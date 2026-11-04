@@ -157,7 +157,7 @@ async function main() {
     truncate table
       public.activity_log, public.vouchers, public.refunds, public.ticket_messages, public.tickets,
       public.messages_outbox, public.campaigns, public.segments, public.automations, public.saved_replies,
-      public.surveys, public.maze_visits, public.bookings, public.guests, public.event_nights, public.seasons,
+      public.surveys, public.bookings, public.guests, public.event_nights, public.seasons,
       public.mazes, public.addons, public.ticket_products, public.staff_users, public.sla_policies,
       public.root_cause_tags, public.ticket_categories
     restart identity cascade;
@@ -435,51 +435,6 @@ async function main() {
   }
   console.log(`Generated ${guests.length} guests and ${bookings.length} bookings`);
 
-  // Maze visits ---------------------------------------------------------------------
-  interface Visit {
-    id: string;
-    guest_id: string;
-    booking_id: string;
-    maze_id: string;
-    maze_slug: string;
-    visited_at: Date;
-    chickened_out: boolean;
-  }
-  const chickenRate: Record<string, number> = {
-    "the-hollow": 0.03,
-    "ward-13": 0.05,
-    rotwood: 0.04,
-    "the-butchers-yard": 0.07,
-    static: 0.06,
-    "nightfall-manor": 0.19,
-  };
-  const visits: Visit[] = [];
-  for (const b of bookings) {
-    if (b.night.future || b.status === "no_show" || b.status === "refunded") continue;
-    if (!rng.chance(0.93)) continue; // some scans are missing, as in real life
-    const order = rng.shuffle(MAZES.map((m) => m.slug));
-    const canExtreme = b.guest.adult && !b.guest.do_not_touch && (b.ticket_type === "vip" || rng.chance(0.3));
-    const count = rng.weighted([[3, 8], [4, 22], [5, 45], [6, 25]] as const);
-    let t = addMinutes(londonInstant(b.night.date, b.entry_time), rng.int(10, 35));
-    let done = 0;
-    for (const slug of order) {
-      if (done >= count) break;
-      if (slug === "nightfall-manor" && !canExtreme) continue;
-      visits.push({
-        id: uuid(),
-        guest_id: b.guest.id,
-        booking_id: b.id,
-        maze_id: mazeIds[slug]!,
-        maze_slug: slug,
-        visited_at: t,
-        chickened_out: rng.chance(chickenRate[slug]! * (b.guest.accessibility_needs ? 1.5 : 1)),
-      });
-      t = addMinutes(t, b.ticket_type === "fast_track" || b.ticket_type === "vip" ? rng.int(14, 28) : rng.int(22, 55));
-      done++;
-    }
-  }
-  console.log(`Generated ${visits.length} maze visits`);
-
   // Surveys --------------------------------------------------------------------------
   interface Survey {
     id: string;
@@ -491,20 +446,17 @@ async function main() {
     submitted_at: Date;
   }
   const surveys: Survey[] = [];
-  const visitsByBooking = new Map<string, Visit[]>();
-  for (const v of visits) {
-    const arr = visitsByBooking.get(v.booking_id) ?? [];
-    arr.push(v);
-    visitsByBooking.set(v.booking_id, arr);
-  }
+  // A booking counts as attended when the night has passed and it was not refunded or a no show.
+  const attended = (b: Booking) => !b.night.future && b.status !== "no_show" && b.status !== "refunded";
   for (const b of bookings) {
-    const bv = visitsByBooking.get(b.id);
-    if (!bv || !rng.chance(0.32)) continue;
+    if (!attended(b) || !rng.chance(0.3)) continue;
     const halloweenPenalty = b.night.halloween ? 1.4 : 0;
     const overall = Math.max(1, Math.min(10, Math.round(rng.normal(8.1 - halloweenPenalty, 1.6))));
     const maze_scores: Record<string, number> = {};
-    for (const v of bv) {
-      maze_scores[v.maze_slug] = Math.max(1, Math.min(10, Math.round(rng.normal(overall + (v.maze_slug === "ward-13" ? 0.6 : v.maze_slug === "static" ? -0.4 : 0), 1.4))));
+    const canExtreme = b.guest.adult && !b.guest.do_not_touch && (b.ticket_type === "vip" || rng.chance(0.3));
+    const rated = rng.shuffle(MAZES.map((m) => m.slug)).filter((slug) => slug !== "nightfall-manor" || canExtreme).slice(0, rng.int(3, 6));
+    for (const slug of rated) {
+      maze_scores[slug] = Math.max(1, Math.min(10, Math.round(rng.normal(overall + (slug === "ward-13" ? 0.6 : slug === "static" ? -0.4 : slug === "nightfall-manor" ? -0.5 : 0), 1.4))));
     }
     const comments =
       overall >= 8
@@ -533,7 +485,7 @@ async function main() {
   for (const b of bookings) {
     const s = stats.get(b.guest.id) ?? { spend: 0, visits: 0, first: null, last: null };
     if (b.status !== "refunded") s.spend += b.total_paid_pence - b.refunded_pence;
-    if (visitsByBooking.has(b.id)) {
+    if (attended(b)) {
       s.visits += 1;
       if (!s.first || b.night.date < s.first) s.first = b.night.date;
       if (!s.last || b.night.date > s.last) s.last = b.night.date;
@@ -574,13 +526,6 @@ async function main() {
     where status = 'on_sale' and date < '2026-11-04' and (
       select coalesce(sum(group_size), 0) from public.bookings b where b.event_night_id = n.id and b.status <> 'refunded'
     ) >= n.capacity * 0.55`);
-  await bulkInsert(
-    "maze_visits",
-    visits.map(({ maze_slug: _s, ...v }) => {
-      void _s;
-      return v;
-    }),
-  );
   await bulkInsert("surveys", surveys.map((s) => ({ ...s, maze_scores: sql.json(s.maze_scores) })));
 
   // Marketing: segments, campaigns, automations ------------------------------------------
@@ -617,12 +562,6 @@ async function main() {
 
   // Outbox: automation sends ---------------------------------------------------------------
   const outbox: Row[] = [];
-  const lastMazeByBooking = new Map<string, string>();
-  const mazeName = Object.fromEntries(MAZES.map((m) => [m.slug, m.name]));
-  for (const [bid, bv] of visitsByBooking) {
-    const last = [...bv].sort((a, b) => a.visited_at.getTime() - b.visited_at.getTime()).at(-1)!;
-    lastMazeByBooking.set(bid, mazeName[last.maze_slug]!);
-  }
   const ticketTypeName = Object.fromEntries(TICKET_TYPES.map((t) => [t.key, t.name]));
   const mergeFor = (b: Booking) => ({
     first_name: b.guest.first_name,
@@ -634,7 +573,6 @@ async function main() {
     entry_time: b.entry_time,
     ticket_type: ticketTypeName[b.ticket_type]!,
     group_size: b.group_size,
-    last_maze: lastMazeByBooking.get(b.id) ?? "the mazes",
     park_name: BRAND.parkName,
     survey_link: `${BRAND.website}/survey/${b.reference}`,
     booking_link: `${BRAND.website}/tickets`,
@@ -668,7 +606,7 @@ async function main() {
     const visitStart = londonInstant(b.night.date, b.entry_time);
     const reminderAt = addMinutes(visitStart, -2880);
     if (b.night.year === 2026 && reminderAt > b.booked_at && reminderAt < NOW && b.status !== "refunded") pushEmail(b, reminderAuto, reminderAt);
-    if (visitsByBooking.has(b.id) && b.night.year === 2026) {
+    if (attended(b) && b.night.year === 2026) {
       const morningAfter = addMinutes(londonInstant(b.night.date, "10:00"), 1440);
       if (morningAfter < NOW) pushEmail(b, surveyAuto, morningAfter);
     }
@@ -691,14 +629,11 @@ async function main() {
       for (const g of consented) {
         const bookingsOfGuest = bookings.filter((b) => b.guest.id === g.id);
         const lastBooking = bookingsOfGuest.sort((a, b) => b.booked_at.getTime() - a.booked_at.getTime())[0];
-        const favourite = lastBooking ? lastMazeByBooking.get(lastBooking.id) ?? "Ward 13" : "Ward 13";
         const values = {
           first_name: g.first_name,
           last_name: g.last_name,
           full_name: `${g.first_name} ${g.last_name}`,
           email: g.email,
-          favourite_maze: favourite,
-          last_maze: favourite,
           park_name: BRAND.parkName,
           booking_reference: lastBooking?.reference ?? "",
         };
@@ -793,7 +728,9 @@ async function main() {
       case "Nottingham locals":
         return g.postcode.startsWith("NG") && g.email_consent;
       case "2025 guests not yet booked for 2026":
-        return gb.some((b) => b.night.year === 2025 && visitsByBooking.has(b.id)) && !gb.some((b) => b.night.year === 2026);
+        return gb.some((b) => b.night.year === 2025 && attended(b)) && !gb.some((b) => b.night.year === 2026);
+      case "Happy guests with SMS consent":
+        return g.sms_consent && !!g.phone && surveys.some((s) => s.guest_id === g.id && s.overall_score >= 8);
       case "VIP and Fast Track buyers":
         return gb.some((b) => b.ticket_type === "vip" || b.ticket_type === "fast_track");
       default:
@@ -974,11 +911,10 @@ async function main() {
   await bulkInsert("activity_log", activity);
 
   // Summary ---------------------------------------------------------------------------------
-  const [counts] = await sql<{ guests: number; bookings: number; visits: number; surveys: number; tickets: number; outbox: number }[]>`
+  const [counts] = await sql<{ guests: number; bookings: number; surveys: number; tickets: number; outbox: number }[]>`
     select
       (select count(*) from public.guests)::int as guests,
       (select count(*) from public.bookings)::int as bookings,
-      (select count(*) from public.maze_visits)::int as visits,
       (select count(*) from public.surveys)::int as surveys,
       (select count(*) from public.tickets)::int as tickets,
       (select count(*) from public.messages_outbox)::int as outbox`;

@@ -249,26 +249,6 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------------
--- Maze visits: mirrors data that will come from the queue system later.
--- Keep this table self contained so it can be replaced wholesale.
--- ---------------------------------------------------------------------------
-create table public.maze_visits (
-  id uuid primary key default gen_random_uuid(),
-  guest_id uuid not null references public.guests (id) on delete cascade,
-  booking_id uuid not null references public.bookings (id) on delete cascade,
-  maze_id uuid not null references public.mazes (id),
-  visited_at timestamptz not null,
-  chickened_out boolean not null default false,
-  external_ref text,                           -- id from the queue system
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
-create index maze_visits_guest_idx on public.maze_visits (guest_id, visited_at);
-create index maze_visits_booking_idx on public.maze_visits (booking_id);
-create index maze_visits_maze_idx on public.maze_visits (maze_id, visited_at);
-create index maze_visits_chicken_idx on public.maze_visits (maze_id) where chickened_out;
-
--- ---------------------------------------------------------------------------
 -- Surveys
 -- ---------------------------------------------------------------------------
 create table public.surveys (
@@ -276,7 +256,7 @@ create table public.surveys (
   guest_id uuid not null references public.guests (id) on delete cascade,
   booking_id uuid not null references public.bookings (id) on delete cascade,
   overall_score integer not null check (overall_score between 1 and 10),
-  maze_scores jsonb not null default '{}',     -- { "<maze slug>": 1..10 }
+  maze_scores jsonb not null default '{}',     -- { "<maze slug>": 1..10 } for the mazes the guest rated
   comments text,
   submitted_at timestamptz not null default now(),
   created_at timestamptz not null default now(),
@@ -552,9 +532,6 @@ create policy "staff read bookings" on public.bookings for select using (public.
 create policy "support write bookings" on public.bookings for insert with check (public.has_role('admin', 'support', 'front_desk'));
 create policy "support update bookings" on public.bookings for update using (public.has_role('admin', 'support', 'front_desk')) with check (public.has_role('admin', 'support', 'front_desk'));
 create policy "admin delete bookings" on public.bookings for delete using (public.has_role('admin'));
-
-create policy "staff read maze_visits" on public.maze_visits for select using (public.is_staff());
-create policy "admin write maze_visits" on public.maze_visits for all using (public.has_role('admin', 'front_desk')) with check (public.has_role('admin', 'front_desk'));
 
 create policy "staff read surveys" on public.surveys for select using (public.is_staff());
 create policy "admin write surveys" on public.surveys for all using (public.has_role('admin')) with check (public.has_role('admin'));

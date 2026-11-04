@@ -218,7 +218,7 @@ export const TICKET_TEMPLATES: TicketTemplate[] = [
         body: "Hi {{first_name}},\n\nThank you for taking the time to write, and I'm sorry. Halloween night was our busiest ever and we had a power fault at Static that made things much worse. That doesn't excuse the queue boards being wrong, and I've passed that to our operations manager.\n\nI'd like to look at this properly rather than send a stock reply. Can you confirm which entry slot you arrived for and roughly what time you left? I'll come back to you by tomorrow.\n\n{{staff_name}}",
       },
       { direction: "inbound", body: "We arrived at 19:00 for our 19:30 slot and left at about 23:15 when it was obvious we weren't getting in anywhere else. I'd still like the refund rather than a voucher, we're not local." },
-      { direction: "internal_note", body: "Queue system shows 3 maze scans across the group between 20:05 and 22:40. Static closure 20:10 to 21:00 confirmed by ops. Recommending full value voucher plus apology; if guest insists on cash, escalate to Eleanor." },
+      { direction: "internal_note", body: "Static closure 20:10 to 21:00 confirmed by ops, and the queue boards were showing stale times all night. Recommending full value voucher plus apology; if guest insists on cash, escalate to Eleanor." },
     ],
   },
   {

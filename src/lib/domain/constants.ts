@@ -150,8 +150,6 @@ export const MERGE_FIELDS = [
   { key: "entry_time", label: "Entry time", example: "19:30" },
   { key: "ticket_type", label: "Ticket type", example: "Fast Track" },
   { key: "group_size", label: "Group size", example: "4" },
-  { key: "last_maze", label: "Last maze visited", example: "Nightfall Manor" },
-  { key: "favourite_maze", label: "Favourite maze", example: "Ward 13" },
   { key: "park_name", label: "Park name", example: "Blackthorn Scream Park" },
   { key: "support_email", label: "Support email", example: "support@blackthornscreampark.co.uk" },
   { key: "ticket_number", label: "Ticket number", example: "#1042" },

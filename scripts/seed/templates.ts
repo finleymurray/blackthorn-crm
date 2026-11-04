@@ -81,7 +81,7 @@ export const AUTOMATIONS = [
     delay_minutes: 0,
     send_at_time: "10:00",
     subject: "How was your night, {{first_name}}?",
-    body: "Hi {{first_name}},\n\nThanks for braving {{park_name}} last night. We'd love to know how it went. Our two minute survey asks you to score the night and each maze you went in, including {{last_maze}}.\n\nEveryone who completes it goes into the draw for VIP tickets next season.\n\nTake the survey: {{survey_link}}\n\nThe Blackthorn team",
+    body: "Hi {{first_name}},\n\nThanks for braving {{park_name}} last night. We'd love to know how it went. Our two minute survey asks you to score the night and each maze you went in.\n\nEveryone who completes it goes into the draw for VIP tickets next season.\n\nTake the survey: {{survey_link}}\n\nThe Blackthorn team",
   },
   {
     trigger: "win_back",
@@ -90,7 +90,7 @@ export const AUTOMATIONS = [
     channel: "email",
     delay_minutes: 0,
     subject: "We've missed you, {{first_name}}",
-    body: "Hi {{first_name}},\n\nLast year you survived {{favourite_maze}}. This year we've rebuilt The Hollow, doubled the actors in Rotwood and added a brand new finale to Nightfall Manor.\n\nTickets for the 2026 season are on sale now and Saturdays are already going fast. Use code BACK10 for 10% off any night in October.\n\nBook now: {{booking_link}}\n\nThe Blackthorn team",
+    body: "Hi {{first_name}},\n\nLast year you made it out alive. This year we've rebuilt The Hollow, doubled the actors in Rotwood and added a brand new finale to Nightfall Manor.\n\nTickets for the 2026 season are on sale now and Saturdays are already going fast. Use code BACK10 for 10% off any night in October.\n\nBook now: {{booking_link}}\n\nThe Blackthorn team",
   },
 ] as const;
 
@@ -107,13 +107,13 @@ export const SEGMENTS: Array<{ name: string; description: string; rules: RuleGro
     },
   },
   {
-    name: "Nightfall Manor survivors",
-    description: "Went through Nightfall Manor and did not chicken out.",
+    name: "Happy guests with SMS consent",
+    description: "Scored us 8 or more in a survey and can be texted.",
     rules: {
       op: "and",
       rules: [
-        { type: "visited_maze", maze_slug: "nightfall-manor" },
-        { type: "chickened_out", maze_slug: "nightfall-manor", negate: true },
+        { type: "survey_score", op: "gt", value: 7 },
+        { type: "sms_consent", value: true },
       ],
     },
   },
@@ -205,7 +205,7 @@ export const CAMPAIGNS: Array<{
     status: "draft",
     blocks: [
       { id: "b1", type: "heading", text: "We've missed you" },
-      { id: "b2", type: "text", text: "Hi {{first_name}},\n\nLast season you made it out of {{favourite_maze}}. This season is bigger, darker and colder. Use BACK10 for 10% off any October night." },
+      { id: "b2", type: "text", text: "Hi {{first_name}},\n\nLast season you made it out alive. This season is bigger, darker and colder. Use BACK10 for 10% off any October night." },
       { id: "b3", type: "button", text: "Claim 10% off", href: "https://blackthornscreampark.co.uk/tickets?code=BACK10" },
     ],
   },

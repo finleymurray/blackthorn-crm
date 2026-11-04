@@ -152,29 +152,26 @@ export async function getGuest(db: Db, id: string): Promise<Guest | null> {
 }
 
 export interface GuestStats {
-  favourite_maze: string | null;
-  chickened_out_of: string[];
-  mazes_completed: number;
   total_bookings: number;
   open_tickets: number;
+  resolved_tickets: number;
+  surveys_completed: number;
   avg_survey_score: number | null;
+  messages_sent: number;
+  last_booking_at: Date | null;
 }
 
 export async function getGuestStats(db: Db, guestId: string): Promise<GuestStats> {
-  const [fav] = await db<{ name: string }[]>`
-    select m.name from public.maze_visits v join public.mazes m on m.id = v.maze_id
-    where v.guest_id = ${guestId} and not v.chickened_out
-    group by m.name order by count(*) desc, m.name limit 1`;
-  const chickened = await db<{ name: string }[]>`
-    select distinct m.name from public.maze_visits v join public.mazes m on m.id = v.maze_id
-    where v.guest_id = ${guestId} and v.chickened_out order by m.name`;
-  const [counts] = await db<{ mazes_completed: number; total_bookings: number; open_tickets: number; avg_survey_score: number | null }[]>`
+  const [counts] = await db<GuestStats[]>`
     select
-      (select count(*) from public.maze_visits where guest_id = ${guestId} and not chickened_out)::int as mazes_completed,
       (select count(*) from public.bookings where guest_id = ${guestId})::int as total_bookings,
       (select count(*) from public.tickets where guest_id = ${guestId} and status <> 'resolved')::int as open_tickets,
-      (select round(avg(overall_score)::numeric, 1) from public.surveys where guest_id = ${guestId})::float as avg_survey_score`;
-  return { favourite_maze: fav?.name ?? null, chickened_out_of: chickened.map((c) => c.name), ...counts! };
+      (select count(*) from public.tickets where guest_id = ${guestId} and status = 'resolved')::int as resolved_tickets,
+      (select count(*) from public.surveys where guest_id = ${guestId})::int as surveys_completed,
+      (select round(avg(overall_score)::numeric, 1) from public.surveys where guest_id = ${guestId})::float as avg_survey_score,
+      (select count(*) from public.messages_outbox where guest_id = ${guestId})::int as messages_sent,
+      (select max(booked_at) from public.bookings where guest_id = ${guestId}) as last_booking_at`;
+  return counts!;
 }
 
 export interface GuestBooking {
@@ -190,8 +187,6 @@ export interface GuestBooking {
   status: string;
   booked_at: Date;
   season_year: number;
-  mazes_visited: number;
-  chickened: number;
   survey_score: number | null;
 }
 
@@ -199,8 +194,6 @@ export async function getGuestBookings(db: Db, guestId: string): Promise<GuestBo
   return db<GuestBooking[]>`
     select b.id, b.reference, n.date::text as date, b.entry_time::text, b.ticket_type::text, b.group_size, b.addons,
       b.total_paid_pence, b.refunded_pence, b.status::text, b.booked_at, s.year as season_year,
-      (select count(*) from public.maze_visits v where v.booking_id = b.id)::int as mazes_visited,
-      (select count(*) from public.maze_visits v where v.booking_id = b.id and v.chickened_out)::int as chickened,
       (select overall_score from public.surveys sv where sv.booking_id = b.id limit 1) as survey_score
     from public.bookings b
     join public.event_nights n on n.id = b.event_night_id
@@ -210,7 +203,7 @@ export async function getGuestBookings(db: Db, guestId: string): Promise<GuestBo
 }
 
 export interface TimelineEvent {
-  kind: "booking" | "maze_visit" | "survey" | "message" | "ticket" | "note" | "activity";
+  kind: "booking" | "survey" | "message" | "ticket" | "note" | "activity";
   id: string;
   at: Date;
   title: string;
@@ -229,12 +222,6 @@ export async function getGuestTimeline(db: Db, guestId: string, limit = 200): Pr
         null::text as href,
         jsonb_build_object('reference', b.reference, 'status', b.status) as meta
       from public.bookings b join public.event_nights n on n.id = b.event_night_id where b.guest_id = ${guestId}
-      union all
-      select 'maze_visit', v.id::text, v.visited_at,
-        case when v.chickened_out then 'Chickened out of ' || m.name else 'Survived ' || m.name end,
-        'Booking ' || b.reference, null,
-        jsonb_build_object('chickened_out', v.chickened_out, 'maze', m.slug)
-      from public.maze_visits v join public.mazes m on m.id = v.maze_id join public.bookings b on b.id = v.booking_id where v.guest_id = ${guestId}
       union all
       select 'survey', s.id::text, s.submitted_at, 'Survey: ' || s.overall_score || '/10', s.comments, null,
         jsonb_build_object('score', s.overall_score, 'maze_scores', s.maze_scores)

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Activity, CalendarDays, Ghost, LifeBuoy, Mail, MessageSquare, Skull, Star, Ticket, UserPen } from "lucide-react";
+import { Activity, CalendarDays, LifeBuoy, Mail, MessageSquare, Star, Ticket, UserPen } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -68,7 +68,7 @@ export function GuestProfileTabs({
                 <TableHead className="hidden md:table-cell">Add-ons</TableHead>
                 <TableHead className="text-right">Paid</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead className="hidden sm:table-cell">Mazes</TableHead>
+                <TableHead className="hidden sm:table-cell">Survey</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -90,16 +90,7 @@ export function GuestProfileTabs({
                   <TableCell>
                     <Badge variant={bookingBadge[b.status] ?? "default"}>{BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}</Badge>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-xs text-muted">
-                    {b.mazes_visited ? (
-                      <>
-                        {b.mazes_visited} visited{b.chickened ? `, ${b.chickened} chickened out` : ""}
-                        {b.survey_score ? ` · ${b.survey_score}/10` : ""}
-                      </>
-                    ) : (
-                      "No scans"
-                    )}
-                  </TableCell>
+                  <TableCell className="hidden sm:table-cell text-xs text-muted">{b.survey_score ? `${b.survey_score}/10` : "Not completed"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -163,7 +154,6 @@ export function GuestProfileTabs({
 
 const iconFor: Record<TimelineEvent["kind"], React.ComponentType<{ className?: string }>> = {
   booking: Ticket,
-  maze_visit: Ghost,
   survey: Star,
   message: Mail,
   ticket: LifeBuoy,
@@ -176,7 +166,6 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
   const kinds: Array<{ key: "all" | TimelineEvent["kind"]; label: string }> = [
     { key: "all", label: "Everything" },
     { key: "booking", label: "Bookings" },
-    { key: "maze_visit", label: "Mazes" },
     { key: "survey", label: "Surveys" },
     { key: "message", label: "Messages" },
     { key: "ticket", label: "Support" },
@@ -185,7 +174,7 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
   const shown = filter === "all" ? events : events.filter((e) => e.kind === filter);
 
   if (events.length === 0) {
-    return <EmptyState icon={CalendarDays} title="Nothing has happened yet" description="Bookings, visits, messages and support will appear here in date order." />;
+    return <EmptyState icon={CalendarDays} title="Nothing has happened yet" description="Bookings, surveys, messages and support will appear here in date order." />;
   }
 
   return (
@@ -208,11 +197,9 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
       </div>
       <ol className="relative space-y-0 border-l border-border pl-5">
         {shown.map((e) => {
-          const Icon = e.kind === "maze_visit" && e.meta.chickened_out ? Skull : iconFor[e.kind];
+          const Icon = iconFor[e.kind];
           const tone =
-            e.kind === "maze_visit" && e.meta.chickened_out
-              ? "bg-warning-soft text-warning"
-              : e.kind === "survey" && Number(e.meta.score) <= 4
+            e.kind === "survey" && Number(e.meta.score) <= 4
                 ? "bg-danger-soft text-danger"
                 : e.kind === "ticket"
                   ? "bg-info-soft text-info"

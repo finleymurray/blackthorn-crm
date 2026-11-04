@@ -127,14 +127,9 @@ export default async function GuestProfilePage({ params, searchParams }: { param
       <section aria-label="Key stats" className="grid gap-3 grid-cols-2 lg:grid-cols-5">
         <Stat label="Visits" value={String(guest.visit_count)} sub={guest.first_visit_on ? `since ${formatDateOnly(guest.first_visit_on)}` : "never visited"} />
         <Stat label="Lifetime spend" value={formatMoney(guest.lifetime_spend_pence)} sub={`${stats.total_bookings} booking${stats.total_bookings === 1 ? "" : "s"}`} />
-        <Stat label="Favourite maze" value={stats.favourite_maze ?? "–"} sub={`${stats.mazes_completed} mazes survived`} />
-        <Stat
-          label="Chickened out of"
-          value={stats.chickened_out_of.length ? stats.chickened_out_of.join(", ") : "Nothing"}
-          sub={stats.chickened_out_of.length ? "at least once" : "braver than most"}
-          small={stats.chickened_out_of.length > 1}
-        />
-        <Stat label="Survey average" value={stats.avg_survey_score ? `${stats.avg_survey_score.toFixed(1)} / 10` : "–"} sub={stats.open_tickets ? `${stats.open_tickets} open ticket${stats.open_tickets === 1 ? "" : "s"}` : "no open tickets"} />
+        <Stat label="Survey average" value={stats.avg_survey_score ? `${stats.avg_survey_score.toFixed(1)} / 10` : "–"} sub={`${stats.surveys_completed} survey${stats.surveys_completed === 1 ? "" : "s"} completed`} />
+        <Stat label="Support" value={stats.open_tickets ? `${stats.open_tickets} open` : "None open"} sub={`${stats.resolved_tickets} resolved`} />
+        <Stat label="Messages sent" value={String(stats.messages_sent)} sub={stats.last_booking_at ? `last booked ${formatDate(stats.last_booking_at)}` : "never booked"} />
       </section>
 
       <div className="grid gap-6 xl:grid-cols-3">
@@ -158,11 +153,11 @@ export default async function GuestProfilePage({ params, searchParams }: { param
   );
 }
 
-function Stat({ label, value, sub, small }: { label: string; value: string; sub: string; small?: boolean }) {
+function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
     <div className="rounded-lg border border-border bg-surface p-4">
       <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
-      <p className={`mt-1.5 font-semibold ${small ? "text-sm leading-snug" : "text-lg"}`}>{value}</p>
+      <p className="mt-1.5 text-lg font-semibold">{value}</p>
       <p className="mt-1 text-xs text-muted">{sub}</p>
     </div>
   );

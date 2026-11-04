@@ -28,7 +28,6 @@ export interface MazeScore {
   slug: string;
   avg_score: number;
   responses: number;
-  chicken_out_pct: number;
 }
 export interface CategoryCount {
   category: string;
@@ -106,16 +105,11 @@ export async function getSurveyScoreByMaze(db: Db): Promise<MazeScore[]> {
     with scores as (
       select key as slug, (value::text)::numeric as score
       from public.surveys s, jsonb_each(s.maze_scores)
-    ),
-    visits as (
-      select maze_id, count(*) as total, count(*) filter (where chickened_out) as chickened from public.maze_visits group by maze_id
     )
-    select m.name as maze, m.slug, round(avg(sc.score), 2)::float as avg_score, count(sc.score)::int as responses,
-      coalesce(round(100.0 * v.chickened / nullif(v.total, 0), 1), 0)::float as chicken_out_pct
+    select m.name as maze, m.slug, round(avg(sc.score), 2)::float as avg_score, count(sc.score)::int as responses
     from public.mazes m
     left join scores sc on sc.slug = m.slug
-    left join visits v on v.maze_id = m.id
-    group by m.id, v.chickened, v.total order by m.sort_order`;
+    group by m.id order by m.sort_order`;
 }
 
 export async function getTicketsByCategory(db: Db): Promise<CategoryCount[]> {
