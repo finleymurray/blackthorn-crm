@@ -10,7 +10,6 @@ import { logActivity } from "@/lib/data/activity";
 import { getSupportConfig } from "@/lib/data/support-config";
 import {
   addTicketMessage,
-  ComplaintRuleError,
   createTicket,
   getTicket,
   issueVoucher,
@@ -37,7 +36,7 @@ export type SupportResult = { ok: true; message?: string; data?: unknown } | { o
 
 function friendly(err: unknown): string {
   if (isPermissionError(err)) return "Your role is not allowed to do that.";
-  if (err instanceof ComplaintRuleError || err instanceof RefundError) return err.message;
+  if (err instanceof RefundError) return err.message;
   return errorMessage(err);
 }
 

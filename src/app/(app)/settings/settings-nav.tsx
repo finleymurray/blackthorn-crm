@@ -8,7 +8,7 @@ const ITEMS = [
   { href: "/settings", label: "Park details", blurb: "Name, logo, sender identity" },
   { href: "/settings/staff", label: "Staff and roles", blurb: "Who can sign in and what they see" },
   { href: "/settings/replies", label: "Saved replies", blurb: "Templates for the support inbox" },
-  { href: "/settings/support", label: "Support rules", blurb: "Categories, root causes, SLA times" },
+  { href: "/settings/support", label: "Support rules", blurb: "Categories and SLA times" },
 ];
 
 export function SettingsNav() {

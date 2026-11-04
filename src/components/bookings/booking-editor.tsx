@@ -86,12 +86,12 @@ export function BookingEditor({ booking: b, nights, editable }: { booking: Booki
             {SLOTS.map((s) => <option key={s} value={s}>{s}</option>)}
           </Select>
         </Field>
-        <Field id="bk-status" label="Status" error={errors.status} help={b.status === "refunded" ? "Fully refunded bookings cannot be reinstated." : "Refunded is set automatically by the Refund action."} required>
+        <Field id="bk-status" label="Status" error={errors.status} help={b.status === "refunded" ? "Refunded bookings cannot be reinstated." : "Use the Refund action to refund or void tickets."} required>
           <Select id="bk-status" value={status} onChange={(e) => setStatus(e.target.value)} disabled={b.status === "refunded"}>
             <option value="confirmed">Confirmed</option>
             <option value="transferred">Moved to another night</option>
             <option value="no_show">No show</option>
-            <option value="refunded" disabled={b.total_paid_pence - b.refunded_pence > 0}>Refunded</option>
+            <option value="refunded" disabled={b.total_paid_pence - b.refunded_pence > 0}>Refunded (tickets void)</option>
           </Select>
         </Field>
         <Field id="bk-type" label="Ticket type" error={errors.ticket_type} required>

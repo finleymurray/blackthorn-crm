@@ -28,7 +28,7 @@ import {
   ACCESSIBILITY_NEEDS,
   BAN_REASONS,
 } from "./seed/pools";
-import { TICKET_TEMPLATES } from "./seed/tickets";
+import { TICKET_TEMPLATES, NEW_INBOUND } from "./seed/tickets";
 import { SAVED_REPLIES, AUTOMATIONS, SEGMENTS, CAMPAIGNS } from "./seed/templates";
 import { MAZES, TICKET_TYPES, ADDONS, TICKET_CATEGORIES, ROOT_CAUSE_TAGS, SLA_HOURS } from "../src/lib/domain/constants";
 import { renderMergeFields } from "../src/lib/messaging/merge";
@@ -767,12 +767,10 @@ async function main() {
     const replied = tpl.thread.some((m) => m.direction === "outbound");
     // Status logic: templates with no reply are new/open; replied threads mostly resolved,
     // some waiting on guest. Keep a handful overdue for the dashboard.
+    // Anything the team has replied to is resolved. Only unanswered threads stay in the queue.
     let status: string;
-    if (old) status = "resolved";
-    else if (!replied) status = rng.weighted([["new", 55], ["open", 45]] as const);
-    else status = rng.weighted([["resolved", 55], ["waiting_on_guest", 25], ["open", 20]] as const);
-    if (tpl.category === "complaint" && tpl.thread.at(-1)?.direction !== "outbound" && !old) status = "open";
-    if (old) status = "resolved";
+    if (old || replied) status = "resolved";
+    else status = rng.weighted([["new", 70], ["open", 30]] as const);
     // Resolved tickets spread across the season; open ones are recent so the
     // inbox looks live rather than abandoned.
     const createdAt = old
@@ -842,6 +840,39 @@ async function main() {
       activity.push({ staff_id: assigned ?? support.id, staff_name: assigned === admin.id ? admin.name : support.name, action: "ticket.resolved", entity_type: "ticket", entity_id: ticketId, summary: `Resolved ticket "${renderMergeFields(tpl.subject, values)}"`, details: sql.json({}), created_at: resolvedAt });
     }
   }
+  // A queue of fresh, unanswered emails to work through, arriving over the last 36 hours.
+  const freshBookings = bookings.filter((b) => b.status !== "refunded" && !b.guest.banned);
+  NEW_INBOUND.forEach((tpl, i) => {
+    const booking = rng.pick(freshBookings);
+    const guest = booking.guest;
+    const priority = tpl.priority ?? (TICKET_CATEGORIES.find((c) => c.key === tpl.category)?.defaultPriority ?? "normal");
+    const createdAt = addMinutes(NOW, -(rng.chance(0.7) ? rng.int(15, 7 * 60) : rng.int(7 * 60, 36 * 60)));
+    const ticketId = uuid();
+    const values = { first_name: guest.first_name, last_name: guest.last_name, booking_reference: booking.reference, visit_date: ukDate(booking.night.date) };
+    messageRows.push({ id: uuid(), ticket_id: ticketId, direction: "inbound", author_staff_id: null, author_name: `${guest.first_name} ${guest.last_name}`, body: renderMergeFields(tpl.body, values), sent_at: createdAt, created_at: createdAt });
+    ticketRows.push({
+      id: ticketId,
+      guest_id: guest.id,
+      requester_name: `${guest.first_name} ${guest.last_name}`,
+      requester_email: guest.email,
+      booking_id: tpl.body.includes("{{booking_reference}}") ? booking.id : null,
+      subject: renderMergeFields(tpl.subject, values),
+      category: tpl.category,
+      priority,
+      status: "new",
+      assigned_to: null,
+      source: tpl.source,
+      sla_due_at: addMinutes(createdAt, SLA_HOURS[priority as keyof typeof SLA_HOURS] * 60),
+      first_response_at: null,
+      resolved_at: null,
+      root_cause: null,
+      final_response: null,
+      created_at: createdAt,
+      updated_at: createdAt,
+    });
+    void i;
+  });
+
   // Make sure the SLA story is interesting: a few open tickets are clearly overdue, a few due soon.
   const openTickets = ticketRows.filter((t) => t.status !== "resolved");
   openTickets.slice(0, 4).forEach((t, i) => {

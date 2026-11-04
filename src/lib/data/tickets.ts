@@ -260,12 +260,7 @@ export const ticketFieldsSchema = z.object({
 });
 export type TicketFieldsInput = z.infer<typeof ticketFieldsSchema>;
 
-export class ComplaintRuleError extends Error {}
-
-/**
- * Applies field changes. Complaints cannot be resolved without a root cause
- * tag and a final response: that is the one business rule enforced here.
- */
+/** Applies field changes and records what changed. */
 export async function updateTicketFields(db: Db, staff: StaffUser, ticket: TicketDetail, input: TicketFieldsInput, sla: SlaPolicies): Promise<string[]> {
   const next = {
     status: input.status ?? ticket.status,
@@ -275,10 +270,6 @@ export async function updateTicketFields(db: Db, staff: StaffUser, ticket: Ticke
     root_cause: input.root_cause === undefined ? ticket.root_cause : input.root_cause || null,
     final_response: input.final_response === undefined ? ticket.final_response : input.final_response || null,
   };
-  if (next.status === "resolved" && next.category === "complaint") {
-    if (!next.root_cause) throw new ComplaintRuleError("Complaints need a root cause tag before they can be resolved.");
-    if (!next.final_response || next.final_response.trim().length < 20) throw new ComplaintRuleError("Complaints need a final response (at least 20 characters) before they can be resolved.");
-  }
   const changes: string[] = [];
   if (next.status !== ticket.status) changes.push(`status ${ticket.status.replace(/_/g, " ")} → ${next.status.replace(/_/g, " ")}`);
   if (next.priority !== ticket.priority) changes.push(`priority ${ticket.priority} → ${next.priority}`);
@@ -369,6 +360,7 @@ export const refundSchema = z.object({
   booking_id: z.string().uuid(),
   kind: z.enum(["full", "partial"]),
   amount_pence: z.coerce.number().int().optional(),
+  void_tickets: z.boolean().optional().default(false),
   reason: z.string().trim().min(3, "Give a reason for the refund").max(300),
 });
 
@@ -377,12 +369,12 @@ export async function refundBooking(db: Db, staff: StaffUser, ticket: TicketDeta
     select id, reference, total_paid_pence, refunded_pence, status::text as status, guest_id from crm.bookings where id = ${input.booking_id} for update`;
   if (!booking) throw new Error("Booking not found");
   if (ticket.guest_id && booking.guest_id !== ticket.guest_id) throw new Error("That booking belongs to a different guest");
-  const plan = planRefund(booking, { kind: input.kind, amount_pence: input.amount_pence } satisfies RefundRequest);
+  const plan = planRefund(booking, { kind: input.kind, amount_pence: input.amount_pence, void_tickets: input.void_tickets } satisfies RefundRequest);
   const receipt = await processRefund({ bookingReference: booking.reference, amountPence: plan.amount_pence, reason: input.reason });
   await db`insert into crm.refunds (booking_id, ticket_id, amount_pence, reason, processed_by, provider_reference) values (${booking.id}, ${ticket.id}, ${plan.amount_pence}, ${input.reason}, ${staff.id}, ${receipt.providerReference})`;
   await db`update crm.bookings set refunded_pence = ${plan.new_refunded_pence}, status = ${plan.new_status}::booking_status where id = ${booking.id}`;
   await db`update crm.guests set lifetime_spend_pence = greatest(0, lifetime_spend_pence - ${plan.amount_pence}) where id = ${booking.guest_id}`;
-  const summary = `Refunded ${formatMoney(plan.amount_pence)} on ${booking.reference} (${input.kind}${plan.new_status === "refunded" ? ", booking now fully refunded" : ""}). Simulated provider ref ${receipt.providerReference}.`;
+  const summary = `Refunded ${formatMoney(plan.amount_pence)} on ${booking.reference} (${input.kind}${plan.new_status === "refunded" ? ", tickets voided" : ", tickets still valid"}). Simulated provider ref ${receipt.providerReference}.`;
   await db`insert into crm.ticket_messages (ticket_id, direction, author_staff_id, author_name, body) values (${ticket.id}, 'internal_note', ${staff.id}, ${staff.name}, ${"Action: " + summary + " Reason: " + input.reason})`;
   await logActivity(db, staff, { action: "booking.refunded", entityType: "booking", entityId: booking.id, summary, details: { ticket_id: ticket.id, ...plan, provider_reference: receipt.providerReference } });
   return summary;

@@ -126,7 +126,6 @@ export async function upsertCategory(db: Db, input: z.infer<typeof categorySchem
     on conflict (key) do update set label = excluded.label, default_priority = excluded.default_priority`;
 }
 export async function setCategoryActive(db: Db, key: string, active: boolean) {
-  if (key === "complaint" && !active) throw new Error("The complaint category is used by the complaint handling rules and cannot be disabled.");
   await db`update crm.ticket_categories set active = ${active} where key = ${key}`;
 }
 

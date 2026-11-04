@@ -6,14 +6,13 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/toast";
-import { saveCategory, saveRootCause, saveSla, toggleCategory, toggleRootCause } from "@/app/(app)/settings/actions";
-import type { RootCauseTag, TicketCategory } from "@/lib/data/support-config";
+import { saveCategory, saveSla, toggleCategory } from "@/app/(app)/settings/actions";
+import type { TicketCategory } from "@/lib/data/support-config";
 import type { SlaPolicies } from "@/lib/support/sla";
 import { TICKET_PRIORITY_LABELS } from "@/lib/domain/constants";
 
-export function SupportRules({ categories, rootCauses, sla }: { categories: TicketCategory[]; rootCauses: RootCauseTag[]; sla: SlaPolicies }) {
+export function SupportRules({ categories, sla }: { categories: TicketCategory[]; sla: SlaPolicies }) {
   const router = useRouter();
   const { toast } = useToast();
   const [pending, start] = React.useTransition();
@@ -61,51 +60,11 @@ export function SupportRules({ categories, rootCauses, sla }: { categories: Tick
         </form>
       </section>
 
-      <section className="panel">
-        <div className="panel-head">
-          <div>
-            <h3 className="panel-title">Root cause tags</h3>
-            <p className="panel-meta">One must be chosen before a complaint can be resolved</p>
-          </div>
-        </div>
-        <ul className="divide-y divide-border">
-          {rootCauses.map((r) => (
-            <li key={r.key} className="flex items-center justify-between gap-3 px-4 py-2">
-              <span className={r.active ? "" : "text-muted line-through"}>
-                {r.label} <span className="ml-1 text-[11px] text-muted">{r.key}</span>
-              </span>
-              <Switch aria-label={`${r.label} enabled`} checked={r.active} disabled={pending} onCheckedChange={(v) => start(async () => done(await toggleRootCause(r.key, v)))} />
-            </li>
-          ))}
-        </ul>
-        <form
-          className="flex flex-wrap items-end gap-2 border-t border-border p-3"
-          onSubmit={(e) => {
-            e.preventDefault();
-            const form = e.currentTarget;
-            const fd = new FormData(form);
-            start(async () => {
-              const r = await saveRootCause({ key: String(fd.get("label")).toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, ""), label: fd.get("label") });
-              done(r);
-              if (r.ok) form.reset();
-            });
-          }}
-        >
-          <label className="flex-1 space-y-1 text-[11px] text-muted">
-            New root cause
-            <Input name="label" placeholder="e.g. Parking" required maxLength={40} />
-          </label>
-          <Button type="submit" size="sm" variant="secondary" loading={pending}>
-            <Plus /> Add
-          </Button>
-        </form>
-      </section>
-
       <section className="panel xl:col-span-2">
         <div className="panel-head">
           <div>
             <h3 className="panel-title">Ticket categories</h3>
-            <p className="panel-meta">Each category sets the default priority for new tickets. Complaint is protected because of the complaint handling rules.</p>
+            <p className="panel-meta">Each category sets the default priority for new tickets.</p>
           </div>
         </div>
         <ul className="divide-y divide-border">
@@ -130,9 +89,8 @@ export function SupportRules({ categories, rootCauses, sla }: { categories: Tick
                   </option>
                 ))}
               </Select>
-              {c.key === "complaint" ? <Badge variant="accent">Protected</Badge> : null}
               <span className="ml-auto">
-                <Switch aria-label={`${c.label} enabled`} checked={c.active} disabled={pending || c.key === "complaint"} onCheckedChange={(v) => start(async () => done(await toggleCategory(c.key, v)))} />
+                <Switch aria-label={`${c.label} enabled`} checked={c.active} disabled={pending} onCheckedChange={(v) => start(async () => done(await toggleCategory(c.key, v)))} />
               </span>
             </li>
           ))}

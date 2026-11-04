@@ -39,7 +39,6 @@ export default async function TicketPage({ params, searchParams }: { params: Pro
         messages={data.messages}
         config={{
           categories: data.config.categories.filter((c) => c.active),
-          rootCauses: data.config.rootCauses.filter((r) => r.active),
           savedReplies: data.config.savedReplies,
           staff: data.config.staff.filter((s) => s.active && (s.role === "admin" || s.role === "support")),
         }}

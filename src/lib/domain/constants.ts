@@ -125,7 +125,7 @@ export const TICKET_PRIORITY_LABELS = {
 
 export const BOOKING_STATUS_LABELS = {
   confirmed: "Confirmed",
-  refunded: "Refunded",
+  refunded: "Refunded / void",
   transferred: "Moved",
   no_show: "No show",
 } as const;

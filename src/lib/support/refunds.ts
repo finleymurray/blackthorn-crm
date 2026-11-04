@@ -12,6 +12,8 @@ export interface RefundableBooking {
 export interface RefundRequest {
   kind: "full" | "partial";
   amount_pence?: number;
+  /** Cancel the tickets as well, even when only part of the money is returned. */
+  void_tickets?: boolean;
 }
 
 export interface RefundPlan {
@@ -46,7 +48,7 @@ export function planRefund(booking: RefundableBooking, request: RefundRequest): 
     remaining_before_pence: remaining,
     remaining_after_pence: after,
     new_refunded_pence: newRefunded,
-    new_status: after === 0 ? "refunded" : (booking.status as RefundPlan["new_status"]),
+    new_status: after === 0 || request.void_tickets ? "refunded" : (booking.status as RefundPlan["new_status"]),
   };
 }
 

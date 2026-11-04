@@ -54,7 +54,7 @@ export async function saveBooking(id: string, input: unknown): Promise<BookingRe
   }
 }
 
-const refundInput = z.object({ kind: z.enum(["full", "partial"]), amount_pence: z.coerce.number().int().optional(), reason: z.string().trim().min(3, "Give a reason").max(300) });
+const refundInput = z.object({ kind: z.enum(["full", "partial"]), amount_pence: z.coerce.number().int().optional(), void_tickets: z.boolean().optional().default(false), reason: z.string().trim().min(3, "Give a reason").max(300) });
 
 export async function refundBookingDirect(id: string, input: unknown): Promise<BookingResult> {
   const staff = await requireStaff();
@@ -66,12 +66,12 @@ export async function refundBookingDirect(id: string, input: unknown): Promise<B
       const [booking] = await db<{ id: string; reference: string; total_paid_pence: number; refunded_pence: number; status: string; guest_id: string }[]>`
         select id, reference, total_paid_pence, refunded_pence, status::text as status, guest_id from crm.bookings where id = ${id} for update`;
       if (!booking) throw new Error("Booking not found");
-      const plan = planRefund(booking, { kind: parsed.data.kind, amount_pence: parsed.data.amount_pence });
+      const plan = planRefund(booking, { kind: parsed.data.kind, amount_pence: parsed.data.amount_pence, void_tickets: parsed.data.void_tickets });
       const receipt = await processRefund({ bookingReference: booking.reference, amountPence: plan.amount_pence, reason: parsed.data.reason });
       await db`insert into crm.refunds (booking_id, amount_pence, reason, processed_by, provider_reference) values (${booking.id}, ${plan.amount_pence}, ${parsed.data.reason}, ${staff.id}, ${receipt.providerReference})`;
       await db`update crm.bookings set refunded_pence = ${plan.new_refunded_pence}, status = ${plan.new_status}::booking_status where id = ${booking.id}`;
       await db`update crm.guests set lifetime_spend_pence = greatest(0, lifetime_spend_pence - ${plan.amount_pence}) where id = ${booking.guest_id}`;
-      const summary = `Refunded ${formatMoney(plan.amount_pence)} on ${booking.reference} (${parsed.data.kind}${plan.new_status === "refunded" ? ", now fully refunded" : ""}). Simulated provider ref ${receipt.providerReference}. Reason: ${parsed.data.reason}`;
+      const summary = `Refunded ${formatMoney(plan.amount_pence)} on ${booking.reference} (${parsed.data.kind}${plan.new_status === "refunded" ? ", tickets voided" : ", tickets still valid"}). Simulated provider ref ${receipt.providerReference}. Reason: ${parsed.data.reason}`;
       await logActivity(db, staff, { action: "booking.refunded", entityType: "booking", entityId: booking.id, summary, details: { ...plan, provider_reference: receipt.providerReference } });
       await logActivity(db, staff, { action: "guest.booking_refunded", entityType: "guest", entityId: booking.guest_id, summary, details: { booking_id: booking.id } });
       return { summary, guestId: booking.guest_id };

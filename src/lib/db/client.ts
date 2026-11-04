@@ -47,8 +47,8 @@ export type Db = TransactionSql;
 export async function withStaff<T>(staff: StaffUser, fn: (db: Db) => Promise<T>): Promise<T> {
   const claims = JSON.stringify({ sub: staff.id, role: "authenticated", email: staff.email });
   return adminSql.begin(async (tx) => {
-    await tx.unsafe(`set local role authenticated`);
-    await tx`select set_config('request.jwt.claims', ${claims}, true)`;
+    // One round trip: switch role and set the JWT claims together.
+    await tx`select set_config('role', 'authenticated', true), set_config('request.jwt.claims', ${claims}, true)`;
     return fn(tx);
   }) as Promise<T>;
 }

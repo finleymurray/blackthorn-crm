@@ -13,9 +13,9 @@ export default async function SupportRulesPage() {
     <section className="space-y-6">
       <div>
         <h2 className="text-[15px] font-medium">Support rules</h2>
-        <p className="text-xs text-muted">Ticket categories, the root cause tags required to close a complaint, and how long each priority has before a ticket is overdue.</p>
+        <p className="text-xs text-muted">Ticket categories and how long each priority has before a ticket is overdue.</p>
       </div>
-      <SupportRules categories={config.categories} rootCauses={config.rootCauses} sla={config.sla} />
+      <SupportRules categories={config.categories} sla={config.sla} />
     </section>
   );
 }

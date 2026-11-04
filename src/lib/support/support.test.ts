@@ -61,6 +61,11 @@ describe("refunds", () => {
     const p = planRefund({ ...booking, refunded_pence: 9000 }, { kind: "partial", amount_pence: 3000 });
     expect(p.new_status).toBe("refunded");
   });
+  it("voids the tickets on a partial refund when asked", () => {
+    const p = planRefund(booking, { kind: "partial", amount_pence: 2000, void_tickets: true });
+    expect(p.new_status).toBe("refunded");
+    expect(p.remaining_after_pence).toBe(10000);
+  });
   it("never refunds more than was paid", () => {
     expect(() => planRefund(booking, { kind: "partial", amount_pence: 12001 })).toThrow(RefundError);
     expect(() => planRefund({ ...booking, refunded_pence: 5000 }, { kind: "partial", amount_pence: 7001 })).toThrow(/at most £70.00/);
