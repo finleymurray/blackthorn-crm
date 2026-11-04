@@ -1,0 +1,122 @@
+@import "tailwindcss";
+
+/*
+  Blackthorn dark theme. Near-black surfaces, off-white text, one deep red
+  accent used sparingly. All colours are checked for WCAG AA contrast against
+  the surfaces they sit on.
+*/
+:root {
+  --background: #0b0b0e;
+  --foreground: #ececec;
+  --surface: #13131a;
+  --surface-raised: #1a1a23;
+  --border: #2a2a35;
+  --border-strong: #3a3a48;
+  --muted: #a4a4b3;
+  --muted-strong: #c6c6d2;
+  --accent: #a3242b;
+  --accent-hover: #bb2b33;
+  --accent-soft: rgba(163, 36, 43, 0.14);
+  --accent-foreground: #ffffff;
+  --success: #3fbf7f;
+  --success-soft: rgba(63, 191, 127, 0.14);
+  --warning: #e0a82e;
+  --warning-soft: rgba(224, 168, 46, 0.16);
+  --danger: #ef5b5b;
+  --danger-soft: rgba(239, 91, 91, 0.16);
+  --info: #6fa8e6;
+  --info-soft: rgba(111, 168, 230, 0.16);
+  --ring: #d9565d;
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-muted: var(--muted);
+  --color-muted-strong: var(--muted-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-display), Georgia, serif;
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  ::selection {
+    background: var(--accent);
+    color: white;
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--muted);
+    opacity: 1;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .vignette {
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(163, 36, 43, 0.18), transparent 60%),
+      radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, 0.6), transparent 60%),
+      var(--background);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg, var(--surface) 0px, var(--surface-raised) 40px, var(--surface) 80px);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
