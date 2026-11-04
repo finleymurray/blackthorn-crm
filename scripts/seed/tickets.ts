@@ -368,37 +368,3 @@ export const TICKET_TEMPLATES: TicketTemplate[] = [
     ],
   },
 ];
-
-/** Templates for the "simulate inbound email" button in the inbox. */
-export const SIMULATED_INBOUND: Array<{ category: TicketTemplate["category"]; subject: string; body: string }> = [
-  {
-    category: "refund",
-    subject: "Refund for tonight - snowed in",
-    body: "Hi, we're booked for tonight ({{booking_reference}}) but the A52 is closed with snow and we can't get there from Derby. Can we have a refund or move to next week?\n\n{{first_name}}",
-  },
-  {
-    category: "booking_change",
-    subject: "Change name on booking",
-    body: "My friend can't come anymore so someone else is taking her ticket. Does the name on {{booking_reference}} matter at the gate?",
-  },
-  {
-    category: "complaint",
-    subject: "Hour queue for Ward 13 and rude staff",
-    body: "We were there last night and queued over an hour for Ward 13 then got told to 'hurry up' by the staff at the entrance. Not what I expect for £42 a ticket. Booking {{booking_reference}}. I want to know what you're going to do about it.",
-  },
-  {
-    category: "lost_property",
-    subject: "Lost glasses in Static",
-    body: "I lost my glasses (black Ray-Ban frames) somewhere in Static last night. Can't see a thing without them. Have they been handed in?",
-  },
-  {
-    category: "accessibility",
-    subject: "Hearing impaired visitor",
-    body: "My dad is coming with us on {{visit_date}} and is profoundly deaf. Are there any mazes with verbal instructions he might miss, and can staff be told?",
-  },
-  {
-    category: "general",
-    subject: "Gift vouchers for Christmas?",
-    body: "Do you sell gift vouchers? Want to get my brother tickets for next season as a Christmas present.",
-  },
-];
