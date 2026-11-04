@@ -17,7 +17,7 @@ const ROLE_BLURB: Record<StaffRole, string> = {
 async function loadDemoLogins(): Promise<DemoLogin[]> {
   try {
     const rows = await adminSql<{ name: string; email: string; role: StaffRole }[]>`
-      select name, email, role from public.staff_users where active
+      select name, email, role from crm.staff_users where active
       order by array_position(array['admin','marketing','support','front_desk']::staff_role[], role)`;
     return rows.map((r) => ({ name: r.name, email: r.email, roleLabel: ROLE_LABELS[r.role], description: ROLE_BLURB[r.role] }));
   } catch {

@@ -31,7 +31,7 @@ describe("compileSegment", () => {
       ],
     };
     const out = compileSegment(rules);
-    expect(out.where).toMatch(/^\(exists \(select 1 from public\.bookings b .*s\.year = \$1 .*\) and not \(exists .*s\.year = \$2 .*\) and \(\(g\.email_consent = \$3\) or \(g\.sms_consent = \$4\)\)$/s);
+    expect(out.where).toMatch(/^\(exists \(select 1 from crm\.bookings b .*s\.year = \$1 .*\) and not \(exists .*s\.year = \$2 .*\) and \(\(g\.email_consent = \$3\) or \(g\.sms_consent = \$4\)\)$/s);
     expect(out.params).toEqual([2025, 2026, true, true]);
   });
 

@@ -17,8 +17,8 @@ export default async function NewTicketPage({ searchParams }: { searchParams: Pr
         ? (
             await db<{ name: string; email: string; reference: string | null }[]>`
               select g.first_name || ' ' || g.last_name as name, g.email,
-                (select b.reference from public.bookings b where b.guest_id = g.id and b.status <> 'refunded' order by b.booked_at desc limit 1) as reference
-              from public.guests g where g.id = ${guest}`
+                (select b.reference from crm.bookings b where b.guest_id = g.id and b.status <> 'refunded' order by b.booked_at desc limit 1) as reference
+              from crm.guests g where g.id = ${guest}`
           )[0] ?? null
         : null;
     return { categories: config.categories.filter((c) => c.active).map((c) => ({ key: c.key, label: c.label })), prefill };

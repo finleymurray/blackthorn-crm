@@ -41,9 +41,9 @@ export interface CampaignStats {
 const select = (db: Db) => db`
   select c.id, c.name, c.channel::text as channel, c.segment_id, s.name as segment_name, s.rules as segment_rules, c.subject, c.preheader, c.blocks, c.sms_body,
     c.status::text as status, c.scheduled_for, c.sent_at, c.stats, st.name as created_by_name, c.created_at, c.updated_at
-  from public.campaigns c
-  left join public.segments s on s.id = c.segment_id
-  left join public.staff_users st on st.id = c.created_by`;
+  from crm.campaigns c
+  left join crm.segments s on s.id = c.segment_id
+  left join crm.staff_users st on st.id = c.created_by`;
 
 export async function listCampaigns(db: Db): Promise<CampaignRow[]> {
   return db<CampaignRow[]>`${select(db)} order by coalesce(c.sent_at, c.scheduled_for, c.updated_at) desc`;
@@ -72,7 +72,7 @@ export type CampaignInput = z.infer<typeof campaignInputSchema>;
 
 export async function createCampaign(db: Db, input: CampaignInput, staffId: string): Promise<string> {
   const [row] = await db<{ id: string }[]>`
-    insert into public.campaigns (name, channel, segment_id, subject, preheader, blocks, sms_body, created_by)
+    insert into crm.campaigns (name, channel, segment_id, subject, preheader, blocks, sms_body, created_by)
     values (${input.name}, ${input.channel}, ${input.segment_id}, ${input.subject || null}, ${input.preheader || null}, ${db.json(input.blocks as never)}, ${input.sms_body || null}, ${staffId})
     returning id`;
   return row!.id;
@@ -80,14 +80,14 @@ export async function createCampaign(db: Db, input: CampaignInput, staffId: stri
 
 export async function updateCampaign(db: Db, id: string, input: CampaignInput): Promise<void> {
   const rows = await db`
-    update public.campaigns set name = ${input.name}, channel = ${input.channel}, segment_id = ${input.segment_id}, subject = ${input.subject || null},
+    update crm.campaigns set name = ${input.name}, channel = ${input.channel}, segment_id = ${input.segment_id}, subject = ${input.subject || null},
       preheader = ${input.preheader || null}, blocks = ${db.json(input.blocks as never)}, sms_body = ${input.sms_body || null}
     where id = ${id} and status <> 'sent' returning id`;
   if (rows.length === 0) throw new Error("Campaign not found or already sent");
 }
 
 export async function deleteCampaign(db: Db, id: string): Promise<void> {
-  const rows = await db`delete from public.campaigns where id = ${id} and status <> 'sent' returning id`;
+  const rows = await db`delete from crm.campaigns where id = ${id} and status <> 'sent' returning id`;
   if (rows.length === 0) throw new Error("Sent campaigns cannot be deleted");
 }
 
@@ -117,9 +117,9 @@ export const SAMPLE_VALUES: MergeValues = {
 };
 
 async function guestValues(db: Db, guestId: string, parkName: string, supportEmail: string): Promise<MergeValues> {
-  const [g] = await db<{ first_name: string; last_name: string; email: string }[]>`select first_name, last_name, email from public.guests where id = ${guestId}`;
+  const [g] = await db<{ first_name: string; last_name: string; email: string }[]>`select first_name, last_name, email from crm.guests where id = ${guestId}`;
   const [b] = await db<{ reference: string; date: string; entry_time: string; ticket_type: string; group_size: number }[]>`
-    select b.reference, n.date::text, b.entry_time::text, b.ticket_type::text, b.group_size from public.bookings b join public.event_nights n on n.id = b.event_night_id
+    select b.reference, n.date::text, b.entry_time::text, b.ticket_type::text, b.group_size from crm.bookings b join crm.event_nights n on n.id = b.event_night_id
     where b.guest_id = ${guestId} and b.status <> 'refunded' order by n.date desc limit 1`;
   return {
     first_name: g?.first_name,
@@ -198,19 +198,19 @@ export async function sendCampaignNow(db: Db, c: CampaignRow): Promise<CampaignS
   const clickRate = c.channel === "email" ? 0.18 : 0.11;
   await db.unsafe(
     `with picked as (
-       select id, random() as r from public.messages_outbox where campaign_id = $1 and status = 'sent'
+       select id, random() as r from crm.messages_outbox where campaign_id = $1 and status = 'sent'
      )
      , opened as (
        select id, r, case when r < $2 then now() + (random() * interval '36 hours') else null end as opened_at from picked
      )
-     update public.messages_outbox o set
+     update crm.messages_outbox o set
        opened_at = p.opened_at,
        clicked_at = case when p.r < $2 * $3 then p.opened_at + (random() * interval '4 hours') else null end
      from opened p where p.id = o.id`,
     [c.id, openRate, clickRate],
   );
   const [eng] = await db<{ opens: number; clicks: number }[]>`
-    select count(opened_at)::int as opens, count(clicked_at)::int as clicks from public.messages_outbox where campaign_id = ${c.id} and status = 'sent'`;
+    select count(opened_at)::int as opens, count(clicked_at)::int as clicks from crm.messages_outbox where campaign_id = ${c.id} and status = 'sent'`;
 
   const stats: CampaignStats = {
     audience: audience.total,
@@ -222,18 +222,18 @@ export async function sendCampaignNow(db: Db, c: CampaignRow): Promise<CampaignS
     bookings_after: 0,
     revenue_after_pence: 0,
   };
-  await db`update public.campaigns set status = 'sent', sent_at = now(), scheduled_for = null, stats = ${db.json(stats as never)} where id = ${c.id}`;
+  await db`update crm.campaigns set status = 'sent', sent_at = now(), scheduled_for = null, stats = ${db.json(stats as never)} where id = ${c.id}`;
   return stats;
 }
 
 export async function scheduleCampaign(db: Db, c: CampaignRow, when: Date): Promise<void> {
   if (c.status === "sent") throw new Error("This campaign has already been sent");
   if (!c.segment_id) throw new Error("Choose a segment before scheduling");
-  await db`update public.campaigns set status = 'scheduled', scheduled_for = ${when} where id = ${c.id}`;
+  await db`update crm.campaigns set status = 'scheduled', scheduled_for = ${when} where id = ${c.id}`;
 }
 
 export async function unscheduleCampaign(db: Db, id: string): Promise<void> {
-  await db`update public.campaigns set status = 'draft', scheduled_for = null where id = ${id} and status = 'scheduled'`;
+  await db`update crm.campaigns set status = 'draft', scheduled_for = null where id = ${id} and status = 'scheduled'`;
 }
 
 export interface CampaignReport {
@@ -251,23 +251,23 @@ export interface CampaignReport {
 export async function getCampaignReport(db: Db, c: CampaignRow): Promise<CampaignReport> {
   const [counts] = await db<{ recipients: number; opens: number; clicks: number }[]>`
     select count(*)::int as recipients, count(opened_at)::int as opens, count(clicked_at)::int as clicks
-    from public.messages_outbox where campaign_id = ${c.id} and status = 'sent'`;
+    from crm.messages_outbox where campaign_id = ${c.id} and status = 'sent'`;
   const [after] = await db<{ bookings_after: number; revenue_after_pence: number }[]>`
     select count(*)::int as bookings_after, coalesce(sum(b.total_paid_pence), 0)::int as revenue_after_pence
-    from public.bookings b
+    from crm.bookings b
     where b.source_campaign_id = ${c.id}
        or (b.booked_at > ${c.sent_at ?? new Date()}::timestamptz and b.booked_at < ${c.sent_at ?? new Date()}::timestamptz + interval '14 days'
-           and b.guest_id in (select guest_id from public.messages_outbox where campaign_id = ${c.id} and status = 'sent'))`;
+           and b.guest_id in (select guest_id from crm.messages_outbox where campaign_id = ${c.id} and status = 'sent'))`;
   const timeline = await db<{ hour: string; opens: number; clicks: number }[]>`
     with hours as (
       select generate_series(date_trunc('hour', ${c.sent_at ?? new Date()}::timestamptz), date_trunc('hour', ${c.sent_at ?? new Date()}::timestamptz) + interval '47 hours', interval '1 hour') as h
     )
     select to_char(h.h at time zone 'Europe/London', 'DD/MM HH24:00') as hour,
-      (select count(*) from public.messages_outbox o where o.campaign_id = ${c.id} and o.opened_at >= h.h and o.opened_at < h.h + interval '1 hour')::int as opens,
-      (select count(*) from public.messages_outbox o where o.campaign_id = ${c.id} and o.clicked_at >= h.h and o.clicked_at < h.h + interval '1 hour')::int as clicks
+      (select count(*) from crm.messages_outbox o where o.campaign_id = ${c.id} and o.opened_at >= h.h and o.opened_at < h.h + interval '1 hour')::int as opens,
+      (select count(*) from crm.messages_outbox o where o.campaign_id = ${c.id} and o.clicked_at >= h.h and o.clicked_at < h.h + interval '1 hour')::int as clicks
     from hours h order by h.h`;
   const sample = await db<CampaignReport["sample"]>`
-    select id, recipient_name, recipient, opened_at, clicked_at, guest_id from public.messages_outbox
+    select id, recipient_name, recipient, opened_at, clicked_at, guest_id from crm.messages_outbox
     where campaign_id = ${c.id} and status = 'sent' order by clicked_at desc nulls last, opened_at desc nulls last, sent_at limit 25`;
   return { stats: c.stats, ...counts!, ...after!, timeline, sample };
 }

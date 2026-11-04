@@ -8,8 +8,8 @@ export const dynamic = "force-dynamic";
 
 /** The public web form, as a guest would see it on the park's website. Creates a support ticket. */
 export default async function ContactPage() {
-  const categories = await adminSql<{ key: string; label: string }[]>`select key, label from public.ticket_categories where active order by sort_order`.catch(() => []);
-  const [settings] = await adminSql<{ name: string; support_email: string }[]>`select name, support_email from public.park_settings where id = 1`.catch(() => [{ name: "Blackthorn Scream Park", support_email: "support@example.com" }]);
+  const categories = await adminSql<{ key: string; label: string }[]>`select key, label from crm.ticket_categories where active order by sort_order`.catch(() => []);
+  const [settings] = await adminSql<{ name: string; support_email: string }[]>`select name, support_email from crm.park_settings where id = 1`.catch(() => [{ name: "Blackthorn Scream Park", support_email: "support@example.com" }]);
 
   return (
     <main className="vignette min-h-screen px-4 py-10 sm:py-16">

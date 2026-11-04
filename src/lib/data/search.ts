@@ -11,17 +11,17 @@ export async function globalSearch(db: Db, raw: string): Promise<SearchHit[]> {
 
   const [guests, bookings, tickets] = await Promise.all([
     db<{ id: string; first_name: string; last_name: string; email: string; postcode: string | null }[]>`
-      select id, first_name, last_name, email, postcode from public.guests
+      select id, first_name, last_name, email, postcode from crm.guests
       where (first_name || ' ' || last_name) ilike ${like} or email ilike ${like}
         or replace(coalesce(phone, ''), ' ', '') like ${"%" + compact + "%"}
         or upper(replace(coalesce(postcode, ''), ' ', '')) like ${compact + "%"}
       order by last_visit_on desc nulls last limit 6`,
     db<{ id: string; reference: string; guest_id: string; name: string; date: string; status: string }[]>`
       select b.id, b.reference, b.guest_id, g.first_name || ' ' || g.last_name as name, n.date::text, b.status::text
-      from public.bookings b join public.guests g on g.id = b.guest_id join public.event_nights n on n.id = b.event_night_id
+      from crm.bookings b join crm.guests g on g.id = b.guest_id join crm.event_nights n on n.id = b.event_night_id
       where upper(b.reference) like ${refCandidate + "%"} limit 4`,
     db<{ id: string; number: number; subject: string; requester_name: string; status: string }[]>`
-      select id, number, subject, requester_name, status::text from public.tickets
+      select id, number, subject, requester_name, status::text from crm.tickets
       where subject ilike ${like} or requester_name ilike ${like} or requester_email ilike ${like}
         ${ticketNumber ? db`or number = ${Number(ticketNumber)}` : db``}
       order by created_at desc limit 5`,

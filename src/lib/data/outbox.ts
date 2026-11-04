@@ -47,13 +47,13 @@ export async function listOutbox(db: Db, p: OutboxParams): Promise<{ rows: Outbo
     db<OutboxRow[]>`
       select o.id, o.channel::text as channel, o.guest_id, o.recipient_name, o.recipient, o.subject, left(o.body_text, 160) as body_text, o.status::text as status,
         o.sent_at, o.opened_at, o.clicked_at, o.campaign_id, c.name as campaign_name, o.automation_id, a.name as automation_name, o.ticket_id, t.number as ticket_number
-      from public.messages_outbox o
-      left join public.campaigns c on c.id = o.campaign_id
-      left join public.automations a on a.id = o.automation_id
-      left join public.tickets t on t.id = o.ticket_id
+      from crm.messages_outbox o
+      left join crm.campaigns c on c.id = o.campaign_id
+      left join crm.automations a on a.id = o.automation_id
+      left join crm.tickets t on t.id = o.ticket_id
       where ${where}
       order by o.sent_at desc, o.id limit ${p.per} offset ${offset}`,
-    db<{ count: number }[]>`select count(*)::int as count from public.messages_outbox o where ${where}`,
+    db<{ count: number }[]>`select count(*)::int as count from crm.messages_outbox o where ${where}`,
   ]);
   return { rows, total: count };
 }
@@ -67,10 +67,10 @@ export async function getOutboxMessage(db: Db, id: string): Promise<OutboxMessag
   const rows = await db<OutboxMessage[]>`
     select o.id, o.channel::text as channel, o.guest_id, o.recipient_name, o.recipient, o.subject, o.body_text as full_text, left(o.body_text, 160) as body_text, o.body_html,
       o.status::text as status, o.sent_at, o.opened_at, o.clicked_at, o.campaign_id, c.name as campaign_name, o.automation_id, a.name as automation_name, o.ticket_id, t.number as ticket_number
-    from public.messages_outbox o
-    left join public.campaigns c on c.id = o.campaign_id
-    left join public.automations a on a.id = o.automation_id
-    left join public.tickets t on t.id = o.ticket_id
+    from crm.messages_outbox o
+    left join crm.campaigns c on c.id = o.campaign_id
+    left join crm.automations a on a.id = o.automation_id
+    left join crm.tickets t on t.id = o.ticket_id
     where o.id = ${id}`;
   return rows[0] ?? null;
 }
@@ -81,6 +81,6 @@ export async function outboxCounts(db: Db): Promise<{ total: number; today: numb
       count(*) filter (where sent_at > now() - interval '24 hours')::int as today,
       count(*) filter (where channel = 'email')::int as email,
       count(*) filter (where channel = 'sms')::int as sms
-    from public.messages_outbox`;
+    from crm.messages_outbox`;
   return row!;
 }

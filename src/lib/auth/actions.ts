@@ -29,7 +29,7 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
 
   if (localDevAuthEnabled()) {
     const rows = await adminSql<{ email: string }[]>`
-      select email from public.staff_users where lower(email) = lower(${email}) and active`;
+      select email from crm.staff_users where lower(email) = lower(${email}) and active`;
     if (!rows[0]) return { error: "No staff account with that email" };
     const expected = process.env.DEMO_PASSWORD ?? "Blackthorn2026!";
     if (password !== expected) return { error: "Incorrect password" };
@@ -48,7 +48,7 @@ export async function signIn(_prev: LoginState, formData: FormData): Promise<Log
     return { error: error.message === "Invalid login credentials" ? "Incorrect email or password" : error.message };
   }
   const staff = await adminSql<{ id: string }[]>`
-    select id from public.staff_users where id = ${data.user.id} and active`;
+    select id from crm.staff_users where id = ${data.user.id} and active`;
   if (!staff[0]) {
     await supabase.auth.signOut();
     return { error: "This account is not a Blackthorn staff user" };

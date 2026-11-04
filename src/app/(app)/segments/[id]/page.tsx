@@ -19,7 +19,7 @@ export default async function SegmentPage({ params }: { params: Promise<{ id: st
     return {
       segment,
       lookups: {
-        seasons: (await db<{ year: number }[]>`select year from public.seasons order by year desc`).map((s) => s.year),
+        seasons: (await db<{ year: number }[]>`select year from crm.seasons order by year desc`).map((s) => s.year),
         tags: await listTags(db),
       },
     };

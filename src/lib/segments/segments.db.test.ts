@@ -8,15 +8,15 @@ import { compileSegment } from "./compile";
 import { exclusionReason, exclusionReasonSql, type ConsentFacts } from "./consent";
 
 const url = process.env.DATABASE_URL;
-const sql = url ? postgres(url, { max: 1, prepare: false, onnotice: () => {} }) : null;
+const sql = url ? postgres(url, { max: 1, prepare: false, onnotice: () => {}, connection: { search_path: "crm, public, extensions" } }) : null;
 
 describe.skipIf(!sql)("segment SQL against the database", () => {
   it("visited_season matches guests with an attended booking in that season", async () => {
     const { where, params } = compileSegment({ op: "and", rules: [{ type: "visited_season", season_year: 2025 }] });
-    const [{ count }] = await sql!.unsafe<{ count: number }[]>(`select count(*)::int as count from public.guests g where ${where}`, params as never[]);
+    const [{ count }] = await sql!.unsafe<{ count: number }[]>(`select count(*)::int as count from crm.guests g where ${where}`, params as never[]);
     const [{ expected }] = await sql!`
-      select count(distinct b.guest_id)::int as expected from public.bookings b
-      join public.event_nights n on n.id = b.event_night_id join public.seasons s on s.id = n.season_id
+      select count(distinct b.guest_id)::int as expected from crm.bookings b
+      join crm.event_nights n on n.id = b.event_night_id join crm.seasons s on s.id = n.season_id
       where s.year = 2025 and b.status in ('confirmed','transferred') and n.date <= current_date`;
     expect(count).toBe(expected);
     expect(count).toBeGreaterThan(0);
@@ -32,8 +32,8 @@ describe.skipIf(!sql)("segment SQL against the database", () => {
         { op: "or", rules: [{ type: "email_consent", value: true }, { type: "sms_consent", value: true }] },
       ],
     });
-    const [{ a }] = await sql!.unsafe<{ a: number }[]>(`select count(*)::int as a from public.guests g where ${all.where}`, all.params as never[]);
-    const [{ b }] = await sql!.unsafe<{ b: number }[]>(`select count(*)::int as b from public.guests g where ${sub.where}`, sub.params as never[]);
+    const [{ a }] = await sql!.unsafe<{ a: number }[]>(`select count(*)::int as a from crm.guests g where ${all.where}`, all.params as never[]);
+    const [{ b }] = await sql!.unsafe<{ b: number }[]>(`select count(*)::int as b from crm.guests g where ${sub.where}`, sub.params as never[]);
     expect(b).toBeGreaterThan(0);
     expect(b).toBeLessThan(a);
   });
@@ -56,7 +56,7 @@ describe.skipIf(!sql)("segment SQL against the database", () => {
     ];
     for (const rule of rules) {
       const { where, params } = compileSegment({ op: "and", rules: [rule] });
-      const [{ count }] = await sql!.unsafe<{ count: number }[]>(`select count(*)::int as count from public.guests g where ${where}`, params as never[]);
+      const [{ count }] = await sql!.unsafe<{ count: number }[]>(`select count(*)::int as count from crm.guests g where ${where}`, params as never[]);
       expect(count).toBeGreaterThanOrEqual(0);
     }
   });
@@ -64,7 +64,7 @@ describe.skipIf(!sql)("segment SQL against the database", () => {
   it("SQL exclusion reasons agree with the TypeScript rules for every guest", async () => {
     for (const channel of ["email", "sms"] as const) {
       const rows = await sql!.unsafe<(ConsentFacts & { reason: string | null })[]>(
-        `select g.banned, g.email_consent, g.sms_consent, g.email, g.phone, ${exclusionReasonSql(channel)} as reason from public.guests g`,
+        `select g.banned, g.email_consent, g.sms_consent, g.email, g.phone, ${exclusionReasonSql(channel)} as reason from crm.guests g`,
       );
       expect(rows.length).toBeGreaterThan(0);
       for (const r of rows) expect(r.reason).toBe(exclusionReason(r, channel));

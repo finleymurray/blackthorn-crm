@@ -34,9 +34,9 @@ export const TRIGGER_LABELS: Record<AutomationTrigger, string> = {
 export async function listAutomations(db: Db): Promise<AutomationRow[]> {
   return db<AutomationRow[]>`
     select a.id, a.trigger::text as trigger, a.name, a.description, a.channel::text as channel, a.delay_minutes, a.send_at_time::text, a.subject, a.body, a.active, a.updated_at,
-      (select count(*) from public.messages_outbox o where o.automation_id = a.id and o.status = 'sent')::int as sent_count,
-      (select max(sent_at) from public.messages_outbox o where o.automation_id = a.id and o.status = 'sent') as last_sent_at
-    from public.automations a
+      (select count(*) from crm.messages_outbox o where o.automation_id = a.id and o.status = 'sent')::int as sent_count,
+      (select max(sent_at) from crm.messages_outbox o where o.automation_id = a.id and o.status = 'sent') as last_sent_at
+    from crm.automations a
     order by array_position(array['booking_confirmed','reminder_48h','post_visit_survey','win_back']::automation_trigger[], a.trigger)`;
 }
 
@@ -60,12 +60,12 @@ export const automationInputSchema = z.object({
 export type AutomationInput = z.infer<typeof automationInputSchema>;
 
 export async function updateAutomation(db: Db, id: string, input: AutomationInput): Promise<void> {
-  await db`update public.automations set name = ${input.name}, channel = ${input.channel}, delay_minutes = ${input.delay_minutes},
+  await db`update crm.automations set name = ${input.name}, channel = ${input.channel}, delay_minutes = ${input.delay_minutes},
     send_at_time = ${input.send_at_time || null}, subject = ${input.subject || null}, body = ${input.body} where id = ${id}`;
 }
 
 export async function setAutomationActive(db: Db, id: string, active: boolean): Promise<void> {
-  await db`update public.automations set active = ${active} where id = ${id}`;
+  await db`update crm.automations set active = ${active} where id = ${id}`;
 }
 
 export interface SimulatedSend {
@@ -109,7 +109,7 @@ export async function simulateAutomation(db: Db, a: AutomationRow, limit = 8): P
     select g.id as guest_id, g.first_name || ' ' || g.last_name as guest_name, g.email, g.phone, g.first_name, g.last_name, g.email_consent, g.sms_consent, g.banned,
       b.reference, n.date::text as date, b.entry_time::text as entry_time, initcap(replace(b.ticket_type::text, '_', ' ')) as ticket_type, b.group_size, b.booked_at,
       (n.date::timestamp + b.entry_time) at time zone 'Europe/London' as starts_at
-    from public.bookings b join public.guests g on g.id = b.guest_id join public.event_nights n on n.id = b.event_night_id
+    from crm.bookings b join crm.guests g on g.id = b.guest_id join crm.event_nights n on n.id = b.event_night_id
     where b.status in ('confirmed', 'transferred') and ${where}`;
 
   const toSend = (b: BookingCtx, when: Date, context: string): SimulatedSend | null => {
@@ -137,7 +137,7 @@ export async function simulateAutomation(db: Db, a: AutomationRow, limit = 8): P
     case "booking_confirmed": {
       // Transactional: sent to everyone who books, regardless of marketing consent.
       const rows = await bookingQuery(db`true order by b.booked_at desc limit ${limit}`);
-      const [{ count }] = await db<{ count: number }[]>`select count(*)::int as count from public.bookings where booked_at > now() - interval '7 days'`;
+      const [{ count }] = await db<{ count: number }[]>`select count(*)::int as count from crm.bookings where booked_at > now() - interval '7 days'`;
       return {
         total: count,
         sample: rows.map((b) => toSend(b, new Date(b.booked_at.getTime() + a.delay_minutes * 60_000), `Booked ${b.reference}`)).filter((x): x is SimulatedSend => !!x),
@@ -147,7 +147,7 @@ export async function simulateAutomation(db: Db, a: AutomationRow, limit = 8): P
     case "reminder_48h": {
       const rows = await bookingQuery(db`n.date >= current_date and n.date <= current_date + 14 order by n.date, b.entry_time limit ${limit}`);
       const [{ count }] = await db<{ count: number }[]>`
-        select count(*)::int as count from public.bookings b join public.event_nights n on n.id = b.event_night_id
+        select count(*)::int as count from crm.bookings b join crm.event_nights n on n.id = b.event_night_id
         where b.status in ('confirmed','transferred') and n.date >= current_date and n.date <= current_date + 14`;
       return {
         total: count,
@@ -158,7 +158,7 @@ export async function simulateAutomation(db: Db, a: AutomationRow, limit = 8): P
     case "post_visit_survey": {
       const rows = await bookingQuery(db`n.date < current_date and n.date >= current_date - 7 order by n.date desc, b.entry_time limit ${limit}`);
       const [{ count }] = await db<{ count: number }[]>`
-        select count(*)::int as count from public.bookings b join public.event_nights n on n.id = b.event_night_id
+        select count(*)::int as count from crm.bookings b join crm.event_nights n on n.id = b.event_night_id
         where b.status in ('confirmed','transferred') and n.date < current_date and n.date >= current_date - 7`;
       const sendTime = a.send_at_time ?? "10:00";
       return {
@@ -175,7 +175,7 @@ export async function simulateAutomation(db: Db, a: AutomationRow, limit = 8): P
     }
     case "win_back": {
       // Marketing: uses the win back rules and respects consent.
-      const [season] = await db<{ year: number }[]>`select year from public.seasons order by year desc limit 1`;
+      const [season] = await db<{ year: number }[]>`select year from crm.seasons order by year desc limit 1`;
       const rules = {
         op: "and",
         rules: [

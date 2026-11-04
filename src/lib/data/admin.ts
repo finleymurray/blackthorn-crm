@@ -19,7 +19,7 @@ export const parkSettingsSchema = z.object({
 });
 
 export async function updateParkSettings(db: Db, input: z.infer<typeof parkSettingsSchema>) {
-  await db`update public.park_settings set name = ${input.name}, tagline = ${input.tagline || ""}, logo_url = ${input.logo_url || null}, sender_name = ${input.sender_name},
+  await db`update crm.park_settings set name = ${input.name}, tagline = ${input.tagline || ""}, logo_url = ${input.logo_url || null}, sender_name = ${input.sender_name},
     sender_email = ${input.sender_email}, support_email = ${input.support_email}, sms_sender = ${input.sms_sender}, address = ${input.address || ""}, website = ${input.website} where id = 1`;
 }
 
@@ -40,9 +40,9 @@ export interface StaffRow {
 export async function listStaff(db: Db): Promise<StaffRow[]> {
   return db<StaffRow[]>`
     select s.id, s.name, s.email, s.role::text as role, s.active, s.created_at,
-      (select max(created_at) from public.activity_log a where a.staff_id = s.id) as last_action_at,
-      (select count(*) from public.activity_log a where a.staff_id = s.id and a.created_at > now() - interval '30 days')::int as actions_30d
-    from public.staff_users s order by s.active desc, s.name`;
+      (select max(created_at) from crm.activity_log a where a.staff_id = s.id) as last_action_at,
+      (select count(*) from crm.activity_log a where a.staff_id = s.id and a.created_at > now() - interval '30 days')::int as actions_30d
+    from crm.staff_users s order by s.active desc, s.name`;
 }
 
 export const staffSchema = z.object({
@@ -74,12 +74,12 @@ export async function createStaff(db: Db, input: z.infer<typeof staffSchema>): P
     }
   }
   const [row] = await db<{ id: string }[]>`
-    insert into public.staff_users (id, name, email, role) values (${id ?? db`gen_random_uuid()`}, ${input.name}, ${email}, ${input.role}::staff_role) returning id`;
+    insert into crm.staff_users (id, name, email, role) values (${id ?? db`gen_random_uuid()`}, ${input.name}, ${email}, ${input.role}::staff_role) returning id`;
   return { id: row!.id, authCreated };
 }
 
 export async function updateStaff(db: Db, id: string, input: { name?: string; role?: StaffRole; active?: boolean }) {
-  await db`update public.staff_users set
+  await db`update crm.staff_users set
     name = coalesce(${input.name ?? null}, name),
     role = coalesce(${input.role ?? null}::staff_role, role),
     active = coalesce(${input.active ?? null}, active)
@@ -96,14 +96,14 @@ export const savedReplySchema = z.object({
 });
 
 export async function createSavedReply(db: Db, input: z.infer<typeof savedReplySchema>): Promise<string> {
-  const [row] = await db<{ id: string }[]>`insert into public.saved_replies (title, category, body, sort_order) values (${input.title}, ${input.category || null}, ${input.body}, (select coalesce(max(sort_order), 0) + 10 from public.saved_replies)) returning id`;
+  const [row] = await db<{ id: string }[]>`insert into crm.saved_replies (title, category, body, sort_order) values (${input.title}, ${input.category || null}, ${input.body}, (select coalesce(max(sort_order), 0) + 10 from crm.saved_replies)) returning id`;
   return row!.id;
 }
 export async function updateSavedReply(db: Db, id: string, input: z.infer<typeof savedReplySchema>) {
-  await db`update public.saved_replies set title = ${input.title}, category = ${input.category || null}, body = ${input.body} where id = ${id}`;
+  await db`update crm.saved_replies set title = ${input.title}, category = ${input.category || null}, body = ${input.body} where id = ${id}`;
 }
 export async function deleteSavedReply(db: Db, id: string) {
-  await db`delete from public.saved_replies where id = ${id}`;
+  await db`delete from crm.saved_replies where id = ${id}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -122,12 +122,12 @@ export const categorySchema = z.object({
 });
 
 export async function upsertCategory(db: Db, input: z.infer<typeof categorySchema>) {
-  await db`insert into public.ticket_categories (key, label, default_priority, sort_order) values (${input.key}, ${input.label}, ${input.default_priority}::ticket_priority, (select coalesce(max(sort_order), 0) + 10 from public.ticket_categories))
+  await db`insert into crm.ticket_categories (key, label, default_priority, sort_order) values (${input.key}, ${input.label}, ${input.default_priority}::ticket_priority, (select coalesce(max(sort_order), 0) + 10 from crm.ticket_categories))
     on conflict (key) do update set label = excluded.label, default_priority = excluded.default_priority`;
 }
 export async function setCategoryActive(db: Db, key: string, active: boolean) {
   if (key === "complaint" && !active) throw new Error("The complaint category is used by the complaint handling rules and cannot be disabled.");
-  await db`update public.ticket_categories set active = ${active} where key = ${key}`;
+  await db`update crm.ticket_categories set active = ${active} where key = ${key}`;
 }
 
 export const rootCauseSchema = z.object({
@@ -141,10 +141,10 @@ export const rootCauseSchema = z.object({
   label: z.string().trim().min(2).max(40),
 });
 export async function upsertRootCause(db: Db, input: z.infer<typeof rootCauseSchema>) {
-  await db`insert into public.root_cause_tags (key, label) values (${input.key}, ${input.label}) on conflict (key) do update set label = excluded.label`;
+  await db`insert into crm.root_cause_tags (key, label) values (${input.key}, ${input.label}) on conflict (key) do update set label = excluded.label`;
 }
 export async function setRootCauseActive(db: Db, key: string, active: boolean) {
-  await db`update public.root_cause_tags set active = ${active} where key = ${key}`;
+  await db`update crm.root_cause_tags set active = ${active} where key = ${key}`;
 }
 
 export const slaSchema = z.object({
@@ -155,6 +155,6 @@ export const slaSchema = z.object({
 });
 export async function updateSla(db: Db, input: z.infer<typeof slaSchema>) {
   for (const [priority, hours] of Object.entries(input)) {
-    await db`insert into public.sla_policies (priority, hours) values (${priority}::ticket_priority, ${hours}) on conflict (priority) do update set hours = excluded.hours`;
+    await db`insert into crm.sla_policies (priority, hours) values (${priority}::ticket_priority, ${hours}) on conflict (priority) do update set hours = excluded.hours`;
   }
 }

@@ -39,7 +39,7 @@ if (!url) {
   console.error("DATABASE_URL is not set. Copy .env.example to .env.local and fill it in.");
   process.exit(1);
 }
-const sql = postgres(url, { max: 4, prepare: false, onnotice: () => {}, transform: { undefined: null } });
+const sql = postgres(url, { max: 4, prepare: false, onnotice: () => {}, transform: { undefined: null }, connection: { search_path: "crm, public, extensions" } });
 const rng = new Rng(20261031);
 
 // "Now" for the demo is fixed so the data looks the same whenever it is seeded.
@@ -155,14 +155,14 @@ async function main() {
   console.log("Resetting demo data…");
   await sql.unsafe(`
     truncate table
-      public.activity_log, public.vouchers, public.refunds, public.ticket_messages, public.tickets,
-      public.messages_outbox, public.campaigns, public.segments, public.automations, public.saved_replies,
-      public.surveys, public.bookings, public.guests, public.event_nights, public.seasons,
-      public.mazes, public.addons, public.ticket_products, public.staff_users, public.sla_policies,
-      public.root_cause_tags, public.ticket_categories
+      crm.activity_log, crm.vouchers, crm.refunds, crm.ticket_messages, crm.tickets,
+      crm.messages_outbox, crm.campaigns, crm.segments, crm.automations, crm.saved_replies,
+      crm.surveys, crm.bookings, crm.guests, crm.event_nights, crm.seasons,
+      crm.mazes, crm.addons, crm.ticket_products, crm.staff_users, crm.sla_policies,
+      crm.root_cause_tags, crm.ticket_categories
     restart identity cascade;
   `);
-  await sql`update public.park_settings set name = ${BRAND.parkName}, sender_name = ${BRAND.parkName},
+  await sql`update crm.park_settings set name = ${BRAND.parkName}, sender_name = ${BRAND.parkName},
     sender_email = 'hello@blackthornscreampark.co.uk', support_email = 'support@blackthornscreampark.co.uk',
     address = ${BRAND.address}, website = ${BRAND.website}, logo_url = null where id = 1`;
 
@@ -522,9 +522,9 @@ async function main() {
   );
   // Mark sold out nights from real demand.
   await sql.unsafe(`
-    update public.event_nights n set status = 'sold_out'
+    update crm.event_nights n set status = 'sold_out'
     where status = 'on_sale' and date < '2026-11-04' and (
-      select coalesce(sum(group_size), 0) from public.bookings b where b.event_night_id = n.id and b.status <> 'refunded'
+      select coalesce(sum(group_size), 0) from crm.bookings b where b.event_night_id = n.id and b.status <> 'refunded'
     ) >= n.capacity * 0.55`);
   await bulkInsert("surveys", surveys.map((s) => ({ ...s, maze_scores: sql.json(s.maze_scores) })));
 
@@ -715,7 +715,7 @@ async function main() {
   await bulkInsert("campaigns", campaignRows);
   // Write attribution back to bookings.
   for (const b of bookings) {
-    if (b.source_campaign_id) await sql`update public.bookings set source_campaign_id = ${b.source_campaign_id} where id = ${b.id}`;
+    if (b.source_campaign_id) await sql`update crm.bookings set source_campaign_id = ${b.source_campaign_id} where id = ${b.id}`;
   }
 
   function segmentMatches(name: string, g: Guest): boolean {
@@ -913,11 +913,11 @@ async function main() {
   // Summary ---------------------------------------------------------------------------------
   const [counts] = await sql<{ guests: number; bookings: number; surveys: number; tickets: number; outbox: number }[]>`
     select
-      (select count(*) from public.guests)::int as guests,
-      (select count(*) from public.bookings)::int as bookings,
-      (select count(*) from public.surveys)::int as surveys,
-      (select count(*) from public.tickets)::int as tickets,
-      (select count(*) from public.messages_outbox)::int as outbox`;
+      (select count(*) from crm.guests)::int as guests,
+      (select count(*) from crm.bookings)::int as bookings,
+      (select count(*) from crm.surveys)::int as surveys,
+      (select count(*) from crm.tickets)::int as tickets,
+      (select count(*) from crm.messages_outbox)::int as outbox`;
   console.log("\nSeed complete:");
   console.table(counts);
   console.log("\nDemo logins (password: " + DEMO_PASSWORD + ")");

@@ -32,6 +32,8 @@ function connect(): Sql {
     prepare: false,
     onnotice: () => {},
     transform: { undefined: null },
+    // All CRM objects live in the crm schema; enum casts resolve through search_path.
+    connection: { search_path: "crm, public, extensions" },
   });
 }
 

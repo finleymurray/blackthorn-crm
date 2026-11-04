@@ -60,9 +60,9 @@ export async function simulateInboundEmail(): Promise<SupportResult> {
     const id = await withStaff(staff, async (db) => {
       const [g] = await db<{ id: string; first_name: string; last_name: string; email: string; reference: string | null; date: string | null }[]>`
         select g.id, g.first_name, g.last_name, g.email, b.reference, n.date::text as date
-        from public.guests g
-        left join lateral (select b.reference, b.event_night_id from public.bookings b where b.guest_id = g.id and b.status <> 'refunded' order by b.booked_at desc limit 1) b on true
-        left join public.event_nights n on n.id = b.event_night_id
+        from crm.guests g
+        left join lateral (select b.reference, b.event_night_id from crm.bookings b where b.guest_id = g.id and b.status <> 'refunded' order by b.booked_at desc limit 1) b on true
+        left join crm.event_nights n on n.id = b.event_night_id
         where not g.banned and b.reference is not null
         order by random() limit 1`;
       if (!g) throw new Error("No guests to simulate from. Run the seed first.");
@@ -162,10 +162,10 @@ export async function fillSavedReply(ticketId: string, savedReplyId: string): Pr
     const text = await withStaff(staff, async (db) => {
       const ticket = await getTicket(db, ticketId);
       if (!ticket) throw new Error("Ticket not found");
-      const [reply] = await db<{ body: string }[]>`select body from public.saved_replies where id = ${savedReplyId}`;
+      const [reply] = await db<{ body: string }[]>`select body from crm.saved_replies where id = ${savedReplyId}`;
       if (!reply) throw new Error("Saved reply not found");
-      const [voucher] = await db<{ code: string }[]>`select code from public.vouchers where ticket_id = ${ticketId} order by created_at desc limit 1`;
-      const [refund] = await db<{ amount_pence: number }[]>`select amount_pence from public.refunds where ticket_id = ${ticketId} order by created_at desc limit 1`;
+      const [voucher] = await db<{ code: string }[]>`select code from crm.vouchers where ticket_id = ${ticketId} order by created_at desc limit 1`;
+      const [refund] = await db<{ amount_pence: number }[]>`select amount_pence from crm.refunds where ticket_id = ${ticketId} order by created_at desc limit 1`;
       const values = await ticketMergeValues(db, ticket, staff, {
         voucher_code: voucher?.code ?? "",
         refund_amount: refund ? `£${(refund.amount_pence / 100).toFixed(2)}` : "",
@@ -200,7 +200,7 @@ export async function moveTargets(bookingId: string): Promise<SupportResult> {
   const staff = await requireStaff();
   try {
     const nights = await withStaff(staff, async (db) => {
-      const [b] = await db<{ group_size: number; event_night_id: string }[]>`select group_size, event_night_id from public.bookings where id = ${bookingId}`;
+      const [b] = await db<{ group_size: number; event_night_id: string }[]>`select group_size, event_night_id from crm.bookings where id = ${bookingId}`;
       if (!b) throw new Error("Booking not found");
       return listMoveTargets(db, b.group_size, b.event_night_id);
     });

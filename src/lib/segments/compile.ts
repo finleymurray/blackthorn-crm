@@ -32,17 +32,17 @@ function compileRule(rule: Rule, p: ParamList): string {
   switch (rule.type) {
     case "visited_season":
       negate = !!rule.negate;
-      sql = `exists (select 1 from public.bookings b join public.event_nights n on n.id = b.event_night_id join public.seasons s on s.id = n.season_id
+      sql = `exists (select 1 from crm.bookings b join crm.event_nights n on n.id = b.event_night_id join crm.seasons s on s.id = n.season_id
         where b.guest_id = g.id and s.year = ${p.add(rule.season_year)} and ${ATTENDED})`;
       break;
     case "booked_season":
       negate = !!rule.negate;
-      sql = `exists (select 1 from public.bookings b join public.event_nights n on n.id = b.event_night_id join public.seasons s on s.id = n.season_id
+      sql = `exists (select 1 from crm.bookings b join crm.event_nights n on n.id = b.event_night_id join crm.seasons s on s.id = n.season_id
         where b.guest_id = g.id and s.year = ${p.add(rule.season_year)} and b.status <> 'refunded')`;
       break;
     case "booked_ticket_type":
       negate = !!rule.negate;
-      sql = `exists (select 1 from public.bookings b where b.guest_id = g.id and b.ticket_type = ${p.add(rule.ticket_type)}::ticket_type and b.status <> 'refunded')`;
+      sql = `exists (select 1 from crm.bookings b where b.guest_id = g.id and b.ticket_type = ${p.add(rule.ticket_type)}::ticket_type and b.status <> 'refunded')`;
       break;
     case "lifetime_spend":
       sql = `g.lifetime_spend_pence ${OPS[rule.op]} ${p.add(rule.pence)}`;
@@ -65,7 +65,7 @@ function compileRule(rule: Rule, p: ParamList): string {
       sql = `${p.add(rule.tag.toLowerCase())} = any (g.tags)`;
       break;
     case "survey_score":
-      sql = `exists (select 1 from public.surveys sv where sv.guest_id = g.id and sv.overall_score ${OPS[rule.op]} ${p.add(rule.value)})`;
+      sql = `exists (select 1 from crm.surveys sv where sv.guest_id = g.id and sv.overall_score ${OPS[rule.op]} ${p.add(rule.value)})`;
       break;
     case "last_visit_days":
       sql =
@@ -75,7 +75,7 @@ function compileRule(rule: Rule, p: ParamList): string {
       break;
     case "bought_addon":
       negate = !!rule.negate;
-      sql = `exists (select 1 from public.bookings b where b.guest_id = g.id and ${p.add(rule.addon)} = any (b.addons) and b.status <> 'refunded')`;
+      sql = `exists (select 1 from crm.bookings b where b.guest_id = g.id and ${p.add(rule.addon)} = any (b.addons) and b.status <> 'refunded')`;
       break;
   }
   return negate ? `not (${sql})` : `(${sql})`;

@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "New segment" };
 export default async function NewSegmentPage() {
   const staff = await requireRole("admin", "marketing");
   const lookups = await withStaff(staff, async (db) => ({
-    seasons: (await db<{ year: number }[]>`select year from public.seasons order by year desc`).map((s) => s.year),
+    seasons: (await db<{ year: number }[]>`select year from crm.seasons order by year desc`).map((s) => s.year),
     tags: await listTags(db),
   }));
   return <SegmentEditor segment={null} initialRules={EMPTY_GROUP} lookups={lookups} />;

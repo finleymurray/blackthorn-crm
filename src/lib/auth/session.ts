@@ -11,13 +11,13 @@ type StaffRow = { id: string; name: string; email: string; role: StaffRole; acti
 
 async function loadStaffById(id: string): Promise<StaffUser | null> {
   const rows = await adminSql<StaffRow[]>`
-    select id, name, email, role, active from public.staff_users where id = ${id} and active`;
+    select id, name, email, role, active from crm.staff_users where id = ${id} and active`;
   return rows[0] ?? null;
 }
 
 async function loadStaffByEmail(email: string): Promise<StaffUser | null> {
   const rows = await adminSql<StaffRow[]>`
-    select id, name, email, role, active from public.staff_users where lower(email) = lower(${email}) and active`;
+    select id, name, email, role, active from crm.staff_users where lower(email) = lower(${email}) and active`;
   return rows[0] ?? null;
 }
 

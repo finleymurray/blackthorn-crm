@@ -17,7 +17,7 @@ export interface ParkSettings {
 export async function getParkSettings(db: Db): Promise<ParkSettings> {
   const [row] = await db<ParkSettings[]>`
     select name, tagline, logo_url, sender_name, sender_email, support_email, sms_sender, address, website, timezone
-    from public.park_settings where id = 1`;
+    from crm.park_settings where id = 1`;
   return row!;
 }
 

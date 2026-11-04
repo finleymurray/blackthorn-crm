@@ -58,7 +58,7 @@ function buildWhere(db: Db, p: GuestListParams) {
       or g.email ilike ${like}
       or replace(coalesce(g.phone, ''), ' ', '') like ${"%" + compact + "%"}
       or upper(replace(coalesce(g.postcode, ''), ' ', '')) like ${compact + "%"}
-      or exists (select 1 from public.bookings b where b.guest_id = g.id and upper(b.reference) = ${compact.startsWith("BTH-") ? compact : "BTH-" + compact})
+      or exists (select 1 from crm.bookings b where b.guest_id = g.id and upper(b.reference) = ${compact.startsWith("BTH-") ? compact : "BTH-" + compact})
     )`);
   }
   if (p.email_consent !== "any") conds.push(db`g.email_consent = ${p.email_consent === "yes"}`);
@@ -69,7 +69,7 @@ function buildWhere(db: Db, p: GuestListParams) {
   if (p.tag) conds.push(db`${p.tag} = any (g.tags)`);
   if (p.season) {
     conds.push(db`exists (
-      select 1 from public.bookings b join public.event_nights n on n.id = b.event_night_id join public.seasons s on s.id = n.season_id
+      select 1 from crm.bookings b join crm.event_nights n on n.id = b.event_night_id join crm.seasons s on s.id = n.season_id
       where b.guest_id = g.id and s.year = ${p.season} and b.status <> 'refunded')`);
   }
   if (p.min_visits !== undefined) conds.push(db`g.visit_count >= ${p.min_visits}`);
@@ -85,11 +85,11 @@ export async function listGuests(db: Db, p: GuestListParams): Promise<{ rows: Gu
     db<GuestListRow[]>`
       select g.id, g.first_name, g.last_name, g.email, g.phone, g.postcode, g.email_consent, g.sms_consent, g.tags,
         g.accessibility_needs, g.do_not_touch, g.banned, g.lifetime_spend_pence, g.visit_count, g.last_visit_on::text, g.created_at
-      from public.guests g
+      from crm.guests g
       where ${where}
       order by ${db.unsafe(SORT_SQL[p.sort])} ${dir}, g.id
       limit ${p.per} offset ${offset}`,
-    db<{ count: number }[]>`select count(*)::int as count from public.guests g where ${where}`,
+    db<{ count: number }[]>`select count(*)::int as count from crm.guests g where ${where}`,
   ]);
   return { rows, total: count };
 }
@@ -100,13 +100,13 @@ export async function listGuestsForExport(db: Db, p: GuestListParams): Promise<G
   return db<GuestListRow[]>`
     select g.id, g.first_name, g.last_name, g.email, g.phone, g.postcode, g.email_consent, g.sms_consent, g.tags,
       g.accessibility_needs, g.do_not_touch, g.banned, g.lifetime_spend_pence, g.visit_count, g.last_visit_on::text, g.created_at
-    from public.guests g where ${where}
+    from crm.guests g where ${where}
     order by ${db.unsafe(SORT_SQL[p.sort])} ${p.dir === "asc" ? db`asc nulls first` : db`desc nulls last`}, g.id
     limit 20000`;
 }
 
 export async function listTags(db: Db): Promise<string[]> {
-  const rows = await db<{ tag: string }[]>`select distinct unnest(tags) as tag from public.guests order by 1`;
+  const rows = await db<{ tag: string }[]>`select distinct unnest(tags) as tag from crm.guests order by 1`;
   return rows.map((r) => r.tag);
 }
 
@@ -147,7 +147,7 @@ export async function getGuest(db: Db, id: string): Promise<Guest | null> {
     select id, first_name, last_name, email, phone, postcode, date_of_birth::text, email_consent, email_consent_at, email_consent_source::text,
       sms_consent, sms_consent_at, sms_consent_source::text, tags, accessibility_needs, do_not_touch, banned, banned_reason, notes,
       lifetime_spend_pence, visit_count, first_visit_on::text, last_visit_on::text, created_at, updated_at
-    from public.guests where id = ${id}`;
+    from crm.guests where id = ${id}`;
   return rows[0] ?? null;
 }
 
@@ -164,13 +164,13 @@ export interface GuestStats {
 export async function getGuestStats(db: Db, guestId: string): Promise<GuestStats> {
   const [counts] = await db<GuestStats[]>`
     select
-      (select count(*) from public.bookings where guest_id = ${guestId})::int as total_bookings,
-      (select count(*) from public.tickets where guest_id = ${guestId} and status <> 'resolved')::int as open_tickets,
-      (select count(*) from public.tickets where guest_id = ${guestId} and status = 'resolved')::int as resolved_tickets,
-      (select count(*) from public.surveys where guest_id = ${guestId})::int as surveys_completed,
-      (select round(avg(overall_score)::numeric, 1) from public.surveys where guest_id = ${guestId})::float as avg_survey_score,
-      (select count(*) from public.messages_outbox where guest_id = ${guestId})::int as messages_sent,
-      (select max(booked_at) from public.bookings where guest_id = ${guestId}) as last_booking_at`;
+      (select count(*) from crm.bookings where guest_id = ${guestId})::int as total_bookings,
+      (select count(*) from crm.tickets where guest_id = ${guestId} and status <> 'resolved')::int as open_tickets,
+      (select count(*) from crm.tickets where guest_id = ${guestId} and status = 'resolved')::int as resolved_tickets,
+      (select count(*) from crm.surveys where guest_id = ${guestId})::int as surveys_completed,
+      (select round(avg(overall_score)::numeric, 1) from crm.surveys where guest_id = ${guestId})::float as avg_survey_score,
+      (select count(*) from crm.messages_outbox where guest_id = ${guestId})::int as messages_sent,
+      (select max(booked_at) from crm.bookings where guest_id = ${guestId}) as last_booking_at`;
   return counts!;
 }
 
@@ -194,10 +194,10 @@ export async function getGuestBookings(db: Db, guestId: string): Promise<GuestBo
   return db<GuestBooking[]>`
     select b.id, b.reference, n.date::text as date, b.entry_time::text, b.ticket_type::text, b.group_size, b.addons,
       b.total_paid_pence, b.refunded_pence, b.status::text, b.booked_at, s.year as season_year,
-      (select overall_score from public.surveys sv where sv.booking_id = b.id limit 1) as survey_score
-    from public.bookings b
-    join public.event_nights n on n.id = b.event_night_id
-    join public.seasons s on s.id = n.season_id
+      (select overall_score from crm.surveys sv where sv.booking_id = b.id limit 1) as survey_score
+    from crm.bookings b
+    join crm.event_nights n on n.id = b.event_night_id
+    join crm.seasons s on s.id = n.season_id
     where b.guest_id = ${guestId}
     order by n.date desc, b.booked_at desc`;
 }
@@ -221,26 +221,26 @@ export async function getGuestTimeline(db: Db, guestId: string, limit = 200): Pr
         'Ref ' || b.reference || ' · £' || to_char(b.total_paid_pence / 100.0, 'FM999990.00') || ' · ' || b.status as detail,
         null::text as href,
         jsonb_build_object('reference', b.reference, 'status', b.status) as meta
-      from public.bookings b join public.event_nights n on n.id = b.event_night_id where b.guest_id = ${guestId}
+      from crm.bookings b join crm.event_nights n on n.id = b.event_night_id where b.guest_id = ${guestId}
       union all
       select 'survey', s.id::text, s.submitted_at, 'Survey: ' || s.overall_score || '/10', s.comments, null,
         jsonb_build_object('score', s.overall_score, 'maze_scores', s.maze_scores)
-      from public.surveys s where s.guest_id = ${guestId}
+      from crm.surveys s where s.guest_id = ${guestId}
       union all
       select 'message', o.id::text, o.sent_at,
         case o.channel when 'sms' then 'SMS sent' else 'Email sent: ' || coalesce(o.subject, '') end,
         left(o.body_text, 140), '/outbox/' || o.id,
         jsonb_build_object('channel', o.channel, 'opened', o.opened_at is not null, 'clicked', o.clicked_at is not null, 'campaign_id', o.campaign_id, 'automation_id', o.automation_id, 'ticket_id', o.ticket_id)
-      from public.messages_outbox o where o.guest_id = ${guestId}
+      from crm.messages_outbox o where o.guest_id = ${guestId}
       union all
       select 'ticket', t.id::text, t.created_at, 'Ticket #' || t.number || ': ' || t.subject,
         initcap(replace(t.category, '_', ' ')) || ' · ' || replace(t.status::text, '_', ' '), '/support/' || t.id,
         jsonb_build_object('status', t.status, 'category', t.category, 'priority', t.priority)
-      from public.tickets t where t.guest_id = ${guestId}
+      from crm.tickets t where t.guest_id = ${guestId}
       union all
       select 'activity', a.id::text, a.created_at, a.summary, 'by ' || coalesce(a.staff_name, 'system'), null,
         jsonb_build_object('action', a.action) || a.details
-      from public.activity_log a where a.entity_type = 'guest' and a.entity_id = ${guestId}
+      from crm.activity_log a where a.entity_type = 'guest' and a.entity_id = ${guestId}
     ) t
     order by at desc
     limit ${limit}`;
@@ -260,7 +260,7 @@ export interface GuestTicket {
 export async function getGuestTickets(db: Db, guestId: string): Promise<GuestTicket[]> {
   return db<GuestTicket[]>`
     select id, number, subject, category, priority::text, status::text, created_at, sla_due_at
-    from public.tickets where guest_id = ${guestId} order by created_at desc`;
+    from crm.tickets where guest_id = ${guestId} order by created_at desc`;
 }
 
 export interface GuestMessage {
@@ -281,10 +281,10 @@ export async function getGuestMessages(db: Db, guestId: string): Promise<GuestMe
   return db<GuestMessage[]>`
     select o.id, o.channel::text, o.subject, o.body_text, o.sent_at, o.opened_at, o.clicked_at, o.status::text,
       c.name as campaign_name, a.name as automation_name, t.number as ticket_number
-    from public.messages_outbox o
-    left join public.campaigns c on c.id = o.campaign_id
-    left join public.automations a on a.id = o.automation_id
-    left join public.tickets t on t.id = o.ticket_id
+    from crm.messages_outbox o
+    left join crm.campaigns c on c.id = o.campaign_id
+    left join crm.automations a on a.id = o.automation_id
+    left join crm.tickets t on t.id = o.ticket_id
     where o.guest_id = ${guestId} order by o.sent_at desc limit 200`;
 }
 
@@ -321,7 +321,7 @@ export type GuestDetailsInput = z.infer<typeof guestDetailsSchema>;
 
 export async function updateGuestDetails(db: Db, id: string, input: GuestDetailsInput): Promise<Guest> {
   const rows = await db<Guest[]>`
-    update public.guests set
+    update crm.guests set
       first_name = ${input.first_name}, last_name = ${input.last_name}, email = ${input.email.toLowerCase()},
       phone = ${input.phone || null}, postcode = ${input.postcode || null}, date_of_birth = ${input.date_of_birth || null},
       accessibility_needs = ${input.accessibility_needs || null}, do_not_touch = ${input.do_not_touch},
@@ -340,9 +340,9 @@ export const consentSchema = z.object({
 
 export async function updateConsent(db: Db, id: string, input: z.infer<typeof consentSchema>) {
   if (input.channel === "email") {
-    await db`update public.guests set email_consent = ${input.value}, email_consent_at = now(), email_consent_source = ${input.source} where id = ${id}`;
+    await db`update crm.guests set email_consent = ${input.value}, email_consent_at = now(), email_consent_source = ${input.source} where id = ${id}`;
   } else {
-    await db`update public.guests set sms_consent = ${input.value}, sms_consent_at = now(), sms_consent_source = ${input.source} where id = ${id}`;
+    await db`update crm.guests set sms_consent = ${input.value}, sms_consent_at = now(), sms_consent_source = ${input.source} where id = ${id}`;
   }
 }
 
@@ -350,7 +350,7 @@ export const tagsSchema = z.array(z.string().trim().min(1).max(30).regex(/^[a-z0
 
 export async function updateTags(db: Db, id: string, tags: string[]) {
   const clean = [...new Set(tags.map((t) => t.toLowerCase()))];
-  await db`update public.guests set tags = ${clean} where id = ${id}`;
+  await db`update crm.guests set tags = ${clean} where id = ${id}`;
   return clean;
 }
 
@@ -359,5 +359,5 @@ export const noteSchema = z.object({ note: z.string().trim().min(1, "Write a not
 export async function appendNote(db: Db, id: string, note: string, staffName: string) {
   const stamp = new Date();
   const line = `[${stamp.toLocaleDateString("en-GB", { timeZone: "Europe/London" })} ${stamp.toLocaleTimeString("en-GB", { timeZone: "Europe/London", hour: "2-digit", minute: "2-digit" })} · ${staffName}] ${note}`;
-  await db`update public.guests set notes = case when notes is null or notes = '' then ${line} else ${line} || E'\n\n' || notes end where id = ${id}`;
+  await db`update crm.guests set notes = case when notes is null or notes = '' then ${line} else ${line} || E'\n\n' || notes end where id = ${id}`;
 }

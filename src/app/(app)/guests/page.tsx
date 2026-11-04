@@ -45,7 +45,7 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
   const params: GuestListParams = parsed.success ? parsed.data : guestListParamsSchema.parse({});
 
   const { rows, total, tags, seasons } = await withStaff(staff, async (db) => {
-    const [list, tags, seasons] = await Promise.all([listGuests(db, params), listTags(db), db<{ year: number }[]>`select year from public.seasons order by year desc`]);
+    const [list, tags, seasons] = await Promise.all([listGuests(db, params), listTags(db), db<{ year: number }[]>`select year from crm.seasons order by year desc`]);
     return { ...list, tags, seasons: seasons.map((s) => s.year) };
   });
 

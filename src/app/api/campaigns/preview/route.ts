@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const html = blocks ? renderBlocksToHtml(blocks, { ...SAMPLE_VALUES, park_name: settings.name, support_email: settings.support_email }, brandingFrom(settings)) : null;
     let audience = null;
     if (segment_id && channel) {
-      const [seg] = await db<{ rules: unknown }[]>`select rules from public.segments where id = ${segment_id}`;
+      const [seg] = await db<{ rules: unknown }[]>`select rules from crm.segments where id = ${segment_id}`;
       if (seg) audience = await audienceSummary(db, seg.rules, channel);
     }
     return { html, audience, smsSender: settings.sms_sender };

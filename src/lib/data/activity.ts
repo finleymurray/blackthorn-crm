@@ -12,7 +12,7 @@ export interface ActivityInput {
 /** Append to the audit trail. Every staff mutation goes through here. */
 export async function logActivity(db: Db, staff: StaffUser, input: ActivityInput): Promise<void> {
   await db`
-    insert into public.activity_log (staff_id, staff_name, action, entity_type, entity_id, summary, details)
+    insert into crm.activity_log (staff_id, staff_name, action, entity_type, entity_id, summary, details)
     values (${staff.id}, ${staff.name}, ${input.action}, ${input.entityType}, ${input.entityId}, ${input.summary}, ${db.json((input.details ?? {}) as never)})`;
 }
 
@@ -30,7 +30,7 @@ export interface ActivityRow {
 export async function listActivity(db: Db, entityType: string, entityId: string, limit = 50): Promise<ActivityRow[]> {
   return db<ActivityRow[]>`
     select id, staff_name, action, entity_type, entity_id, summary, details, created_at
-    from public.activity_log
+    from crm.activity_log
     where entity_type = ${entityType} and entity_id = ${entityId}
     order by created_at desc limit ${limit}`;
 }
