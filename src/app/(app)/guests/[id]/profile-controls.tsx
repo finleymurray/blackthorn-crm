@@ -139,17 +139,17 @@ export function ConsentControls({
   const id = `consent-${channel}`;
 
   return (
-    <div className="flex items-center justify-between gap-3 bg-surface px-4 py-2.5">
-      <div className="flex items-center gap-3">
-        <Icon className="size-4 text-muted" aria-hidden />
-        <div>
-          <p className="text-[13px] font-medium" id={`${id}-label`}>
-            {channel === "email" ? "Email marketing" : "SMS marketing"}{" "}
-            <Badge variant={optimistic ? "success" : "default"} dot className="ml-1">
+    <div className="flex items-center justify-between gap-3 py-1.5">
+      <div className="flex min-w-0 items-center gap-2.5">
+        <Icon className="size-3.5 shrink-0 text-muted" aria-hidden />
+        <div className="min-w-0">
+          <p className="flex items-center gap-2 text-[13px]" id={`${id}-label`}>
+            {channel === "email" ? "Email" : "SMS"}
+            <Badge variant={optimistic ? "success" : "default"} dot>
               {optimistic ? "Opted in" : "Not opted in"}
             </Badge>
           </p>
-          <p className="text-xs text-muted">{at ? `${optimistic ? "Given" : "Withdrawn"} ${at}${source ? ` · ${source}` : ""}` : "No consent recorded"}</p>
+          <p className="truncate text-[11px] text-muted">{at ? `${optimistic ? "Given" : "Withdrawn"} ${at}${source ? ` · ${source}` : ""}` : "No consent recorded"}</p>
         </div>
       </div>
       {editable ? (
@@ -203,11 +203,11 @@ export function TagsEditor({ guestId, tags, editable }: { guestId: string; tags:
   };
 
   return (
-    <div className="panel p-4">
-      <h2 className="flex items-center gap-2 text-[13px] font-semibold">
-        <Tag className="size-3.5 text-muted" aria-hidden /> Tags
-      </h2>
-      <div className="mt-3 flex flex-wrap gap-1.5">
+    <div>
+      <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted">
+        <Tag className="size-3" aria-hidden /> Tags
+      </h3>
+      <div className="flex flex-wrap gap-1.5">
         {list.length === 0 ? <p className="text-xs text-muted">No tags yet.</p> : null}
         {list.map((t) => (
           <Badge key={t} variant="outline" className="gap-1 pr-1">
@@ -244,8 +244,8 @@ export function TagsEditor({ guestId, tags, editable }: { guestId: string; tags:
           <label htmlFor="new-tag" className="sr-only">
             New tag
           </label>
-          <Input id="new-tag" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a tag" className="h-8 text-xs" maxLength={30} />
-          <Button type="submit" size="sm" variant="secondary" disabled={pending || !draft.trim()} aria-label="Add tag">
+          <Input id="new-tag" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a tag" className="h-7 text-xs" maxLength={30} />
+          <Button type="submit" size="icon-sm" variant="secondary" disabled={pending || !draft.trim()} aria-label="Add tag">
             <Plus />
           </Button>
         </form>
@@ -266,8 +266,8 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
   const { toast } = useToast();
 
   return (
-    <div className="panel p-4">
-      <h2 className="text-[13px] font-semibold">Notes</h2>
+    <div>
+      <h3 className="mb-2 text-[11px] font-medium text-muted">Notes</h3>
       {editable ? (
         <form
           className="mt-3 space-y-2"
@@ -287,7 +287,7 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
           <label htmlFor="new-note" className="sr-only">
             New note
           </label>
-          <Textarea id="new-note" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a note about this guest…" rows={3} maxLength={2000} aria-invalid={!!error} />
+          <Textarea id="new-note" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a note…" rows={2} maxLength={2000} aria-invalid={!!error} className="text-xs" />
           {error ? (
             <p role="alert" className="text-xs text-danger">
               {error}
@@ -300,7 +300,7 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
           </div>
         </form>
       ) : null}
-      <div className="mt-3 whitespace-pre-wrap text-[13px] leading-relaxed text-muted-strong">{notes ? notes : <span className="text-muted">No notes yet.</span>}</div>
+      <div className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-muted-strong">{notes ? notes : <span className="text-muted">No notes yet.</span>}</div>
     </div>
   );
 }

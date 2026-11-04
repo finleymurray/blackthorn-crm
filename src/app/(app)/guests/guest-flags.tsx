@@ -28,7 +28,7 @@ export function GuestFlags({
       </Badge>,
     );
   if (size === "md" && guest.tags) {
-    for (const t of guest.tags) items.push(<Badge key={`tag-${t}`}>{t}</Badge>);
+    for (const t of guest.tags) items.push(<Badge key={`tag-${t}`} variant="outline">{t}</Badge>);
   }
   if (items.length === 0) return null;
   return <div className={`flex flex-wrap gap-1 ${size === "sm" ? "mt-1" : ""}`}>{items}</div>;

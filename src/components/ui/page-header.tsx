@@ -1,32 +1,52 @@
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+export interface Crumb {
+  label: string;
+  href?: string;
+}
+
+/**
+ * The header bar at the top of every page in the canvas: breadcrumb-style
+ * title on the left, actions on the right. Content goes in <PageBody>.
+ */
 export function PageHeader({
   title,
-  description,
+  crumbs = [],
+  meta,
   actions,
   className,
-  eyebrow,
-  meta,
 }: {
   title: React.ReactNode;
-  description?: React.ReactNode;
+  crumbs?: Crumb[];
+  meta?: React.ReactNode;
   actions?: React.ReactNode;
   className?: string;
-  eyebrow?: React.ReactNode;
-  /** Short facts shown after the title, e.g. counts or dates. */
-  meta?: React.ReactNode;
 }) {
   return (
-    <div className={cn("flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between", className)}>
-      <div className="min-w-0">
-        {eyebrow ? <div className="mb-1 text-xs text-muted">{eyebrow}</div> : null}
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h1 className="text-lg font-semibold tracking-tight">{title}</h1>
-          {meta ? <span className="text-xs text-muted">{meta}</span> : null}
-        </div>
-        {description ? <p className="mt-0.5 text-sm text-muted">{description}</p> : null}
-      </div>
-      {actions ? <div className="flex flex-wrap items-center gap-2 sm:shrink-0">{actions}</div> : null}
-    </div>
+    <header className={cn("sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur sm:px-5", className)}>
+      <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1 text-[13px]">
+        {crumbs.map((c) => (
+          <span key={c.label} className="flex items-center gap-1 text-muted">
+            {c.href ? (
+              <Link href={c.href} className="rounded-sm hover:text-foreground focus-visible:outline-2 focus-visible:outline-ring">
+                {c.label}
+              </Link>
+            ) : (
+              c.label
+            )}
+            <ChevronRight className="size-3" aria-hidden />
+          </span>
+        ))}
+        <h1 className="truncate font-medium text-foreground">{title}</h1>
+        {meta ? <span className="ml-2 hidden truncate text-xs text-muted sm:inline">{meta}</span> : null}
+      </nav>
+      {actions ? <div className="ml-auto flex shrink-0 items-center gap-2">{actions}</div> : null}
+    </header>
   );
+}
+
+export function PageBody({ children, className, wide }: { children: React.ReactNode; className?: string; wide?: boolean }) {
+  return <div className={cn("px-4 py-4 sm:px-5", !wide && "mx-auto max-w-[1400px]", className)}>{children}</div>;
 }

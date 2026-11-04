@@ -5,21 +5,21 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+  "inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
   {
     variants: {
       variant: {
-        default: "bg-accent text-accent-foreground hover:bg-accent-hover shadow-sm",
-        secondary: "bg-surface-raised text-foreground border border-border hover:bg-border/60",
-        outline: "border border-border-strong bg-transparent text-foreground hover:bg-surface-raised",
-        ghost: "text-muted-strong hover:bg-surface-raised hover:text-foreground",
-        destructive: "bg-danger/90 text-white hover:bg-danger",
+        default: "bg-accent text-accent-foreground hover:bg-accent-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]",
+        secondary: "bg-white/[0.06] text-foreground hover:bg-white/[0.1] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]",
+        outline: "border border-border-strong bg-transparent text-foreground hover:bg-white/[0.04]",
+        ghost: "text-muted-strong hover:bg-white/[0.05] hover:text-foreground",
+        destructive: "bg-danger/85 text-white hover:bg-danger",
         link: "text-foreground underline-offset-4 hover:underline",
       },
       size: {
         default: "h-8 px-3 text-[13px]",
         sm: "h-7 rounded-md px-2.5 text-xs",
-        lg: "h-9 rounded-md px-5",
+        lg: "h-9 rounded-md px-4 text-[13px]",
         icon: "size-8",
         "icon-sm": "size-7",
       },
@@ -43,13 +43,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       );
     }
     return (
-      <button
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        disabled={disabled || loading}
-        aria-busy={loading || undefined}
-        {...props}
-      >
+      <button className={cn(buttonVariants({ variant, size, className }))} ref={ref} disabled={disabled || loading} aria-busy={loading || undefined} {...props}>
         {loading ? <Loader2 className="animate-spin" aria-hidden /> : null}
         {children}
       </button>

@@ -1,5 +1,5 @@
 import type { Db } from "@/lib/db/client";
-import type { SearchHit } from "@/components/shell/global-search";
+import type { SearchHit } from "@/components/shell/command-palette";
 
 export async function globalSearch(db: Db, raw: string): Promise<SearchHit[]> {
   const q = raw.trim().slice(0, 80);

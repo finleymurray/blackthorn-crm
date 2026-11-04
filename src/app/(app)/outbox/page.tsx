@@ -1,7 +1,14 @@
 import { requireStaff } from "@/lib/auth/session";
-import { PageHeader } from "@/components/ui/page-header";
+import { PageBody, PageHeader } from "@/components/ui/page-header";
 
 export default async function OutboxPage() {
   await requireStaff("/outbox");
-  return <PageHeader title="Outbox" description="Coming in a later phase." />;
+  return (
+    <>
+      <PageHeader title="Outbox" />
+      <PageBody>
+        <p className="text-muted">Coming in a later phase.</p>
+      </PageBody>
+    </>
+  );
 }

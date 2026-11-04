@@ -1,20 +1,25 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { ChevronsUpDown, LogOut, Search } from "lucide-react";
 import { ThornMark } from "@/components/brand/logo";
+import { Avatar } from "@/components/ui/avatar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { ROLE_LABELS, type StaffUser } from "@/lib/auth/types";
 import { navForRole, type NavGroup } from "./nav-items";
-import type { StaffRole } from "@/lib/auth/types";
+import { CommandPalette } from "./command-palette";
 
 export function SidebarNav({ groups, onNavigate }: { groups: NavGroup[]; onNavigate?: () => void }) {
   const pathname = usePathname();
   return (
-    <nav aria-label="Main" className="flex-1 space-y-4">
+    <nav aria-label="Main" className="flex-1 space-y-5 px-2">
       {groups.map((group, gi) => (
         <div key={group.label ?? gi}>
-          {group.label ? <p className="mb-1 px-5 text-[11px] font-medium text-muted">{group.label}</p> : null}
-          <ul>
+          {group.label ? <p className="mb-1 px-2 text-[11px] font-medium text-muted">{group.label}</p> : null}
+          <ul className="space-y-px">
             {group.items.map((item) => {
               const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
               const Icon = item.icon;
@@ -25,12 +30,11 @@ export function SidebarNav({ groups, onNavigate }: { groups: NavGroup[]; onNavig
                     onClick={onNavigate}
                     aria-current={active ? "page" : undefined}
                     className={cn(
-                      "relative flex items-center gap-2.5 py-[7px] pl-5 pr-3 text-[13px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
-                      active ? "bg-white/[0.04] font-medium text-foreground" : "text-muted-strong hover:bg-white/[0.03] hover:text-foreground",
+                      "flex h-7 items-center gap-2 rounded-md px-2 text-[13px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+                      active ? "bg-white/[0.07] text-foreground" : "text-muted-strong hover:bg-white/[0.04] hover:text-foreground",
                     )}
                   >
-                    {active ? <span className="absolute inset-y-1 left-0 w-0.5 bg-accent" aria-hidden /> : null}
-                    <Icon className={cn("size-4 shrink-0", active ? "text-foreground" : "text-muted")} aria-hidden />
+                    <Icon className={cn("size-4 shrink-0", active ? "text-foreground" : "text-muted")} strokeWidth={1.75} aria-hidden />
                     {item.label}
                   </Link>
                 </li>
@@ -43,21 +47,72 @@ export function SidebarNav({ groups, onNavigate }: { groups: NavGroup[]; onNavig
   );
 }
 
-export function Sidebar({ role }: { role: StaffRole }) {
-  const groups = navForRole(role);
+export function SidebarFrame({ staff, signOutAction, onNavigate }: { staff: StaffUser; signOutAction: () => Promise<void>; onNavigate?: () => void }) {
+  const groups = navForRole(staff.role);
+  const [paletteOpen, setPaletteOpen] = React.useState(false);
+
+  React.useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setPaletteOpen((o) => !o);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
   return (
-    <aside className="hidden lg:flex lg:w-56 lg:shrink-0 lg:flex-col lg:border-r lg:border-border lg:bg-background">
-      <div className="flex h-12 items-center gap-2 border-b border-border px-5">
+    <div className="flex h-full flex-col">
+      <div className="flex h-12 items-center gap-2 px-4">
         <ThornMark className="size-5 text-foreground" />
         <span className="font-display text-[17px] leading-none tracking-wide">Blackthorn</span>
-        <span className="ml-auto rounded-[3px] border border-border px-1 text-[10px] text-muted">CRM</span>
       </div>
-      <div className="flex flex-1 flex-col py-4">
-        <SidebarNav groups={groups} />
+
+      <div className="px-2 pb-3">
+        <button
+          type="button"
+          onClick={() => setPaletteOpen(true)}
+          className="flex h-8 w-full items-center gap-2 rounded-md bg-white/[0.04] px-2 text-[13px] text-muted shadow-[inset_0_0_0_1px_var(--border)] hover:bg-white/[0.06] hover:text-muted-strong focus-visible:outline-2 focus-visible:outline-ring"
+        >
+          <Search className="size-3.5" aria-hidden />
+          <span className="flex-1 text-left">Search</span>
+          <kbd className="rounded-[3px] bg-white/[0.06] px-1 text-[10px] font-medium text-muted">⌘K</kbd>
+        </button>
       </div>
-      <div className="border-t border-border px-5 py-3 text-[11px] leading-relaxed text-muted">
-        Demo environment. Messages go to the outbox; payments are simulated.
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+
+      <SidebarNav groups={groups} onNavigate={onNavigate} />
+
+      <div className="mt-auto p-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              type="button"
+              className="flex h-10 w-full items-center gap-2 rounded-md px-2 text-left hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:outline-ring"
+              aria-label={`Account menu for ${staff.name}`}
+            >
+              <Avatar name={staff.name} />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[13px] text-foreground">{staff.name}</span>
+                <span className="block truncate text-[11px] text-muted">{ROLE_LABELS[staff.role]}</span>
+              </span>
+              <ChevronsUpDown className="size-3.5 text-muted" aria-hidden />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" side="top" className="w-60">
+            <DropdownMenuLabel>
+              <p className="truncate font-medium text-foreground">{staff.name}</p>
+              <p className="truncate text-xs text-muted">{staff.email}</p>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => void signOutAction()}>
+              <LogOut /> Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <p className="px-2 pb-1 pt-2 text-[11px] leading-snug text-muted">Demo: messages go to the outbox, payments are simulated.</p>
       </div>
-    </aside>
+    </div>
   );
 }
