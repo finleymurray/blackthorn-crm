@@ -549,6 +549,7 @@ create policy "marketing write automations" on public.automations for all using 
 -- Outbox: everyone reads; marketing and support send (campaigns, ticket replies).
 create policy "staff read outbox" on public.messages_outbox for select using (public.is_staff());
 create policy "staff insert outbox" on public.messages_outbox for insert with check (public.has_role('admin', 'marketing', 'support'));
+create policy "marketing update outbox" on public.messages_outbox for update using (public.has_role('admin', 'marketing')) with check (public.has_role('admin', 'marketing'));
 create policy "admin delete outbox" on public.messages_outbox for delete using (public.has_role('admin'));
 
 -- Support tables: everyone reads; admin and support write; front desk can raise.
