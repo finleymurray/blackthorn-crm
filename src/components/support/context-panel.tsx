@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { TICKET_TYPE_LABELS, BOOKING_STATUS_LABELS } from "@/lib/domain/constants";
 import { TicketActions } from "./ticket-actions";
+import { OpenBookingLink } from "./open-booking-link";
 import { titleCase } from "@/lib/utils";
 
 const bookingTone: Record<string, "success" | "danger" | "info" | "warning"> = { confirmed: "success", refunded: "danger", transferred: "info", no_show: "warning" };
@@ -101,9 +102,9 @@ export function ContextPanel({ ticket, context, canAct, canRefund }: { ticket: T
             {context.bookings.map((b) => (
               <li key={b.id} className={`rounded-md border px-2.5 py-2 text-xs ${b.id === ticket.booking_id ? "border-accent/50 bg-accent-soft/40" : "border-border"}`}>
                 <div className="flex items-center justify-between gap-2">
-                  <Link href={`/bookings/${b.id}`} className="font-mono text-[11px] hover:underline">
+                  <OpenBookingLink bookingId={b.id} className="font-mono text-[11px] hover:underline">
                     {b.reference}
-                  </Link>
+                  </OpenBookingLink>
                   <Badge variant={bookingTone[b.status]} dot>
                     {BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}
                   </Badge>
@@ -116,6 +117,9 @@ export function ContextPanel({ ticket, context, canAct, canRefund }: { ticket: T
                   {b.refunded_pence ? `, refunded ${formatMoney(b.refunded_pence)}` : ""}
                   {b.id === ticket.booking_id ? " · this ticket" : ""}
                 </p>
+                <OpenBookingLink bookingId={b.id} className="mt-1 inline-block text-[11px] text-muted hover:text-foreground">
+                  Open in a tab
+                </OpenBookingLink>
               </li>
             ))}
           </ul>
