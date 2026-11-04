@@ -88,7 +88,7 @@ export function GuestProfileTabs({
                     {b.refunded_pence > 0 ? <div className="text-xs text-danger">−{formatMoney(b.refunded_pence)}</div> : null}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={bookingBadge[b.status] ?? "default"}>{BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}</Badge>
+                    <Badge variant={bookingBadge[b.status] ?? "default"} dot>{BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}</Badge>
                   </TableCell>
                   <TableCell className="hidden sm:table-cell text-xs text-muted">{b.survey_score ? `${b.survey_score}/10` : "Not completed"}</TableCell>
                 </TableRow>
@@ -102,7 +102,7 @@ export function GuestProfileTabs({
         {tickets.length === 0 ? (
           <EmptyState icon={LifeBuoy} title="No support tickets" description="This guest has never contacted support." />
         ) : (
-          <ul className="divide-y divide-border rounded-lg border border-border">
+          <ul className="divide-y divide-border rounded-md border border-border">
             {tickets.map((t) => (
               <li key={t.id}>
                 <Link href={`/support/${t.id}`} className="flex items-start justify-between gap-3 px-4 py-3 hover:bg-surface focus-visible:outline-2 focus-visible:outline-ring">
@@ -114,7 +114,7 @@ export function GuestProfileTabs({
                       {titleCase(t.category)} · {TICKET_PRIORITY_LABELS[t.priority as keyof typeof TICKET_PRIORITY_LABELS]} priority · {formatDateTime(t.created_at)}
                     </p>
                   </div>
-                  <Badge variant={ticketBadge[t.status] ?? "default"}>{TICKET_STATUS_LABELS[t.status as keyof typeof TICKET_STATUS_LABELS]}</Badge>
+                  <Badge variant={ticketBadge[t.status] ?? "default"} dot>{TICKET_STATUS_LABELS[t.status as keyof typeof TICKET_STATUS_LABELS]}</Badge>
                 </Link>
               </li>
             ))}
@@ -126,7 +126,7 @@ export function GuestProfileTabs({
         {messages.length === 0 ? (
           <EmptyState icon={Mail} title="No messages sent" description="Campaign and automation messages to this guest will show here." />
         ) : (
-          <ul className="divide-y divide-border rounded-lg border border-border">
+          <ul className="divide-y divide-border rounded-md border border-border">
             {messages.map((m) => (
               <li key={m.id}>
                 <Link href={`/outbox/${m.id}`} className="flex items-start gap-3 px-4 py-3 hover:bg-surface focus-visible:outline-2 focus-visible:outline-ring">

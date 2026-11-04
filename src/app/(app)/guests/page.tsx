@@ -51,6 +51,8 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
     return { ...list, tags, seasons: seasons.map((s) => s.year) };
   });
 
+  const ariaSort = (key: GuestListParams["sort"]): "ascending" | "descending" | "none" =>
+    params.sort === key ? (params.dir === "asc" ? "ascending" : "descending") : "none";
   const sortLink = (key: GuestListParams["sort"], label: string, align: "left" | "right" = "left") => {
     const active = params.sort === key;
     const nextDir = active && params.dir === "desc" ? "asc" : "desc";
@@ -62,16 +64,15 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
       >
         {label}
         <Icon className="size-3" aria-hidden />
-        <span className="sr-only">{active ? `, sorted ${params.dir === "asc" ? "ascending" : "descending"}` : ", click to sort"}</span>
       </Link>
     );
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <PageHeader
         title="Guests"
-        description={`${formatNumber(total)} ${total === 1 ? "guest matches" : "guests match"} the current filters.`}
+        meta={`${formatNumber(total)} ${total === 1 ? "match" : "matches"}`}
         actions={
           <Button asChild variant="secondary" size="sm">
             <a href={`/guests/export${toQuery(params, { page: 1 })}`} download>
@@ -99,17 +100,17 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead aria-sort={params.sort === "name" ? (params.dir === "asc" ? "ascending" : "descending") : "none"}>{sortLink("name", "Guest")}</TableHead>
+                <TableHead aria-sort={ariaSort("name")}>{sortLink("name", "Guest")}</TableHead>
                 <TableHead className="hidden md:table-cell">Contact</TableHead>
                 <TableHead className="hidden lg:table-cell">Postcode</TableHead>
                 <TableHead>Consent</TableHead>
-                <TableHead className="text-right" aria-sort={params.sort === "visits" ? (params.dir === "asc" ? "ascending" : "descending") : "none"}>
+                <TableHead className="text-right" aria-sort={ariaSort("visits")}>
                   {sortLink("visits", "Visits", "right")}
                 </TableHead>
-                <TableHead className="text-right" aria-sort={params.sort === "spend" ? (params.dir === "asc" ? "ascending" : "descending") : "none"}>
+                <TableHead className="text-right" aria-sort={ariaSort("spend")}>
                   {sortLink("spend", "Spend", "right")}
                 </TableHead>
-                <TableHead className="hidden sm:table-cell" aria-sort={params.sort === "last_visit" ? (params.dir === "asc" ? "ascending" : "descending") : "none"}>
+                <TableHead className="hidden sm:table-cell" aria-sort={ariaSort("last_visit")}>
                   {sortLink("last_visit", "Last visit")}
                 </TableHead>
               </TableRow>
@@ -125,23 +126,23 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
                     <GuestFlags guest={g} />
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
-                    <div className="text-sm">{g.email}</div>
+                    <div>{g.email}</div>
                     <div className="text-xs text-muted">{g.phone ?? "No phone"}</div>
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell text-sm">{formatPostcode(g.postcode)}</TableCell>
+                  <TableCell className="hidden lg:table-cell">{formatPostcode(g.postcode)}</TableCell>
                   <TableCell>
                     <div className="flex gap-1">
-                      <Badge variant={g.email_consent ? "success" : "default"} aria-label={`Email consent ${g.email_consent ? "given" : "not given"}`}>
+                      <Badge variant={g.email_consent ? "success" : "default"} dot aria-label={`Email consent ${g.email_consent ? "given" : "not given"}`}>
                         Email
                       </Badge>
-                      <Badge variant={g.sms_consent ? "success" : "default"} aria-label={`SMS consent ${g.sms_consent ? "given" : "not given"}`}>
+                      <Badge variant={g.sms_consent ? "success" : "default"} dot aria-label={`SMS consent ${g.sms_consent ? "given" : "not given"}`}>
                         SMS
                       </Badge>
                     </div>
                   </TableCell>
                   <TableCell className="tabular text-right">{g.visit_count}</TableCell>
                   <TableCell className="tabular text-right">{formatMoney(g.lifetime_spend_pence)}</TableCell>
-                  <TableCell className="hidden sm:table-cell text-sm text-muted-strong">{g.last_visit_on ? formatDateOnly(g.last_visit_on) : "Never"}</TableCell>
+                  <TableCell className="hidden sm:table-cell tabular text-muted-strong">{g.last_visit_on ? formatDateOnly(g.last_visit_on) : "Never"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

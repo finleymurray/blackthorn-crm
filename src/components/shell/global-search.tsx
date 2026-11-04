@@ -70,12 +70,12 @@ export function GlobalSearch() {
   const showList = open && query.trim().length >= 2;
 
   return (
-    <div className="relative w-full max-w-xl" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false); }}>
+    <div className="relative w-full max-w-md" onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false); }}>
       <label htmlFor="global-search" className="sr-only">
         Search guests, bookings and tickets
       </label>
       <div className="relative">
-        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
+        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted" aria-hidden />
         <input
           ref={inputRef}
           id="global-search"
@@ -111,9 +111,9 @@ export function GlobalSearch() {
               setOpen(false);
             }
           }}
-          className="h-9 w-full rounded-md border border-border bg-surface pl-9 pr-16 text-sm placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-ring"
+          className="h-8 w-full rounded-md border border-border bg-surface pl-8 pr-14 text-[13px] placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-ring"
         />
-        <kbd className="pointer-events-none absolute right-2.5 top-1/2 hidden -translate-y-1/2 rounded border border-border bg-background px-1.5 py-0.5 text-[10px] font-medium text-muted sm:block">
+        <kbd className="pointer-events-none absolute right-2 top-1/2 hidden -translate-y-1/2 rounded-[3px] border border-border bg-background px-1 py-px text-[10px] text-muted sm:block">
           Ctrl K
         </kbd>
       </div>

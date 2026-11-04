@@ -1,18 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Cake, Mail, MapPin, Phone } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { requireStaff } from "@/lib/auth/session";
 import { withStaff } from "@/lib/db/client";
 import { getGuest, getGuestBookings, getGuestMessages, getGuestStats, getGuestTickets, getGuestTimeline } from "@/lib/data/guests";
 import { formatDate, formatDateOnly, formatMoney, formatPostcode } from "@/lib/format";
 import { canEditGuests } from "@/lib/auth/types";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GuestFlags } from "../guest-flags";
 import { GuestProfileTabs } from "./profile-tabs";
 import { ConsentControls, EditGuestDialog, NotesPanel, TagsEditor } from "./profile-controls";
-import { initials } from "@/lib/utils";
 import { CONSENT_SOURCE_LABELS } from "@/lib/domain/constants";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -42,123 +40,117 @@ export default async function GuestProfilePage({ params, searchParams }: { param
   const editable = canEditGuests(staff.role);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <Link href="/guests" className="inline-flex items-center gap-1 text-sm text-muted hover:text-foreground">
-          <ArrowLeft className="size-3.5" aria-hidden /> All guests
-        </Link>
-      </div>
+    <div className="space-y-5">
+      <Link href="/guests" className="inline-flex items-center gap-1 text-xs text-muted hover:text-foreground">
+        <ArrowLeft className="size-3" aria-hidden /> Guests
+      </Link>
 
-      {/* Header */}
-      <header className="rounded-lg border border-border bg-surface p-5">
-        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-          <div className="flex items-start gap-4">
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-accent text-base font-semibold text-white" aria-hidden>
-              {initials(`${guest.first_name} ${guest.last_name}`)}
-            </span>
-            <div className="min-w-0">
-              <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
-                {guest.first_name} {guest.last_name}
-              </h1>
-              <dl className="mt-1.5 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-strong">
-                <div className="flex items-center gap-1.5">
-                  <dt className="sr-only">Email</dt>
-                  <Mail className="size-3.5 text-muted" aria-hidden />
-                  <dd>
-                    <a href={`mailto:${guest.email}`} className="hover:underline">
-                      {guest.email}
-                    </a>
-                  </dd>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <dt className="sr-only">Phone</dt>
-                  <Phone className="size-3.5 text-muted" aria-hidden />
-                  <dd>{guest.phone ?? <span className="text-muted">No phone</span>}</dd>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <dt className="sr-only">Postcode</dt>
-                  <MapPin className="size-3.5 text-muted" aria-hidden />
-                  <dd>{guest.postcode ? formatPostcode(guest.postcode) : <span className="text-muted">No postcode</span>}</dd>
-                </div>
-                {guest.date_of_birth ? (
-                  <div className="flex items-center gap-1.5">
-                    <dt className="sr-only">Date of birth</dt>
-                    <Cake className="size-3.5 text-muted" aria-hidden />
-                    <dd>{formatDateOnly(guest.date_of_birth)}</dd>
-                  </div>
-                ) : null}
-              </dl>
-              <div className="mt-2">
-                <GuestFlags guest={guest} size="md" />
-              </div>
-              {guest.banned && guest.banned_reason ? <p className="mt-2 text-sm text-danger">{guest.banned_reason}</p> : null}
-              {guest.accessibility_needs ? <p className="mt-2 text-sm text-info">{guest.accessibility_needs}</p> : null}
-            </div>
+      <header className="flex flex-col gap-4 border-b border-border pb-4 md:flex-row md:items-start md:justify-between">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <h1 className="text-xl font-semibold tracking-tight">
+              {guest.first_name} {guest.last_name}
+            </h1>
+            <GuestFlags guest={guest} size="md" />
           </div>
-          <div className="flex shrink-0 flex-wrap gap-2">
-            {editable ? <EditGuestDialog guest={guest} /> : null}
-            <Button asChild variant="secondary" size="sm">
-              <Link href={`/support/new?guest=${guest.id}`}>New ticket</Link>
-            </Button>
-          </div>
+          <dl className="kv mt-3 max-w-xl">
+            <dt>Email</dt>
+            <dd>
+              <a href={`mailto:${guest.email}`} className="hover:underline">
+                {guest.email}
+              </a>
+            </dd>
+            <dt>Phone</dt>
+            <dd>{guest.phone ?? <span className="text-muted">Not recorded</span>}</dd>
+            <dt>Postcode</dt>
+            <dd>{guest.postcode ? formatPostcode(guest.postcode) : <span className="text-muted">Not recorded</span>}</dd>
+            <dt>Date of birth</dt>
+            <dd>{guest.date_of_birth ? formatDateOnly(guest.date_of_birth) : <span className="text-muted">Not recorded</span>}</dd>
+            {guest.accessibility_needs ? (
+              <>
+                <dt>Accessibility</dt>
+                <dd className="text-info">{guest.accessibility_needs}</dd>
+              </>
+            ) : null}
+            {guest.banned ? (
+              <>
+                <dt>Ban</dt>
+                <dd className="text-danger">{guest.banned_reason ?? "Banned from the park"}</dd>
+              </>
+            ) : null}
+          </dl>
         </div>
-
-        <div className="mt-5 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
-          <ConsentControls
-            guestId={guest.id}
-            editable={editable}
-            channel="email"
-            value={guest.email_consent}
-            at={guest.email_consent_at ? formatDate(guest.email_consent_at) : null}
-            source={guest.email_consent_source ? CONSENT_SOURCE_LABELS[guest.email_consent_source] ?? guest.email_consent_source : null}
-          />
-          <ConsentControls
-            guestId={guest.id}
-            editable={editable}
-            channel="sms"
-            value={guest.sms_consent}
-            at={guest.sms_consent_at ? formatDate(guest.sms_consent_at) : null}
-            source={guest.sms_consent_source ? CONSENT_SOURCE_LABELS[guest.sms_consent_source] ?? guest.sms_consent_source : null}
-          />
+        <div className="flex shrink-0 flex-wrap gap-2">
+          {editable ? <EditGuestDialog guest={guest} /> : null}
+          <Button asChild variant="secondary" size="sm">
+            <Link href={`/support/new?guest=${guest.id}`}>New ticket</Link>
+          </Button>
         </div>
       </header>
 
-      {/* Stats */}
-      <section aria-label="Key stats" className="grid gap-3 grid-cols-2 lg:grid-cols-5">
-        <Stat label="Visits" value={String(guest.visit_count)} sub={guest.first_visit_on ? `since ${formatDateOnly(guest.first_visit_on)}` : "never visited"} />
-        <Stat label="Lifetime spend" value={formatMoney(guest.lifetime_spend_pence)} sub={`${stats.total_bookings} booking${stats.total_bookings === 1 ? "" : "s"}`} />
-        <Stat label="Survey average" value={stats.avg_survey_score ? `${stats.avg_survey_score.toFixed(1)} / 10` : "–"} sub={`${stats.surveys_completed} survey${stats.surveys_completed === 1 ? "" : "s"} completed`} />
-        <Stat label="Support" value={stats.open_tickets ? `${stats.open_tickets} open` : "None open"} sub={`${stats.resolved_tickets} resolved`} />
-        <Stat label="Messages sent" value={String(stats.messages_sent)} sub={stats.last_booking_at ? `last booked ${formatDate(stats.last_booking_at)}` : "never booked"} />
+      <section aria-label="Marketing consent" className="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
+        <ConsentControls
+          guestId={guest.id}
+          editable={editable}
+          channel="email"
+          value={guest.email_consent}
+          at={guest.email_consent_at ? formatDate(guest.email_consent_at) : null}
+          source={guest.email_consent_source ? CONSENT_SOURCE_LABELS[guest.email_consent_source] ?? guest.email_consent_source : null}
+        />
+        <ConsentControls
+          guestId={guest.id}
+          editable={editable}
+          channel="sms"
+          value={guest.sms_consent}
+          at={guest.sms_consent_at ? formatDate(guest.sms_consent_at) : null}
+          source={guest.sms_consent_source ? CONSENT_SOURCE_LABELS[guest.sms_consent_source] ?? guest.sms_consent_source : null}
+        />
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-3">
+      <section aria-label="Key stats" className="stat-strip grid-cols-2 lg:grid-cols-5">
+        <div>
+          <p className="stat-label">Visits</p>
+          <p className="stat-value">{guest.visit_count}</p>
+          <p className="stat-sub">{guest.first_visit_on ? `first ${formatDateOnly(guest.first_visit_on)}` : "never visited"}</p>
+        </div>
+        <div>
+          <p className="stat-label">Lifetime spend</p>
+          <p className="stat-value">{formatMoney(guest.lifetime_spend_pence)}</p>
+          <p className="stat-sub">
+            {stats.total_bookings} booking{stats.total_bookings === 1 ? "" : "s"}
+          </p>
+        </div>
+        <div>
+          <p className="stat-label">Survey average</p>
+          <p className="stat-value">{stats.avg_survey_score ? `${stats.avg_survey_score.toFixed(1)}` : "–"}</p>
+          <p className="stat-sub">
+            {stats.surveys_completed} survey{stats.surveys_completed === 1 ? "" : "s"} completed
+          </p>
+        </div>
+        <div>
+          <p className="stat-label">Support</p>
+          <p className="stat-value">{stats.open_tickets}</p>
+          <p className="stat-sub">open · {stats.resolved_tickets} resolved</p>
+        </div>
+        <div>
+          <p className="stat-label">Messages sent</p>
+          <p className="stat-value">{stats.messages_sent}</p>
+          <p className="stat-sub">{stats.last_booking_at ? `last booked ${formatDate(stats.last_booking_at)}` : "never booked"}</p>
+        </div>
+      </section>
+
+      <div className="grid gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
           <GuestProfileTabs guestId={guest.id} initialTab={tab} bookings={data.bookings} timeline={data.timeline} tickets={data.tickets} messages={data.messages} />
         </div>
         <aside className="space-y-4">
           <TagsEditor guestId={guest.id} tags={guest.tags} editable={editable} />
           <NotesPanel guestId={guest.id} notes={guest.notes} editable={editable} />
-          <div className="rounded-lg border border-border bg-surface p-4 text-xs text-muted">
-            <p>
-              Guest since {formatDate(guest.created_at)}. Last updated {formatDate(guest.updated_at)}.
-            </p>
-            <p className="mt-1">
-              Staff changes are recorded in the activity log and shown in the timeline. <Badge variant="outline" className="ml-1">GDPR</Badge>
-            </p>
-          </div>
+          <p className="px-1 text-[11px] leading-relaxed text-muted">
+            Record created {formatDate(guest.created_at)}, last updated {formatDate(guest.updated_at)}. Staff changes are written to the activity log and appear in the timeline.
+          </p>
         </aside>
       </div>
-    </div>
-  );
-}
-
-function Stat({ label, value, sub }: { label: string; value: string; sub: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-surface p-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-muted">{label}</p>
-      <p className="mt-1.5 text-lg font-semibold">{value}</p>
-      <p className="mt-1 text-xs text-muted">{sub}</p>
     </div>
   );
 }

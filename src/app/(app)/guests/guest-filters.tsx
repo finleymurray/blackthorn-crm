@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Search, X } from "lucide-react";
-import { Input, Select, Label } from "@/components/ui/input";
+import { Input, Select } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { GuestListParams } from "@/lib/data/guests";
 
@@ -28,7 +28,6 @@ export function GuestFilters({ params, tags, seasons }: { params: GuestListParam
     startTransition(() => router.push(`/guests${sp.size ? `?${sp}` : ""}`));
   }, [params.sort, params.dir, router]);
 
-  // Debounced search as you type.
   React.useEffect(() => {
     if (q === params.q) return;
     const t = window.setTimeout(submit, 300);
@@ -38,95 +37,86 @@ export function GuestFilters({ params, tags, seasons }: { params: GuestListParam
   const hasFilters =
     params.q || params.email_consent !== "any" || params.sms_consent !== "any" || params.flag !== "any" || params.tag || params.season || params.min_visits !== undefined;
 
+  const selectClass = "h-8 w-auto min-w-[8.5rem] text-xs";
+
   return (
     <form
       ref={formRef}
       role="search"
       aria-label="Filter guests"
-      className="flex flex-col gap-3 rounded-lg border border-border bg-surface p-3 lg:flex-row lg:items-end"
+      className="toolbar"
       onSubmit={(e) => {
         e.preventDefault();
         submit();
       }}
       aria-busy={pending}
     >
-      <div className="flex-1 space-y-1">
-        <Label htmlFor="guest-q">Search</Label>
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden />
-          <Input
-            id="guest-q"
-            name="q"
-            type="search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Name, email, phone, postcode or booking ref"
-            className="pl-9"
-            autoComplete="off"
-          />
-        </div>
+      <div className="relative w-full sm:w-72">
+        <label htmlFor="guest-q" className="sr-only">
+          Search guests
+        </label>
+        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted" aria-hidden />
+        <Input id="guest-q" name="q" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Name, email, phone, postcode or booking ref" className="pl-8" autoComplete="off" />
       </div>
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:flex">
-        <div className="space-y-1">
-          <Label htmlFor="f-email">Email consent</Label>
-          <Select id="f-email" name="email_consent" defaultValue={params.email_consent} onChange={submit}>
-            <option value="any">Any</option>
-            <option value="yes">Opted in</option>
-            <option value="no">Not opted in</option>
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="f-sms">SMS consent</Label>
-          <Select id="f-sms" name="sms_consent" defaultValue={params.sms_consent} onChange={submit}>
-            <option value="any">Any</option>
-            <option value="yes">Opted in</option>
-            <option value="no">Not opted in</option>
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="f-flag">Flag</Label>
-          <Select id="f-flag" name="flag" defaultValue={params.flag} onChange={submit}>
-            <option value="any">Any</option>
-            <option value="accessibility">Accessibility needs</option>
-            <option value="do_not_touch">Do not touch</option>
-            <option value="banned">Banned</option>
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="f-tag">Tag</Label>
-          <Select id="f-tag" name="tag" defaultValue={params.tag} onChange={submit}>
-            <option value="">Any</option>
-            {tags.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="f-season">Booked in</Label>
-          <Select id="f-season" name="season" defaultValue={params.season ? String(params.season) : ""} onChange={submit}>
-            <option value="">Any season</option>
-            {seasons.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div className="space-y-1">
-          <Label htmlFor="f-visits">Min visits</Label>
-          <Select id="f-visits" name="min_visits" defaultValue={params.min_visits !== undefined ? String(params.min_visits) : ""} onChange={submit}>
-            <option value="">Any</option>
-            <option value="1">1+</option>
-            <option value="2">2+</option>
-            <option value="3">3+</option>
-            <option value="5">5+</option>
-          </Select>
-        </div>
-      </div>
+      <label htmlFor="f-email" className="sr-only">
+        Email consent
+      </label>
+      <Select id="f-email" name="email_consent" defaultValue={params.email_consent} onChange={submit} className={selectClass}>
+        <option value="any">Email consent: any</option>
+        <option value="yes">Email: opted in</option>
+        <option value="no">Email: not opted in</option>
+      </Select>
+      <label htmlFor="f-sms" className="sr-only">
+        SMS consent
+      </label>
+      <Select id="f-sms" name="sms_consent" defaultValue={params.sms_consent} onChange={submit} className={selectClass}>
+        <option value="any">SMS consent: any</option>
+        <option value="yes">SMS: opted in</option>
+        <option value="no">SMS: not opted in</option>
+      </Select>
+      <label htmlFor="f-flag" className="sr-only">
+        Flag
+      </label>
+      <Select id="f-flag" name="flag" defaultValue={params.flag} onChange={submit} className={selectClass}>
+        <option value="any">Flag: any</option>
+        <option value="accessibility">Accessibility needs</option>
+        <option value="do_not_touch">Do not touch</option>
+        <option value="banned">Banned</option>
+      </Select>
+      <label htmlFor="f-tag" className="sr-only">
+        Tag
+      </label>
+      <Select id="f-tag" name="tag" defaultValue={params.tag} onChange={submit} className={selectClass}>
+        <option value="">Tag: any</option>
+        {tags.map((t) => (
+          <option key={t} value={t}>
+            {t}
+          </option>
+        ))}
+      </Select>
+      <label htmlFor="f-season" className="sr-only">
+        Booked in season
+      </label>
+      <Select id="f-season" name="season" defaultValue={params.season ? String(params.season) : ""} onChange={submit} className={selectClass}>
+        <option value="">Booked in: any season</option>
+        {seasons.map((y) => (
+          <option key={y} value={y}>
+            Booked in {y}
+          </option>
+        ))}
+      </Select>
+      <label htmlFor="f-visits" className="sr-only">
+        Minimum visits
+      </label>
+      <Select id="f-visits" name="min_visits" defaultValue={params.min_visits !== undefined ? String(params.min_visits) : ""} onChange={submit} className={selectClass}>
+        <option value="">Visits: any</option>
+        <option value="1">1 or more visits</option>
+        <option value="2">2 or more visits</option>
+        <option value="3">3 or more visits</option>
+        <option value="5">5 or more visits</option>
+      </Select>
       {hasFilters ? (
-        <Button type="button" variant="ghost" size="sm" onClick={() => router.push("/guests")} className="self-start lg:self-end">
+        <Button type="button" variant="ghost" size="sm" onClick={() => router.push("/guests")}>
           <X /> Clear
         </Button>
       ) : null}

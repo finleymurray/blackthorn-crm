@@ -139,13 +139,13 @@ export function ConsentControls({
   const id = `consent-${channel}`;
 
   return (
-    <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-background/60 px-3 py-2.5">
+    <div className="flex items-center justify-between gap-3 bg-surface px-4 py-2.5">
       <div className="flex items-center gap-3">
         <Icon className="size-4 text-muted" aria-hidden />
         <div>
-          <p className="text-sm font-medium" id={`${id}-label`}>
+          <p className="text-[13px] font-medium" id={`${id}-label`}>
             {channel === "email" ? "Email marketing" : "SMS marketing"}{" "}
-            <Badge variant={optimistic ? "success" : "default"} className="ml-1">
+            <Badge variant={optimistic ? "success" : "default"} dot className="ml-1">
               {optimistic ? "Opted in" : "Not opted in"}
             </Badge>
           </p>
@@ -203,9 +203,9 @@ export function TagsEditor({ guestId, tags, editable }: { guestId: string; tags:
   };
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-4">
-      <h2 className="flex items-center gap-2 text-sm font-semibold">
-        <Tag className="size-4 text-muted" aria-hidden /> Tags
+    <div className="panel p-4">
+      <h2 className="flex items-center gap-2 text-[13px] font-semibold">
+        <Tag className="size-3.5 text-muted" aria-hidden /> Tags
       </h2>
       <div className="mt-3 flex flex-wrap gap-1.5">
         {list.length === 0 ? <p className="text-xs text-muted">No tags yet.</p> : null}
@@ -266,8 +266,8 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
   const { toast } = useToast();
 
   return (
-    <div className="rounded-lg border border-border bg-surface p-4">
-      <h2 className="text-sm font-semibold">Notes</h2>
+    <div className="panel p-4">
+      <h2 className="text-[13px] font-semibold">Notes</h2>
       {editable ? (
         <form
           className="mt-3 space-y-2"
@@ -300,7 +300,7 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
           </div>
         </form>
       ) : null}
-      <div className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-muted-strong">{notes ? notes : <span className="text-muted">No notes yet.</span>}</div>
+      <div className="mt-3 whitespace-pre-wrap text-[13px] leading-relaxed text-muted-strong">{notes ? notes : <span className="text-muted">No notes yet.</span>}</div>
     </div>
   );
 }
