@@ -35,9 +35,15 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, loading = false, children, disabled, ...props }, ref) => {
-    const Comp = asChild ? Slot.Root : "button";
+    if (asChild) {
+      return (
+        <Slot.Root className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props}>
+          {children}
+        </Slot.Root>
+      );
+    }
     return (
-      <Comp
+      <button
         className={cn(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={disabled || loading}
@@ -46,7 +52,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       >
         {loading ? <Loader2 className="animate-spin" aria-hidden /> : null}
         {children}
-      </Comp>
+      </button>
     );
   },
 );

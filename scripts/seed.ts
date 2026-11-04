@@ -314,7 +314,7 @@ async function main() {
     const tags: string[] = [];
     if (kind === "superfan") tags.push("superfan");
     if (rng.chance(0.08)) tags.push(rng.pick(TAGS.filter((t) => t !== "superfan")));
-    if (postcodeIsLocal(created)) tags.push("local");
+    if (postcodeIsLocal()) tags.push("local");
     const g: Guest = {
       id: uuid(),
       first_name: first,
@@ -349,7 +349,7 @@ async function main() {
     g.banned_reason = BAN_REASONS[i]!;
     g.bookingsWanted = 1;
   }
-  function postcodeIsLocal(_d: Date) {
+  function postcodeIsLocal() {
     return rng.chance(0.15);
   }
 
@@ -814,12 +814,17 @@ async function main() {
   const staffNames: Record<string, string> = { support: "Priya", admin: "Eleanor" };
 
   const TICKET_COUNT = 62;
+  const templateUses = new Map<number, number>();
   for (let i = 0; i < TICKET_COUNT; i++) {
-    const tpl = TICKET_TEMPLATES[i % TICKET_TEMPLATES.length]!;
+    const tplIndex = i % TICKET_TEMPLATES.length;
+    const tpl = TICKET_TEMPLATES[tplIndex]!;
+    const uses = templateUses.get(tplIndex) ?? 0;
+    templateUses.set(tplIndex, uses + 1);
     const booking = rng.pick(pastBookings);
     const guest = booking.guest;
-    // Spread: most in Oct/Nov 2026, some older ones resolved.
-    const old = i % 7 === 3;
+    // Spread: most in Oct/Nov 2026, some older ones resolved. A complaint
+    // template is only ever "live" once; repeats are historical.
+    const old = i % 7 === 3 || (tpl.category === "complaint" && uses > 0);
     const priority = tpl.priority;
     const slaHours = SLA_HOURS[priority];
     const replied = tpl.thread.some((m) => m.direction === "outbound");
@@ -830,6 +835,7 @@ async function main() {
     else if (!replied) status = rng.weighted([["new", 55], ["open", 45]] as const);
     else status = rng.weighted([["resolved", 55], ["waiting_on_guest", 25], ["open", 20]] as const);
     if (tpl.category === "complaint" && tpl.thread.at(-1)?.direction !== "outbound" && !old) status = "open";
+    if (old) status = "resolved";
     // Resolved tickets spread across the season; open ones are recent so the
     // inbox looks live rather than abandoned.
     const createdAt = old
