@@ -109,7 +109,7 @@ export default async function CampaignReportPage({ params }: { params: Promise<{
               actions={
                 <span className="flex items-center gap-3 text-[11px] text-muted">
                   <span className="inline-flex items-center gap-1.5">
-                    <span className="inline-block h-2 w-2 rounded-[2px] bg-[#cf5d66]" aria-hidden /> Opens
+                    <span className="inline-block h-2 w-2 rounded-[2px] bg-[#c2636b]" aria-hidden /> Opens
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <span className="inline-block h-2 w-2 rounded-[2px] bg-[#4a8fd8]" aria-hidden /> Clicks

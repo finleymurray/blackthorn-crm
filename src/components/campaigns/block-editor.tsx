@@ -84,7 +84,7 @@ export function BlockEditor({ blocks, onChange, readOnly }: { blocks: EmailBlock
         const meta = BLOCK_META[b.type];
         const Icon = meta.icon;
         return (
-          <div key={b.id} className="group rounded-md border border-border bg-black/10">
+          <div key={b.id} className="group rounded-md border border-border bg-black/20">
             <div className="flex items-center gap-2 border-b border-border px-2.5 py-1">
               <Icon className="size-3.5 text-muted" aria-hidden />
               <span className="text-[11px] font-medium text-muted">{meta.label}</span>

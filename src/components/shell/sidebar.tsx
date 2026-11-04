@@ -31,7 +31,7 @@ export function SidebarNav({ groups, onNavigate }: { groups: NavGroup[]; onNavig
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "flex h-7 items-center gap-2 rounded-md px-2 text-[13px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
-                      active ? "bg-white/[0.07] text-foreground" : "text-muted-strong hover:bg-white/[0.04] hover:text-foreground",
+                      active ? "bg-white/[0.06] text-foreground shadow-[inset_0_0_0_1px_rgba(255,255,255,0.06)]" : "text-white/60 hover:bg-white/[0.04] hover:text-foreground",
                     )}
                   >
                     <Icon className={cn("size-4 shrink-0", active ? "text-foreground" : "text-muted")} strokeWidth={1.75} aria-hidden />
@@ -73,7 +73,7 @@ export function SidebarFrame({ staff, signOutAction, onNavigate }: { staff: Staf
         <button
           type="button"
           onClick={() => setPaletteOpen(true)}
-          className="flex h-8 w-full items-center gap-2 rounded-md bg-white/[0.04] px-2 text-[13px] text-muted shadow-[inset_0_0_0_1px_var(--border)] hover:bg-white/[0.06] hover:text-muted-strong focus-visible:outline-2 focus-visible:outline-ring"
+          className="flex h-8 w-full items-center gap-2 rounded-md border border-white/[0.08] bg-white/[0.03] px-2 text-[13px] text-white/50 hover:border-white/[0.16] hover:text-white/70 focus-visible:outline-2 focus-visible:outline-ring"
         >
           <Search className="size-3.5" aria-hidden />
           <span className="flex-1 text-left">Search</span>

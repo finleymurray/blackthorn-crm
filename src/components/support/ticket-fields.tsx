@@ -40,7 +40,7 @@ export function TicketFields({ ticket, config, editable }: { ticket: TicketDetai
   const selectClass = "h-7 w-auto min-w-0 text-[11px]";
 
   return (
-    <div className="flex shrink-0 flex-wrap items-center gap-1.5 border-b border-border bg-black/10 px-3 py-2" aria-busy={pending}>
+    <div className="flex shrink-0 flex-wrap items-center gap-1.5 border-b border-border bg-black/20 px-3 py-2" aria-busy={pending}>
       <label htmlFor="tf-status" className="sr-only">
         Status
       </label>

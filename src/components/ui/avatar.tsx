@@ -1,6 +1,6 @@
 import { cn, initials } from "@/lib/utils";
 
-const PALETTE = ["#5b5bd6", "#2f8f83", "#b4772a", "#8d4fa8", "#2f7fc1", "#a33f5c", "#4f8b3b", "#7d6a2f"];
+const PALETTE = ["#3b6ea5", "#2f8f83", "#a7762a", "#7a4f3a", "#4f8b3b", "#9a4a4a", "#4b6b8a", "#6b7a2f"];
 
 function hash(s: string): number {
   let h = 0;
@@ -14,7 +14,7 @@ export function Avatar({ name, size = "md", className }: { name: string; size?: 
   return (
     <span
       className={cn("inline-flex shrink-0 select-none items-center justify-center rounded-full font-semibold text-white", dims, className)}
-      style={{ background: `linear-gradient(135deg, ${colour}, ${colour}cc)` }}
+      style={{ background: colour }}
       aria-hidden
     >
       {initials(name)}

@@ -6,30 +6,37 @@
   for primary actions and the active state only. Contrast meets WCAG AA.
 */
 :root {
-  --background: #0c0c0f;          /* app chrome: sidebar, body */
-  --surface: #121216;             /* content canvas and panels */
-  --surface-raised: #18181d;      /* hover rows, popovers */
-  --surface-overlay: #1c1c22;     /* dialogs and menus */
+  --background: #0b0c0e;          /* app chrome: sidebar, body (recessed) */
+  --surface: #0e0f12;             /* content canvas */
+  --surface-raised: #16181d;      /* panels, hover rows */
+  --surface-overlay: #1c1e24;     /* dialogs and menus */
   --border: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.14);
-  --foreground: #ededf0;
-  --muted: #8b8b96;
-  --muted-strong: #b8b8c2;
-  --accent: #a3242b;
-  --accent-hover: #b92b33;
-  --accent-soft: rgba(163, 36, 43, 0.16);
-  --accent-text: #f0989d;
+  --border-subtle: rgba(255, 255, 255, 0.04);
+  --border-strong: rgba(255, 255, 255, 0.16);
+  --foreground: #eceef2;
+  --muted: #7c8392;               /* meta text, 4.6:1 on the canvas */
+  --muted-strong: #8e95a3;        /* secondary text */
+  --accent: #9b2c33;
+  --accent-hover: #b0333b;
+  --accent-soft: rgba(155, 44, 51, 0.14);
+  --accent-text: #e59aa0;
   --accent-foreground: #ffffff;
-  --success: #46c08a;
-  --success-soft: rgba(70, 192, 138, 0.14);
-  --warning: #e3ab38;
-  --warning-soft: rgba(227, 171, 56, 0.14);
-  --danger: #f06565;
-  --danger-soft: rgba(240, 101, 101, 0.14);
-  --info: #7cb0ea;
-  --info-soft: rgba(124, 176, 234, 0.14);
-  --ring: #d9565d;
+  --success: #34d399;
+  --success-soft: rgba(16, 185, 129, 0.10);
+  --success-border: rgba(16, 185, 129, 0.20);
+  --warning: #fcd34d;
+  --warning-soft: rgba(245, 158, 11, 0.10);
+  --warning-border: rgba(245, 158, 11, 0.20);
+  --danger: #fda4af;
+  --danger-soft: rgba(244, 63, 94, 0.10);
+  --danger-border: rgba(244, 63, 94, 0.20);
+  --info: #93c5fd;
+  --info-soft: rgba(59, 130, 246, 0.10);
+  --info-border: rgba(59, 130, 246, 0.20);
+  --ring: #c6555c;
   --radius: 6px;
+  --bevel: inset 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  --shadow-overlay: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 16px 40px -8px rgba(0, 0, 0, 0.6);
 }
 
 @theme inline {
@@ -39,6 +46,7 @@
   --color-surface-raised: var(--surface-raised);
   --color-surface-overlay: var(--surface-overlay);
   --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
   --color-border-strong: var(--border-strong);
   --color-muted: var(--muted);
   --color-muted-strong: var(--muted-strong);
@@ -49,14 +57,18 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
+  --color-success-border: var(--success-border);
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
+  --color-warning-border: var(--warning-border);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
+  --color-danger-border: var(--danger-border);
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
+  --color-info-border: var(--info-border);
   --color-ring: var(--ring);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-display), Georgia, serif;
   --radius-sm: 4px;
   --radius-md: var(--radius);
@@ -78,7 +90,7 @@
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "cv11", "ss01", "ss03";
+    font-feature-settings: "tnum" 1, "cv02" 1, "ss01" 1;
   }
   :focus-visible {
     outline: 2px solid var(--ring);
@@ -108,11 +120,17 @@
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
+    box-shadow: var(--bevel);
   }
   .panel {
-    background: var(--surface);
+    background: var(--surface-raised);
     border: 1px solid var(--border);
     border-radius: var(--radius);
+    box-shadow: var(--bevel);
+  }
+  .overlay {
+    background: var(--surface-overlay);
+    box-shadow: var(--shadow-overlay), var(--bevel);
   }
   .panel-head {
     display: flex;
@@ -143,7 +161,7 @@
     overflow: hidden;
   }
   .stat-strip > * {
-    background: var(--surface);
+    background: var(--surface-raised);
     padding: 0.75rem 0.875rem;
     min-width: 0;
   }
@@ -199,7 +217,7 @@
   }
   .vignette {
     background:
-      radial-gradient(ellipse at 50% 0%, rgba(163, 36, 43, 0.16), transparent 55%),
+      radial-gradient(ellipse at 50% 0%, rgba(155, 44, 51, 0.10), transparent 55%),
       var(--background);
   }
 }

@@ -16,7 +16,7 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn("fixed inset-0 z-50 bg-black/70 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out", className)}
+    className={cn("fixed inset-0 z-50 bg-black/60", className)}
     {...props}
   />
 ));
@@ -31,7 +31,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-lg border border-border-strong bg-surface-overlay p-5 shadow-2xl max-h-[calc(100vh-2rem)] overflow-y-auto",
+        "fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overlay rounded-lg p-5 max-h-[calc(100vh-2rem)] overflow-y-auto",
         size === "sm" && "max-w-sm",
         size === "md" && "max-w-lg",
         size === "lg" && "max-w-2xl",
@@ -83,7 +83,7 @@ const SheetContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-y-0 z-50 flex h-full w-[min(18rem,90vw)] flex-col border-border bg-background shadow-2xl",
+        "fixed inset-y-0 z-50 flex h-full w-[min(18rem,90vw)] flex-col border-border bg-background shadow-[0_16px_40px_-8px_rgba(0,0,0,0.6)]",
         side === "left" ? "left-0 border-r" : "right-0 border-l",
         className,
       )}

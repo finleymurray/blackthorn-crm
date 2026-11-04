@@ -115,10 +115,10 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 actions={
                   <span className="flex items-center gap-3 text-[11px] text-muted">
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="inline-block h-2 w-2 rounded-[2px] bg-[#3a3a48]" aria-hidden /> All time
+                      <span className="inline-block h-2 w-2 rounded-[2px] bg-white/[0.12]" aria-hidden /> All time
                     </span>
                     <span className="inline-flex items-center gap-1.5">
-                      <span className="inline-block h-2 w-2 rounded-[2px] bg-[#cf5d66]" aria-hidden /> Open
+                      <span className="inline-block h-2 w-2 rounded-[2px] bg-[#c2636b]" aria-hidden /> Open
                     </span>
                   </span>
                 }

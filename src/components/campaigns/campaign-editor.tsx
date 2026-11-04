@@ -390,7 +390,7 @@ export function CampaignEditor({
                 </div>
               ) : null}
             </div>
-            <div className="bg-[#1b1b21] p-3">
+            <div className="bg-black/20 p-3">
               {channel === "email" ? (
                 <div className={cn("mx-auto overflow-hidden rounded-md bg-white shadow-lg transition-[width]", device === "mobile" ? "w-[375px] max-w-full" : "w-full")}>
                   <div className="border-b border-neutral-200 bg-neutral-50 px-3 py-2 text-[12px] text-neutral-800">
@@ -404,9 +404,9 @@ export function CampaignEditor({
                   )}
                 </div>
               ) : (
-                <div className="mx-auto w-[300px] max-w-full rounded-[28px] border-[6px] border-[#2a2a31] bg-[#0b0b0e] p-3 pt-6">
+                <div className="mx-auto w-[300px] max-w-full rounded-[28px] border-[6px] border-white/[0.10] bg-background p-3 pt-6">
                   <p className="mb-3 text-center text-[11px] text-muted">{preview?.smsSender ?? "Blackthorn"}</p>
-                  <div className="ml-2 mr-10 rounded-2xl rounded-bl-sm bg-[#2d2d34] px-3 py-2 text-[13px] leading-snug text-foreground">{renderMergeFields(smsBody || "Your message appears here", SAMPLE_VALUES)}</div>
+                  <div className="ml-2 mr-10 rounded-2xl rounded-bl-sm bg-white/[0.08] px-3 py-2 text-[13px] leading-snug text-foreground">{renderMergeFields(smsBody || "Your message appears here", SAMPLE_VALUES)}</div>
                   <p className="mt-1 ml-3 text-[10px] text-muted">Delivered</p>
                 </div>
               )}

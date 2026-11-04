@@ -6,7 +6,7 @@ import { formatMoney, formatNumber } from "@/lib/format";
 import { TICKET_TYPE_LABELS, type TicketTypeKey } from "@/lib/domain/constants";
 import type { CategoryCount, MazeScore, NightPoint, TicketTypeRevenue } from "@/lib/data/dashboard";
 
-const axisProps = { tick: { fill: CHART.axis, fontSize: 11 }, axisLine: { stroke: CHART.grid }, tickLine: false as const };
+const axisProps = { tick: { fill: CHART.axis, fontSize: 11 }, axisLine: { stroke: "rgba(255,255,255,0.08)" }, tickLine: false as const };
 
 function ddmm(date: string) {
   const [, m, d] = date.split("-");

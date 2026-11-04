@@ -187,8 +187,8 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
             onClick={() => setFilter(k.key)}
             aria-pressed={filter === k.key}
             className={cn(
-              "rounded-full border px-2.5 py-1 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-ring",
-              filter === k.key ? "border-accent/50 bg-accent-soft text-foreground" : "border-border text-muted hover:text-foreground",
+              "rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+              filter === k.key ? "border-white/[0.16] bg-white/[0.08] text-foreground" : "border-white/[0.08] text-white/60 hover:border-white/[0.16] hover:text-foreground",
             )}
           >
             {k.label}

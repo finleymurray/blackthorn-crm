@@ -57,9 +57,9 @@ export default async function OutboxMessagePage({ params }: { params: Promise<{ 
               )}
             </div>
           ) : (
-            <div className="mx-auto w-[340px] max-w-full rounded-[32px] border-[6px] border-[#2a2a31] bg-[#0b0b0e] p-4 pt-8">
+            <div className="mx-auto w-[340px] max-w-full rounded-[32px] border-[6px] border-white/[0.10] bg-background p-4 pt-8">
               <p className="mb-4 text-center text-[11px] text-muted">{settings.sms_sender}</p>
-              <div className="ml-1 mr-10 rounded-2xl rounded-bl-sm bg-[#2d2d34] px-3.5 py-2.5 text-[14px] leading-snug text-foreground">{m.full_text}</div>
+              <div className="ml-1 mr-10 rounded-2xl rounded-bl-sm bg-white/[0.08] px-3.5 py-2.5 text-[14px] leading-snug text-foreground">{m.full_text}</div>
               <p className="ml-2 mt-1.5 text-[10px] text-muted">Delivered {formatDateTime(m.sent_at)}</p>
             </div>
           )}

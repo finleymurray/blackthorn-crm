@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Pirata_One } from "next/font/google";
+import { Geist, Pirata_One } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-const inter = Inter({
-  variable: "--font-inter",
+const geist = Geist({
+  variable: "--font-geist",
   subsets: ["latin"],
   display: "swap",
 });
@@ -31,7 +31,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-GB" className={`${inter.variable} ${display.variable} h-full antialiased`}>
+    <html lang="en-GB" className={`${geist.variable} ${display.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <TooltipProvider delayDuration={300}>
           <ToastProvider>{children}</ToastProvider>

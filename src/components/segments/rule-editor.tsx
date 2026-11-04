@@ -240,7 +240,7 @@ export function GroupEditor({
   const addGroup = () => onChange({ ...group, rules: [...group.rules, { op: group.op === "and" ? "or" : "and", rules: [defaultRule("email_consent", lookups)] }] });
 
   return (
-    <div className={cn("space-y-2", depth > 0 && "rounded-md border border-border bg-black/10 p-3")}>
+    <div className={cn("space-y-2", depth > 0 && "rounded-md border border-border bg-black/20 p-3")}>
       {group.rules.length === 0 ? <p className="text-xs text-muted">No rules yet: this matches every guest.</p> : null}
       {group.rules.map((node, i) => (
         <div key={i} className="flex items-start gap-2">
