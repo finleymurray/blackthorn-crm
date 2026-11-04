@@ -74,7 +74,11 @@ export function GuestProfileTabs({
             <TableBody>
               {bookings.map((b) => (
                 <TableRow key={b.id}>
-                  <TableCell className="font-mono text-xs">{b.reference}</TableCell>
+                  <TableCell>
+                    <Link href={`/bookings/${b.id}`} className="font-mono text-xs hover:underline">
+                      {b.reference}
+                    </Link>
+                  </TableCell>
                   <TableCell>
                     <div className="text-sm">{formatDateOnly(b.date)}</div>
                     <div className="text-xs text-muted">{formatClock(b.entry_time)} entry · {b.season_year}</div>

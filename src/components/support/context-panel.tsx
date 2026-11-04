@@ -101,7 +101,9 @@ export function ContextPanel({ ticket, context, canAct, canRefund }: { ticket: T
             {context.bookings.map((b) => (
               <li key={b.id} className={`rounded-md border px-2.5 py-2 text-xs ${b.id === ticket.booking_id ? "border-accent/50 bg-accent-soft/40" : "border-border"}`}>
                 <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px]">{b.reference}</span>
+                  <Link href={`/bookings/${b.id}`} className="font-mono text-[11px] hover:underline">
+                    {b.reference}
+                  </Link>
                   <Badge variant={bookingTone[b.status]} dot>
                     {BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}
                   </Badge>

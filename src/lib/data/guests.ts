@@ -219,7 +219,7 @@ export async function getGuestTimeline(db: Db, guestId: string, limit = 200): Pr
       select 'booking' as kind, b.id::text as id, b.booked_at as at,
         'Booked ' || b.group_size || ' x ' || initcap(replace(b.ticket_type::text, '_', ' ')) || ' for ' || to_char(n.date, 'DD/MM/YYYY') as title,
         'Ref ' || b.reference || ' · £' || to_char(b.total_paid_pence / 100.0, 'FM999990.00') || ' · ' || b.status as detail,
-        null::text as href,
+        '/bookings/' || b.id as href,
         jsonb_build_object('reference', b.reference, 'status', b.status) as meta
       from crm.bookings b join crm.event_nights n on n.id = b.event_night_id where b.guest_id = ${guestId}
       union all

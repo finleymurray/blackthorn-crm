@@ -21,6 +21,7 @@ export interface StaffUser {
 export const ROLE_ACCESS: Record<string, StaffRole[]> = {
   "/": ["admin", "marketing", "support", "front_desk"],
   "/guests": ["admin", "marketing", "support", "front_desk"],
+  "/bookings": ["admin", "marketing", "support", "front_desk"],
   "/segments": ["admin", "marketing"],
   "/campaigns": ["admin", "marketing"],
   "/automations": ["admin", "marketing"],

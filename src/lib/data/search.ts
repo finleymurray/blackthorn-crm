@@ -40,7 +40,7 @@ export async function globalSearch(db: Db, raw: string): Promise<SearchHit[]> {
       id: b.id,
       title: b.reference,
       subtitle: `${b.name} · ${b.date.split("-").reverse().join("/")} · ${b.status}`,
-      href: `/guests/${b.guest_id}?tab=bookings`,
+      href: `/bookings/${b.id}`,
     })),
     ...tickets.map((t) => ({
       type: "ticket" as const,

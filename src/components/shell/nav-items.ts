@@ -1,4 +1,4 @@
-import { LayoutDashboard, Users, Filter, Megaphone, Workflow, LifeBuoy, Inbox, Settings, type LucideIcon } from "lucide-react";
+import { LayoutDashboard, Users, Ticket, Filter, Megaphone, Workflow, LifeBuoy, Inbox, Settings, type LucideIcon } from "lucide-react";
 import type { StaffRole } from "@/lib/auth/types";
 import { ROLE_ACCESS } from "@/lib/auth/types";
 
@@ -19,6 +19,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/", label: "Dashboard", icon: LayoutDashboard },
       { href: "/guests", label: "Guests", icon: Users },
+      { href: "/bookings", label: "Bookings", icon: Ticket },
     ],
   },
   {
