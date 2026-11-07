@@ -25,8 +25,8 @@ export function SettingsNav() {
                 aria-current={active ? "page" : undefined}
                 className={cn("block rounded-md px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-ring", active ? "bg-white/[0.07]" : "hover:bg-white/[0.04]")}
               >
-                <span className={cn("block text-[13px]", active ? "text-foreground" : "text-muted-strong")}>{i.label}</span>
-                <span className="hidden text-[11px] text-muted lg:block">{i.blurb}</span>
+                <span className={cn("block text-sm", active ? "text-foreground" : "text-muted-strong")}>{i.label}</span>
+                <span className="hidden text-xs text-muted lg:block">{i.blurb}</span>
               </Link>
             </li>
           );

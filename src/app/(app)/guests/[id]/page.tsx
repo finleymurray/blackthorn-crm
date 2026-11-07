@@ -56,21 +56,21 @@ export default async function GuestProfilePage({ params, searchParams }: { param
         }
       />
       <PageBody wide className="p-0 sm:p-0">
-        <div className="grid min-h-full xl:grid-cols-[320px_1fr]">
+        <div className="grid min-h-full xl:grid-cols-[360px_1fr]">
           {/* Record pane */}
           <aside className="border-b border-border xl:border-b-0 xl:border-r">
-            <div className="flex items-start gap-3 p-5 pb-4">
+            <div className="flex items-start gap-4 px-6 pb-6 pt-7">
               <Avatar name={name} size="lg" />
               <div className="min-w-0">
-                <h2 className="text-[15px] font-medium">{name}</h2>
-                <p className="text-xs text-muted">Guest since {formatDate(guest.created_at)}</p>
+                <h2 className="text-base font-medium">{name}</h2>
+                <p className="text-[13px] text-muted">Guest since {formatDate(guest.created_at)}</p>
                 <div className="mt-2">
                   <GuestFlags guest={guest} size="md" />
                 </div>
               </div>
             </div>
 
-            <section className="px-5 py-3 hairline-b">
+            <section className="px-6 py-5 hairline-b">
               <dl>
                 <div className="attr">
                   <dt>Email</dt>
@@ -105,8 +105,8 @@ export default async function GuestProfilePage({ params, searchParams }: { param
               </dl>
             </section>
 
-            <section className="px-5 py-3 hairline-b" aria-label="Marketing consent">
-              <h3 className="mb-1 text-[11px] font-medium text-muted">Marketing consent</h3>
+            <section className="px-6 py-5 hairline-b" aria-label="Marketing consent">
+              <h3 className="mb-2 text-xs font-medium text-muted">Marketing consent</h3>
               <ConsentControls
                 guestId={guest.id}
                 editable={editable}
@@ -125,16 +125,16 @@ export default async function GuestProfilePage({ params, searchParams }: { param
               />
             </section>
 
-            <section className="px-5 py-3 hairline-b">
+            <section className="px-6 py-5 hairline-b">
               <TagsEditor guestId={guest.id} tags={guest.tags} editable={editable} />
             </section>
-            <section className="px-5 py-3">
+            <section className="px-6 py-5">
               <NotesPanel guestId={guest.id} notes={guest.notes} editable={editable} />
             </section>
           </aside>
 
           {/* Activity */}
-          <div className="min-w-0 p-5">
+          <div className="min-w-0 space-y-8 p-6 sm:p-8">
             <section aria-label="Key stats" className="stat-strip grid-cols-2 lg:grid-cols-5">
               <div>
                 <p className="stat-label">Visits</p>
@@ -166,7 +166,7 @@ export default async function GuestProfilePage({ params, searchParams }: { param
                 <p className="stat-sub">{stats.last_booking_at ? `last booked ${formatDate(stats.last_booking_at)}` : "never booked"}</p>
               </div>
             </section>
-            <div className="mt-5">
+            <div>
               <GuestProfileTabs guestId={guest.id} initialTab={tab} bookings={data.bookings} timeline={data.timeline} tickets={data.tickets} messages={data.messages} />
             </div>
           </div>

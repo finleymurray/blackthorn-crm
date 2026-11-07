@@ -64,7 +64,7 @@ export default async function CampaignsPage() {
                           <Link href={c.status === "sent" ? `/campaigns/${c.id}/report` : `/campaigns/${c.id}`} className="font-medium hover:underline">
                             {c.name}
                           </Link>
-                          <div className="truncate text-xs text-muted">{c.channel === "email" ? c.subject : c.sms_body}</div>
+                          <div className="truncate text-[13px] text-muted">{c.channel === "email" ? c.subject : c.sms_body}</div>
                         </div>
                       </div>
                     </TableCell>

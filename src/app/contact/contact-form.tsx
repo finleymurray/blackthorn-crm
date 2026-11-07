@@ -14,8 +14,8 @@ export function ContactForm({ categories }: { categories: Array<{ key: string; l
     return (
       <div className="flex flex-col items-center py-6 text-center" role="status">
         <CheckCircle2 className="size-8 text-success" aria-hidden />
-        <h2 className="mt-3 text-[15px] font-medium">Thanks, we&apos;ve got it</h2>
-        <p className="mt-1 max-w-sm text-[13px] text-muted">
+        <h2 className="mt-3 text-base font-medium">Thanks, we&apos;ve got it</h2>
+        <p className="mt-1 max-w-sm text-sm text-muted">
           Your reference is <span className="font-medium text-foreground">#{state.number}</span>. We&apos;ll reply by email. If you need to add anything, just reply to the confirmation.
         </p>
       </div>
@@ -55,7 +55,7 @@ export function ContactForm({ categories }: { categories: Array<{ key: string; l
         <input id="cf-website" name="website" tabIndex={-1} autoComplete="off" />
       </div>
       {state && !state.ok ? (
-        <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
+        <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">
           {state.error}
         </p>
       ) : null}

@@ -11,9 +11,9 @@ const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 const DropdownMenuSub = DropdownMenuPrimitive.Sub;
 const DropdownMenuRadioGroup = DropdownMenuPrimitive.RadioGroup;
 
-const contentClass = "overlay z-50 min-w-[10rem] overflow-hidden rounded-md p-1 text-[13px] text-foreground";
+const contentClass = "overlay z-50 min-w-[10rem] overflow-hidden rounded-md p-1 text-sm text-foreground";
 const itemClass =
-  "relative flex cursor-default select-none items-center gap-2 rounded-[4px] px-2 py-1.5 text-[13px] outline-none transition-colors focus:bg-white/[0.06] data-[state=open]:bg-white/[0.06] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-3.5 [&_svg]:shrink-0 [&_svg]:text-muted";
+  "relative flex cursor-default select-none items-center gap-2.5 rounded-[4px] px-2.5 py-2 text-sm outline-none transition-colors focus:bg-white/[0.06] data-[state=open]:bg-white/[0.06] data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:size-3.5 [&_svg]:shrink-0 [&_svg]:text-muted";
 
 const DropdownMenuContent = React.forwardRef<React.ComponentRef<typeof DropdownMenuPrimitive.Content>, React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Content>>(
   ({ className, sideOffset = 4, ...props }, ref) => (
@@ -80,7 +80,7 @@ const DropdownMenuRadioItem = React.forwardRef<React.ComponentRef<typeof Dropdow
 DropdownMenuRadioItem.displayName = "DropdownMenuRadioItem";
 
 const DropdownMenuLabel = React.forwardRef<React.ComponentRef<typeof DropdownMenuPrimitive.Label>, React.ComponentPropsWithoutRef<typeof DropdownMenuPrimitive.Label>>(
-  ({ className, ...props }, ref) => <DropdownMenuPrimitive.Label ref={ref} className={cn("px-2 py-1.5 text-[11px] font-medium text-muted", className)} {...props} />,
+  ({ className, ...props }, ref) => <DropdownMenuPrimitive.Label ref={ref} className={cn("px-2 py-1.5 text-xs font-medium text-muted", className)} {...props} />,
 );
 DropdownMenuLabel.displayName = "DropdownMenuLabel";
 

@@ -33,7 +33,7 @@ export function BookingFilters({ params, nights }: { params: BookingListParams; 
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
-  const sel = "h-8 w-auto text-xs";
+  const sel = "h-8 w-auto text-[13px]";
   const active = params.q || params.status !== "all" || params.ticket_type || params.night || params.season || params.when !== "all";
   const seasons = [...new Set(nights.map((n) => n.season_year))];
   return (

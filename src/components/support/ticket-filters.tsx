@@ -53,7 +53,7 @@ export function TicketFilters({
   ];
 
   return (
-    <div className="space-y-2 border-b border-border p-2.5">
+    <div className="space-y-3 border-b border-border px-5 py-4">
       <div className="relative">
         <label htmlFor="ticket-q" className="sr-only">
           Search tickets
@@ -61,7 +61,7 @@ export function TicketFilters({
         <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted" aria-hidden />
         <Input id="ticket-q" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search subject, name, email or #" className="pl-8" autoComplete="off" />
       </div>
-      <div className="flex flex-wrap gap-1" role="group" aria-label="Views">
+      <div className="-mx-1 flex gap-0.5 overflow-x-auto" role="group" aria-label="Views">
         {views.map((v) => (
           <button
             key={v.key}
@@ -69,7 +69,7 @@ export function TicketFilters({
             onClick={v.apply}
             aria-pressed={v.active}
             className={cn(
-              "inline-flex h-6 items-center gap-1 rounded-md px-2 text-[11px] transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+              "inline-flex h-7 shrink-0 items-center gap-1 rounded-md px-2 text-xs transition-colors focus-visible:outline-2 focus-visible:outline-ring",
               v.active ? "bg-white/[0.08] text-foreground" : "text-muted hover:bg-white/[0.04] hover:text-foreground",
             )}
           >
@@ -78,11 +78,11 @@ export function TicketFilters({
           </button>
         ))}
       </div>
-      <div className="flex gap-1.5">
+      <div className="flex gap-2">
         <label htmlFor="ticket-category" className="sr-only">
           Category
         </label>
-        <Select id="ticket-category" value={params.category} onChange={(e) => push({ category: e.target.value })} className="h-7 min-w-0 flex-1 text-[11px]">
+        <Select id="ticket-category" value={params.category} onChange={(e) => push({ category: e.target.value })} className="h-8 min-w-0 flex-1 text-[13px]">
           <option value="">All categories</option>
           {categories.map((c) => (
             <option key={c.key} value={c.key}>
@@ -93,7 +93,7 @@ export function TicketFilters({
         <label htmlFor="ticket-priority" className="sr-only">
           Priority
         </label>
-        <Select id="ticket-priority" value={params.priority} onChange={(e) => push({ priority: e.target.value as TicketListParams["priority"] })} className="h-7 min-w-0 flex-1 text-[11px]">
+        <Select id="ticket-priority" value={params.priority} onChange={(e) => push({ priority: e.target.value as TicketListParams["priority"] })} className="h-8 min-w-0 flex-1 text-[13px]">
           <option value="">Any priority</option>
           <option value="urgent">Urgent</option>
           <option value="high">High</option>

@@ -17,11 +17,11 @@ export function AppFrame({ staff, signOutAction, children }: { staff: StaffUser;
 
   return (
     <div className="flex h-screen overflow-hidden">
-      <aside className="hidden w-[232px] shrink-0 lg:block">
+      <aside className="hidden w-[248px] shrink-0 lg:block">
         <SidebarFrame staff={staff} signOutAction={signOutAction} />
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col p-2 pl-0 max-lg:pl-2">
+      <div className="flex min-w-0 flex-1 flex-col p-3 pl-0 max-lg:pl-3">
         <div className="flex h-10 items-center gap-2 lg:hidden">
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>

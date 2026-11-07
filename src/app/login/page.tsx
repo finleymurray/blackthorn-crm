@@ -37,7 +37,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <ThornMark className="size-9 text-foreground" />
           <div>
             <p className="font-display text-3xl leading-none tracking-wide">Blackthorn</p>
-            <p className="mt-1 text-[11px] uppercase tracking-[0.25em] text-muted">Scream Park · CRM</p>
+            <p className="mt-1 text-xs uppercase tracking-[0.25em] text-muted">Scream Park · CRM</p>
           </div>
         </div>
 
@@ -47,13 +47,13 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <LoginForm next={next} demoLogins={demoLogins} password={password} />
           </div>
           {demoLogins.length === 0 ? (
-            <p className="mt-4 text-xs text-muted">
+            <p className="mt-4 text-[13px] text-muted">
               No staff accounts yet. Run <code className="rounded-[3px] bg-surface-raised px-1 py-px">npm run db:seed</code> to create the demo data.
             </p>
           ) : null}
         </div>
 
-        <p className="mt-6 text-center text-[11px] text-muted">Demonstration system. No real emails, SMS or payments are sent.</p>
+        <p className="mt-6 text-center text-xs text-muted">Demonstration system. No real emails, SMS or payments are sent.</p>
       </div>
     </main>
   );

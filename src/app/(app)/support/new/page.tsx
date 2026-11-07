@@ -28,7 +28,7 @@ export default async function NewTicketPage({ searchParams }: { searchParams: Pr
       <PageHeader crumbs={[{ label: "Support", href: "/support" }]} title="New ticket" />
       <PageBody>
         <div className="max-w-2xl">
-          <p className="mb-4 text-xs text-muted">Raise a ticket on a guest&apos;s behalf, for example after a phone call or at the front desk. It is matched to the guest record by email.</p>
+          <p className="mb-4 text-[13px] text-muted">Raise a ticket on a guest&apos;s behalf, for example after a phone call or at the front desk. It is matched to the guest record by email.</p>
           <NewTicketForm categories={data.categories} prefill={data.prefill} />
         </div>
       </PageBody>

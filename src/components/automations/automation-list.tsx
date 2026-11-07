@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { CalendarClock, Mail, MessageSquare, Pencil, Play, FlaskConical } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Field, Input, Select, Textarea } from "@/components/ui/input";
 import { useToast } from "@/components/ui/toast";
@@ -49,21 +48,18 @@ function AutomationItem({ a, editable, onEdit, onSimulate }: { a: AutomationRow;
   const switchId = `auto-${a.id}`;
 
   return (
-    <li className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+    <li className="flex flex-col gap-4 px-6 py-5 sm:flex-row sm:items-center">
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2">
-          <h2 className="text-[13px] font-medium" id={`${switchId}-label`}>
+          <h2 className="text-sm font-medium" id={`${switchId}-label`}>
             {a.name}
           </h2>
-          <Badge variant={active ? "success" : "default"} dot>
-            {active ? "On" : "Off"}
-          </Badge>
-          <span className="inline-flex items-center gap-1 text-[11px] text-muted">
+          <span className="inline-flex items-center gap-1 text-xs text-muted">
             <Icon className="size-3" aria-hidden /> {a.channel === "email" ? "Email" : "SMS"}
           </span>
         </div>
-        <p className="mt-0.5 text-xs text-muted">{a.description}</p>
-        <dl className="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-xs">
+        <p className="mt-1 text-[13px] text-muted">{a.description}</p>
+        <dl className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[13px]">
           <div className="flex items-center gap-1.5">
             <dt className="text-muted">Trigger</dt>
             <dd>{TRIGGER_LABELS[a.trigger]}</dd>
@@ -187,7 +183,7 @@ function EditDialog({ a, onClose }: { a: AutomationRow; onClose: () => void }) {
                 <Input id="a-time" name="send_at_time" type="time" defaultValue={a.send_at_time?.slice(0, 5) ?? "10:00"} />
               </Field>
             ) : null}
-            {fixedTiming ? <p className="text-xs text-muted sm:col-span-2">Timing: {timingLabel(a)}.</p> : null}
+            {fixedTiming ? <p className="text-[13px] text-muted sm:col-span-2">Timing: {timingLabel(a)}.</p> : null}
           </div>
           {channel === "email" ? (
             <Field id="a-subject" label="Subject" error={errors.subject} required>
@@ -196,20 +192,20 @@ function EditDialog({ a, onClose }: { a: AutomationRow; onClose: () => void }) {
           ) : null}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="a-body" className="text-xs font-medium text-muted-strong">
+              <label htmlFor="a-body" className="text-[13px] font-medium text-muted-strong">
                 Message
               </label>
               <MergeFieldMenu onInsert={(t) => setBody((b) => insertAtCaret(bodyRef.current, b, t))} />
             </div>
             <Textarea ref={bodyRef} id="a-body" value={body} onChange={(e) => setBody(e.target.value)} rows={10} maxLength={5000} aria-invalid={!!errors.body} />
             {errors.body ? (
-              <p role="alert" className="text-xs text-danger">
+              <p role="alert" className="text-[13px] text-danger">
                 {errors.body}
               </p>
             ) : null}
           </div>
           {errors.form ? (
-            <p role="alert" className="text-xs text-danger">
+            <p role="alert" className="text-[13px] text-danger">
               {errors.form}
             </p>
           ) : null}
@@ -257,16 +253,16 @@ function SimulateDialog({ a, onClose, editable }: { a: AutomationRow; onClose: (
           <DialogDescription>Who this automation would message right now, based on the current data. Nothing is sent.</DialogDescription>
         </DialogHeader>
         {error ? (
-          <p role="alert" className="text-[13px] text-danger">
+          <p role="alert" className="text-sm text-danger">
             {error}
           </p>
         ) : !result ? (
-          <p className="py-8 text-center text-xs text-muted">Working it out…</p>
+          <p className="py-8 text-center text-[13px] text-muted">Working it out…</p>
         ) : (
           <>
-            <p className="rounded-md bg-white/[0.04] px-3 py-2 text-xs text-muted-strong">{result.explanation}</p>
+            <p className="rounded-md bg-white/[0.04] px-3 py-2 text-[13px] text-muted-strong">{result.explanation}</p>
             {result.sample.length === 0 ? (
-              <p className="py-6 text-center text-xs text-muted">Nobody would be messaged right now.</p>
+              <p className="py-6 text-center text-[13px] text-muted">Nobody would be messaged right now.</p>
             ) : (
               <div className="grid gap-3 md:grid-cols-[240px_1fr]">
                 <ul className="max-h-80 divide-y divide-border overflow-y-auto rounded-md border border-border" aria-label="Recipients">
@@ -278,16 +274,16 @@ function SimulateDialog({ a, onClose, editable }: { a: AutomationRow; onClose: (
                         aria-pressed={selected === i}
                         className={`w-full px-3 py-2 text-left hover:bg-white/[0.04] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring ${selected === i ? "bg-white/[0.06]" : ""}`}
                       >
-                        <span className="block truncate text-[13px]">{s.guest_name}</span>
-                        <span className="block truncate text-[11px] text-muted">{s.context}</span>
-                        <span className="block text-[11px] text-muted">Would send {formatDateTime(s.when)}</span>
+                        <span className="block truncate text-sm">{s.guest_name}</span>
+                        <span className="block truncate text-xs text-muted">{s.context}</span>
+                        <span className="block text-xs text-muted">Would send {formatDateTime(s.when)}</span>
                       </button>
                     </li>
                   ))}
                 </ul>
                 {current ? (
                   <div className="min-w-0 rounded-md border border-border">
-                    <div className="border-b border-border px-3 py-2 text-xs">
+                    <div className="border-b border-border px-3 py-2 text-[13px]">
                       <div className="flex gap-2">
                         <span className="w-12 text-muted">To</span>
                         <span className="truncate">
@@ -301,7 +297,7 @@ function SimulateDialog({ a, onClose, editable }: { a: AutomationRow; onClose: (
                         </div>
                       ) : null}
                     </div>
-                    <pre className="max-h-64 overflow-y-auto whitespace-pre-wrap px-3 py-3 font-sans text-[13px] leading-relaxed text-foreground">{current.body}</pre>
+                    <pre className="max-h-64 overflow-y-auto whitespace-pre-wrap px-3 py-3 font-sans text-sm leading-relaxed text-foreground">{current.body}</pre>
                   </div>
                 ) : null}
               </div>

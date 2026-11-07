@@ -49,7 +49,7 @@ export function MergeFieldMenu({ onInsert, disabled }: { onInsert: (token: strin
         {MERGE_FIELDS.map((f) => (
           <DropdownMenuItem key={f.key} onSelect={() => onInsert(`{{${f.key}}}`)}>
             <span className="flex-1">{f.label}</span>
-            <span className="text-[11px] text-muted">{`{{${f.key}}}`}</span>
+            <span className="text-xs text-muted">{`{{${f.key}}}`}</span>
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>
@@ -79,7 +79,7 @@ export function BlockEditor({ blocks, onChange, readOnly }: { blocks: EmailBlock
 
   return (
     <div className="space-y-2">
-      {blocks.length === 0 ? <p className="rounded-md border border-dashed border-border px-4 py-6 text-center text-xs text-muted">Add a heading, some text and a button to get started.</p> : null}
+      {blocks.length === 0 ? <p className="rounded-md border border-dashed border-border px-4 py-6 text-center text-[13px] text-muted">Add a heading, some text and a button to get started.</p> : null}
       {blocks.map((b, i) => {
         const meta = BLOCK_META[b.type];
         const Icon = meta.icon;
@@ -87,7 +87,7 @@ export function BlockEditor({ blocks, onChange, readOnly }: { blocks: EmailBlock
           <div key={b.id} className="group rounded-md border border-border bg-black/20">
             <div className="flex items-center gap-2 border-b border-border px-2.5 py-1">
               <Icon className="size-3.5 text-muted" aria-hidden />
-              <span className="text-[11px] font-medium text-muted">{meta.label}</span>
+              <span className="text-xs font-medium text-muted">{meta.label}</span>
               {!readOnly ? (
                 <div className="ml-auto flex items-center gap-0.5 opacity-60 group-focus-within:opacity-100 group-hover:opacity-100">
                   {(b.type === "heading" || b.type === "text" || b.type === "button") && (
@@ -114,7 +114,7 @@ export function BlockEditor({ blocks, onChange, readOnly }: { blocks: EmailBlock
                   aria-label="Heading text"
                   value={b.text}
                   onChange={(e) => update(b.id, { text: e.target.value })}
-                  className="h-9 text-[15px] font-medium"
+                  className="h-9 text-base font-medium"
                   maxLength={200}
                   readOnly={readOnly}
                 />
@@ -132,18 +132,18 @@ export function BlockEditor({ blocks, onChange, readOnly }: { blocks: EmailBlock
                 />
               ) : b.type === "image" ? (
                 <div className="grid gap-2 sm:grid-cols-[1fr_1fr]">
-                  <label className="space-y-1 text-[11px] text-muted">
+                  <label className="space-y-1 text-xs text-muted">
                     Image URL
                     <Input value={b.src} onChange={(e) => update(b.id, { src: e.target.value })} placeholder="https://…" maxLength={1000} readOnly={readOnly} />
                   </label>
-                  <label className="space-y-1 text-[11px] text-muted">
+                  <label className="space-y-1 text-xs text-muted">
                     Alt text (read by screen readers)
                     <Input value={b.alt} onChange={(e) => update(b.id, { alt: e.target.value })} maxLength={200} readOnly={readOnly} />
                   </label>
                 </div>
               ) : b.type === "button" ? (
                 <div className="grid gap-2 sm:grid-cols-[1fr_1.4fr]">
-                  <label className="space-y-1 text-[11px] text-muted">
+                  <label className="space-y-1 text-xs text-muted">
                     Button label
                     <Input
                       ref={(el) => {
@@ -155,7 +155,7 @@ export function BlockEditor({ blocks, onChange, readOnly }: { blocks: EmailBlock
                       readOnly={readOnly}
                     />
                   </label>
-                  <label className="space-y-1 text-[11px] text-muted">
+                  <label className="space-y-1 text-xs text-muted">
                     Link
                     <Input value={b.href} onChange={(e) => update(b.id, { href: e.target.value })} placeholder="https://…" maxLength={1000} readOnly={readOnly} />
                   </label>

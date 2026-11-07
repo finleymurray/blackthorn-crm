@@ -143,13 +143,13 @@ export function ConsentControls({
       <div className="flex min-w-0 items-center gap-2.5">
         <Icon className="size-3.5 shrink-0 text-muted" aria-hidden />
         <div className="min-w-0">
-          <p className="flex items-center gap-2 text-[13px]" id={`${id}-label`}>
+          <p className="flex items-center gap-2 text-sm" id={`${id}-label`}>
             {channel === "email" ? "Email" : "SMS"}
             <Badge variant={optimistic ? "success" : "default"} dot>
               {optimistic ? "Opted in" : "Not opted in"}
             </Badge>
           </p>
-          <p className="truncate text-[11px] text-muted">{at ? `${optimistic ? "Given" : "Withdrawn"} ${at}${source ? ` · ${source}` : ""}` : "No consent recorded"}</p>
+          <p className="truncate text-xs text-muted">{at ? `${optimistic ? "Given" : "Withdrawn"} ${at}${source ? ` · ${source}` : ""}` : "No consent recorded"}</p>
         </div>
       </div>
       {editable ? (
@@ -204,11 +204,11 @@ export function TagsEditor({ guestId, tags, editable }: { guestId: string; tags:
 
   return (
     <div>
-      <h3 className="mb-2 flex items-center gap-1.5 text-[11px] font-medium text-muted">
+      <h3 className="mb-2 flex items-center gap-1.5 text-xs font-medium text-muted">
         <Tag className="size-3" aria-hidden /> Tags
       </h3>
       <div className="flex flex-wrap gap-1.5">
-        {list.length === 0 ? <p className="text-xs text-muted">No tags yet.</p> : null}
+        {list.length === 0 ? <p className="text-[13px] text-muted">No tags yet.</p> : null}
         {list.map((t) => (
           <Badge key={t} variant="outline" className="gap-1 pr-1">
             {t}
@@ -244,14 +244,14 @@ export function TagsEditor({ guestId, tags, editable }: { guestId: string; tags:
           <label htmlFor="new-tag" className="sr-only">
             New tag
           </label>
-          <Input id="new-tag" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a tag" className="h-7 text-xs" maxLength={30} />
+          <Input id="new-tag" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a tag" className="h-7 text-[13px]" maxLength={30} />
           <Button type="submit" size="icon-sm" variant="secondary" disabled={pending || !draft.trim()} aria-label="Add tag">
             <Plus />
           </Button>
         </form>
       ) : null}
       {error ? (
-        <p role="alert" className="mt-2 text-xs text-danger">
+        <p role="alert" className="mt-2 text-[13px] text-danger">
           {error}
         </p>
       ) : null}
@@ -267,7 +267,7 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
 
   return (
     <div>
-      <h3 className="mb-2 text-[11px] font-medium text-muted">Notes</h3>
+      <h3 className="mb-2 text-xs font-medium text-muted">Notes</h3>
       {editable ? (
         <form
           className="mt-3 space-y-2"
@@ -287,9 +287,9 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
           <label htmlFor="new-note" className="sr-only">
             New note
           </label>
-          <Textarea id="new-note" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a note…" rows={2} maxLength={2000} aria-invalid={!!error} className="text-xs" />
+          <Textarea id="new-note" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Add a note…" rows={2} maxLength={2000} aria-invalid={!!error} className="text-[13px]" />
           {error ? (
-            <p role="alert" className="text-xs text-danger">
+            <p role="alert" className="text-[13px] text-danger">
               {error}
             </p>
           ) : null}
@@ -300,7 +300,7 @@ export function NotesPanel({ guestId, notes, editable }: { guestId: string; note
           </div>
         </form>
       ) : null}
-      <div className="mt-3 whitespace-pre-wrap text-xs leading-relaxed text-muted-strong">{notes ? notes : <span className="text-muted">No notes yet.</span>}</div>
+      <div className="mt-3 whitespace-pre-wrap text-[13px] leading-relaxed text-muted-strong">{notes ? notes : <span className="text-muted">No notes yet.</span>}</div>
     </div>
   );
 }

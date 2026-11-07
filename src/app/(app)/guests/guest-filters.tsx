@@ -127,7 +127,7 @@ export function GuestFilters({ params, tags, seasons }: { params: GuestListParam
               <DropdownMenuSubTrigger>{d.label}</DropdownMenuSubTrigger>
               <DropdownMenuSubContent className="w-48">
                 <DropdownMenuRadioGroup value={current[d.key]} onValueChange={(v) => navigate({ ...current, [d.key]: v }, q)}>
-                  {d.options.length === 0 ? <p className="px-2 py-1.5 text-xs text-muted">Nothing to choose</p> : null}
+                  {d.options.length === 0 ? <p className="px-2 py-1.5 text-[13px] text-muted">Nothing to choose</p> : null}
                   {d.options.map((o) => (
                     <DropdownMenuRadioItem key={o.value} value={o.value}>
                       {o.label}
@@ -143,7 +143,7 @@ export function GuestFilters({ params, tags, seasons }: { params: GuestListParam
       {active.map((d) => {
         const label = d.options.find((o) => o.value === current[d.key])?.label ?? current[d.key];
         return (
-          <span key={d.key} className="inline-flex h-7 items-center gap-1 rounded-md bg-white/[0.06] pl-2 pr-1 text-xs">
+          <span key={d.key} className="inline-flex h-7 items-center gap-1 rounded-md bg-white/[0.06] pl-2 pr-1 text-[13px]">
             <span className="text-muted">{d.label}</span>
             <span className="text-foreground">{label}</span>
             <button

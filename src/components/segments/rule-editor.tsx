@@ -58,8 +58,8 @@ export function defaultRule(type: RuleType, lookups: Lookups): Rule {
   }
 }
 
-const selectClass = "h-7 w-auto min-w-[6rem] text-xs";
-const inputClass = "h-7 w-24 text-xs";
+const selectClass = "h-7 w-auto min-w-[6rem] text-[13px]";
+const inputClass = "h-7 w-24 text-[13px]";
 
 function NegateSelect({ value, onChange, yes, no }: { value: boolean; onChange: (v: boolean) => void; yes: string; no: string }) {
   return (
@@ -121,7 +121,7 @@ function RuleFields({ rule, onChange, lookups }: { rule: Rule; onChange: (r: Rul
             <option value="eq">exactly</option>
           </Select>
           <Input aria-label="Visits" type="number" min={0} max={999} value={rule.value} onChange={(e) => onChange({ ...rule, value: Math.max(0, Number(e.target.value) || 0) })} className={inputClass} />
-          <span className="text-xs text-muted">visits</span>
+          <span className="text-[13px] text-muted">visits</span>
         </>
       );
     case "lifetime_spend":
@@ -131,7 +131,7 @@ function RuleFields({ rule, onChange, lookups }: { rule: Rule; onChange: (r: Rul
             <option value="gt">over</option>
             <option value="lt">under</option>
           </Select>
-          <span className="text-xs text-muted">£</span>
+          <span className="text-[13px] text-muted">£</span>
           <Input aria-label="Amount in pounds" type="number" min={0} step={1} value={Math.round(rule.pence / 100)} onChange={(e) => onChange({ ...rule, pence: Math.max(0, Math.round(Number(e.target.value) || 0) * 100) })} className={inputClass} />
         </>
       );
@@ -143,7 +143,7 @@ function RuleFields({ rule, onChange, lookups }: { rule: Rule; onChange: (r: Rul
             <option value="older_than">more than</option>
           </Select>
           <Input aria-label="Days" type="number" min={1} max={3650} value={rule.days} onChange={(e) => onChange({ ...rule, days: Math.max(1, Number(e.target.value) || 1) })} className={inputClass} />
-          <span className="text-xs text-muted">days{rule.op === "older_than" ? " ago" : ""}</span>
+          <span className="text-[13px] text-muted">days{rule.op === "older_than" ? " ago" : ""}</span>
         </>
       );
     case "survey_score":
@@ -154,7 +154,7 @@ function RuleFields({ rule, onChange, lookups }: { rule: Rule; onChange: (r: Rul
             <option value="lt">below</option>
           </Select>
           <Input aria-label="Score" type="number" min={1} max={10} value={rule.value} onChange={(e) => onChange({ ...rule, value: Math.min(10, Math.max(1, Number(e.target.value) || 1)) })} className={inputClass} />
-          <span className="text-xs text-muted">out of 10 (any survey)</span>
+          <span className="text-[13px] text-muted">out of 10 (any survey)</span>
         </>
       );
     case "postcode_starts":
@@ -241,19 +241,19 @@ export function GroupEditor({
 
   return (
     <div className={cn("space-y-2", depth > 0 && "rounded-md border border-border bg-black/20 p-3")}>
-      {group.rules.length === 0 ? <p className="text-xs text-muted">No rules yet: this matches every guest.</p> : null}
+      {group.rules.length === 0 ? <p className="text-[13px] text-muted">No rules yet: this matches every guest.</p> : null}
       {group.rules.map((node, i) => (
         <div key={i} className="flex items-start gap-2">
           <div className="w-12 shrink-0 pt-1.5 text-right">
             {i === 0 ? (
-              <span className="text-[11px] text-muted">{depth > 0 ? <CornerDownRight className="ml-auto size-3" aria-hidden /> : "Where"}</span>
+              <span className="text-xs text-muted">{depth > 0 ? <CornerDownRight className="ml-auto size-3" aria-hidden /> : "Where"}</span>
             ) : i === 1 && !readOnly ? (
-              <Select aria-label="Combine rules with" value={group.op} onChange={(e) => onChange({ ...group, op: e.target.value as "and" | "or" })} className="h-7 w-14 min-w-0 px-1.5 text-[11px] font-medium">
+              <Select aria-label="Combine rules with" value={group.op} onChange={(e) => onChange({ ...group, op: e.target.value as "and" | "or" })} className="h-7 w-14 min-w-0 px-1.5 text-xs font-medium">
                 <option value="and">AND</option>
                 <option value="or">OR</option>
               </Select>
             ) : (
-              <span className="text-[11px] font-medium text-muted-strong">{group.op.toUpperCase()}</span>
+              <span className="text-xs font-medium text-muted-strong">{group.op.toUpperCase()}</span>
             )}
           </div>
           <div className="min-w-0 flex-1">

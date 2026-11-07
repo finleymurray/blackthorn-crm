@@ -34,8 +34,8 @@ export default async function OutboxPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <PageHeader title="Outbox" meta={`${formatNumber(counts.total)} messages · ${formatNumber(counts.today)} in the last 24 hours`} />
-      <PageBody wide className="space-y-3">
-        <div className="flex items-start gap-3 rounded-md border border-warning/30 bg-warning-soft px-3 py-2 text-xs text-warning">
+      <PageBody wide className="space-y-5">
+        <div className="flex items-start gap-3 rounded-md border border-warning/30 bg-warning-soft px-3 py-2 text-[13px] text-warning">
           <Inbox className="mt-0.5 size-3.5 shrink-0" aria-hidden />
           <p>
             <span className="font-medium">Demo outbox.</span> Every email and text the system “sends” lands here instead of a real inbox or phone. Open a message to see it exactly as the guest would.
@@ -59,15 +59,15 @@ export default async function OutboxPage({ searchParams }: { searchParams: Promi
                         <Icon className="size-3.5" />
                       </span>
                       <span className="min-w-0">
-                        <span className="block truncate text-[13px]">{m.recipient_name ?? m.recipient}</span>
-                        <span className="block truncate text-[11px] text-muted">{m.recipient}</span>
+                        <span className="block truncate text-sm">{m.recipient_name ?? m.recipient}</span>
+                        <span className="block truncate text-xs text-muted">{m.recipient}</span>
                       </span>
                       <span className="col-span-3 min-w-0 pl-9 sm:col-span-1 sm:pl-0">
-                        <span className="block truncate text-[13px]">{m.subject ?? m.body_text}</span>
-                        <span className="block truncate text-[11px] text-muted">{source}</span>
+                        <span className="block truncate text-sm">{m.subject ?? m.body_text}</span>
+                        <span className="block truncate text-xs text-muted">{source}</span>
                       </span>
                       <span className="col-start-3 row-start-1 flex flex-col items-end gap-1 sm:col-start-4">
-                        <span className="tabular text-[11px] text-muted">{formatDateTime(m.sent_at)}</span>
+                        <span className="tabular text-xs text-muted">{formatDateTime(m.sent_at)}</span>
                         <span className="flex gap-1">
                           {m.status === "test" ? <Badge>Test</Badge> : m.status === "simulated" ? <Badge variant="info">Simulated</Badge> : null}
                           {m.clicked_at ? (

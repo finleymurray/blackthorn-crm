@@ -15,8 +15,8 @@ export default async function AutomationsPage() {
   return (
     <>
       <PageHeader title="Automations" meta={`${active} of ${automations.length} switched on`} />
-      <PageBody className="space-y-4">
-        <p className="max-w-2xl text-xs text-muted">
+      <PageBody className="space-y-6">
+        <p className="max-w-2xl text-[13px] text-muted">
           Automations send on their own when something happens: a booking, an upcoming visit, the morning after. Transactional messages (confirmation, reminder, survey) go to every booker. The win back automation is marketing, so it only goes to guests with consent.
         </p>
         <AutomationList automations={automations} editable={canManageMarketing(staff.role)} />

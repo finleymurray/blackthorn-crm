@@ -34,7 +34,7 @@ export function SlaTimer({
 
   if (compact) {
     return (
-      <span className={cn("inline-flex items-center gap-1 text-[11px] tabular", tone, className)} title={s.label}>
+      <span className={cn("inline-flex items-center gap-1 text-xs tabular", tone, className)} title={s.label}>
         <Clock className="size-3" aria-hidden />
         {s.status === "resolved" ? (s.label.includes("late") ? "late" : "on time") : s.status === "red" ? `−${s.label.replace("Overdue by ", "")}` : s.label.replace(" left", "")}
       </span>
@@ -42,12 +42,12 @@ export function SlaTimer({
   }
 
   return (
-    <div className={cn("space-y-1", className)} role="status" aria-live="polite">
-      <div className="flex items-center justify-between text-xs">
+    <div className={cn("space-y-1.5", className)} role="status" aria-live="polite">
+      <div className="flex items-center justify-between text-[13px]">
         <span className="inline-flex items-center gap-1 text-muted">
           <Clock className="size-3" aria-hidden /> SLA
         </span>
-        <span className={cn("tabular font-medium", tone)}>{s.label}</span>
+        <span className={cn("whitespace-nowrap tabular font-medium", tone)}>{s.label}</span>
       </div>
       {s.status !== "resolved" ? (
         <div className="h-1 overflow-hidden rounded-full bg-white/[0.06]" aria-hidden>

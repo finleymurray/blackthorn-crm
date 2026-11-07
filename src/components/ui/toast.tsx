@@ -48,7 +48,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             key={t.id}
             role={t.kind === "error" ? "alert" : "status"}
             className={cn(
-              "overlay pointer-events-auto flex items-start gap-3 rounded-md border p-3 text-[13px]",
+              "overlay pointer-events-auto flex items-start gap-3 rounded-md border p-3 text-sm",
               t.kind === "success" && "border-success/40",
               t.kind === "error" && "border-danger/40",
               t.kind === "info" && "border-info/40",
@@ -63,7 +63,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
             )}
             <div className="min-w-0 flex-1">
               <p className="font-medium">{t.title}</p>
-              {t.description ? <p className="mt-0.5 text-xs text-muted">{t.description}</p> : null}
+              {t.description ? <p className="mt-0.5 text-[13px] text-muted">{t.description}</p> : null}
             </div>
             <button
               type="button"

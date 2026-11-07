@@ -98,7 +98,7 @@ export function TicketWorkspace({
   const allTabs = tabs.length ? tabs : knownBookings.filter((b) => b.id === activeId);
   const tabClass = (active: boolean) =>
     cn(
-      "group inline-flex h-9 shrink-0 items-center gap-1.5 border-b-2 px-3 text-[13px] transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
+      "group inline-flex h-9 shrink-0 items-center gap-1.5 border-b-2 px-3 text-sm transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring",
       active ? "border-accent text-foreground" : "border-transparent text-muted hover:text-foreground",
     );
 
@@ -114,7 +114,7 @@ export function TicketWorkspace({
             <span key={t.id} className="flex items-end">
               <Link role="tab" aria-selected={active} href={withView(t.id)} className={tabClass(active)}>
                 <Ticket className="size-3.5" aria-hidden />
-                <span className="font-mono text-xs">{t.reference}</span>
+                <span className="font-mono text-[13px]">{t.reference}</span>
               </Link>
               <button
                 type="button"
@@ -139,7 +139,7 @@ export function TicketWorkspace({
             <BookingPane view={bookingView} canEdit={canEdit} canRefund={canRefund} />
           </div>
         ) : (
-          <p className="p-6 text-xs text-muted">Loading booking…</p>
+          <p className="p-6 text-[13px] text-muted">Loading booking…</p>
         )
       ) : null}
     </div>
@@ -149,16 +149,16 @@ export function TicketWorkspace({
 function BookingPane({ view, canEdit, canRefund }: { view: BookingView; canEdit: boolean; canRefund: boolean }) {
   const b = view.booking;
   return (
-    <div className="space-y-4 p-4">
+    <div className="space-y-6 p-6">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0">
-          <h2 className="flex items-center gap-2 text-[15px] font-medium">
+          <h2 className="flex items-center gap-2 text-base font-medium">
             <span className="font-mono">{b.reference}</span>
             <Badge variant={tone[b.status]} dot>
               {BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}
             </Badge>
           </h2>
-          <p className="text-[11px] text-muted">
+          <p className="text-xs text-muted">
             {b.guest_name} · booked {formatDateTime(b.booked_at)} · paid {formatMoney(b.total_paid_pence)}
             {b.refunded_pence ? `, ${formatMoney(b.refunded_pence)} refunded` : ""}
           </p>
@@ -180,27 +180,27 @@ function BookingPane({ view, canEdit, canRefund }: { view: BookingView; canEdit:
           <h3 className="panel-title">History</h3>
         </div>
         {view.refunds.length === 0 && view.activity.length === 0 ? (
-          <p className="px-4 py-4 text-xs text-muted">No changes since the booking was made.</p>
+          <p className="px-4 py-4 text-[13px] text-muted">No changes since the booking was made.</p>
         ) : (
           <ul className="divide-y divide-border">
             {view.refunds.map((r) => (
-              <li key={r.id} className="flex items-start justify-between gap-3 px-4 py-2 text-xs">
+              <li key={r.id} className="flex items-start justify-between gap-3 px-4 py-2 text-[13px]">
                 <span>
                   Refund of {formatMoney(r.amount_pence)} · {r.reason}
-                  <span className="block text-[11px] text-muted">{r.processed_by_name ?? "System"}</span>
+                  <span className="block text-xs text-muted">{r.processed_by_name ?? "System"}</span>
                 </span>
-                <span className="shrink-0 tabular text-[11px] text-muted">{formatDateTime(r.created_at)}</span>
+                <span className="shrink-0 tabular text-xs text-muted">{formatDateTime(r.created_at)}</span>
               </li>
             ))}
             {view.activity
               .filter((a) => !a.summary.startsWith("Refunded"))
               .map((a) => (
-                <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-2 text-xs">
+                <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-2 text-[13px]">
                   <span>
                     {a.summary}
-                    <span className="block text-[11px] text-muted">{a.staff_name ?? "System"}</span>
+                    <span className="block text-xs text-muted">{a.staff_name ?? "System"}</span>
                   </span>
-                  <span className="shrink-0 tabular text-[11px] text-muted">{formatDateTime(a.created_at)}</span>
+                  <span className="shrink-0 tabular text-xs text-muted">{formatDateTime(a.created_at)}</span>
                 </li>
               ))}
           </ul>

@@ -2,7 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const inputClass =
-  "flex h-8 w-full rounded-md border border-white/[0.08] bg-black/20 px-2.5 py-1 text-[13px] text-foreground transition-colors hover:border-white/[0.16] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger";
+  "flex h-9 w-full rounded-md border border-white/[0.08] bg-black/20 px-3 py-1.5 text-sm text-foreground transition-colors hover:border-white/[0.16] file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-ring disabled:cursor-not-allowed disabled:opacity-50 aria-[invalid=true]:border-danger";
 
 const Input = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
   ({ className, type, ...props }, ref) => (
@@ -44,7 +44,7 @@ const Label = React.forwardRef<HTMLLabelElement, React.LabelHTMLAttributes<HTMLL
   ({ className, ...props }, ref) => (
     <label
       ref={ref}
-      className={cn("text-xs font-medium leading-none text-muted-strong peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)}
+      className={cn("text-[13px] font-medium leading-none text-muted-strong peer-disabled:cursor-not-allowed peer-disabled:opacity-70", className)}
       {...props}
     />
   ),
@@ -88,9 +88,9 @@ export function Field({
         {required ? <span className="text-danger" aria-hidden> *</span> : null}
       </Label>
       {children}
-      {help && !error ? <p id={`${id}-help`} className="text-xs text-muted">{help}</p> : null}
+      {help && !error ? <p id={`${id}-help`} className="text-[13px] text-muted">{help}</p> : null}
       {error ? (
-        <p id={`${id}-error`} role="alert" className="text-xs text-danger">
+        <p id={`${id}-error`} role="alert" className="text-[13px] text-danger">
           {error}
         </p>
       ) : null}

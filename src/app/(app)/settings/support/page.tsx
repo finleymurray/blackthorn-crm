@@ -12,8 +12,8 @@ export default async function SupportRulesPage() {
   return (
     <section className="space-y-6">
       <div>
-        <h2 className="text-[15px] font-medium">Support rules</h2>
-        <p className="text-xs text-muted">Ticket categories and how long each priority has before a ticket is overdue.</p>
+        <h2 className="text-base font-medium">Support rules</h2>
+        <p className="text-[13px] text-muted">Ticket categories and how long each priority has before a ticket is overdue.</p>
       </div>
       <SupportRules categories={config.categories} sla={config.sla} />
     </section>

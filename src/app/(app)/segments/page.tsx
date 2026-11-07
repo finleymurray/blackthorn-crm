@@ -65,9 +65,9 @@ export default async function SegmentsPage() {
                     <Link href={`/segments/${s.id}`} className="font-medium hover:underline focus-visible:outline-2 focus-visible:outline-ring">
                       {s.name}
                     </Link>
-                    {s.description ? <div className="text-xs text-muted">{s.description}</div> : null}
+                    {s.description ? <div className="text-[13px] text-muted">{s.description}</div> : null}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-xs text-muted">
+                  <TableCell className="hidden md:table-cell text-[13px] text-muted">
                     <span className="text-muted-strong">{countRules(s.rules)} rule{countRules(s.rules) === 1 ? "" : "s"}</span> · {truncate(describeGroup(s.rules), 90)}
                   </TableCell>
                   <TableCell className="tabular text-right">{s.count === null ? <span className="text-danger">Error</span> : formatNumber(s.count)}</TableCell>

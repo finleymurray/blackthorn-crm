@@ -48,21 +48,21 @@ export function Conversation({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <header className="flex h-12 shrink-0 items-center gap-2 border-b border-border px-3">
+      <header className="flex min-h-16 shrink-0 items-center gap-4 border-b border-border px-6 py-3">
         <Button asChild variant="ghost" size="icon-sm" className="lg:hidden" aria-label="Back to tickets">
           <Link href="/support">
             <ArrowLeft />
           </Link>
         </Button>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-[13px] font-medium">
+          <h1 className="truncate text-sm font-medium">
             <span className="text-muted">#{ticket.number}</span> {ticket.subject}
           </h1>
-          <p className="truncate text-[11px] text-muted">
+          <p className="mt-0.5 truncate text-[13px] text-muted">
             {ticket.requester_name} · {ticket.requester_email} · via {ticket.source === "web_form" ? "web form" : "email"} · opened {formatDateTime(ticket.created_at)}
           </p>
         </div>
-        <div className="hidden w-40 sm:block">
+        <div className="hidden w-44 shrink-0 sm:block">
           <SlaTimer dueAt={ticket.sla_due_at} createdAt={ticket.created_at} resolvedAt={ticket.resolved_at} />
         </div>
         <Dialog open={contextOpen} onOpenChange={setContextOpen}>
@@ -80,13 +80,13 @@ export function Conversation({
 
       <TicketFields ticket={ticket} config={config} editable={editable} />
 
-      <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-        <ol className="mx-auto max-w-3xl space-y-4">
+      <div className="min-h-0 flex-1 overflow-y-auto px-6 py-8">
+        <ol className="mx-auto max-w-3xl space-y-7">
           {messages.map((m) => (
             <li key={m.id} className={cn("flex gap-3", m.direction === "outbound" && "flex-row-reverse")}>
               <Avatar name={m.author_name} size="sm" className="mt-1" />
               <div className={cn("min-w-0 max-w-[85%]", m.direction === "outbound" && "text-right")}>
-                <div className={cn("mb-1 flex items-center gap-2 text-[11px] text-muted", m.direction === "outbound" && "justify-end")}>
+                <div className={cn("mb-1.5 flex items-center gap-2 text-xs text-muted", m.direction === "outbound" && "justify-end")}>
                   <span className="font-medium text-muted-strong">{m.author_name}</span>
                   {m.direction === "internal_note" ? (
                     <Badge variant="warning">
@@ -105,7 +105,7 @@ export function Conversation({
                 </div>
                 <div
                   className={cn(
-                    "inline-block whitespace-pre-wrap rounded-lg px-3.5 py-2.5 text-left text-[13px] leading-relaxed",
+                    "inline-block whitespace-pre-wrap rounded-lg px-4 py-3 text-left text-sm leading-relaxed",
                     m.direction === "internal_note"
                       ? "border border-warning/30 bg-warning-soft/60 text-foreground"
                       : m.direction === "outbound"
@@ -153,16 +153,16 @@ function Composer({ ticket, savedReplies, ai, staffName }: { ticket: TicketDetai
     });
 
   return (
-    <div className="shrink-0 border-t border-border bg-surface p-3">
+    <div className="shrink-0 border-t border-border bg-surface px-6 py-4">
       <div className="mx-auto max-w-3xl">
-        <div className="mb-2 flex flex-wrap items-center gap-1.5">
+        <div className="mb-3 flex flex-wrap items-center gap-2">
           <div className="flex gap-0.5 rounded-md bg-white/[0.04] p-0.5" role="radiogroup" aria-label="Message type">
             <button
               type="button"
               role="radio"
               aria-checked={kind === "reply"}
               onClick={() => setKind("reply")}
-              className={cn("inline-flex h-6 items-center gap-1 rounded-[4px] px-2 text-[11px]", kind === "reply" ? "bg-white/[0.08] text-foreground" : "text-muted hover:text-foreground")}
+              className={cn("inline-flex h-6 items-center gap-1 rounded-[4px] px-2 text-xs", kind === "reply" ? "bg-white/[0.08] text-foreground" : "text-muted hover:text-foreground")}
             >
               <MessageSquareText className="size-3" aria-hidden /> Reply to guest
             </button>
@@ -171,7 +171,7 @@ function Composer({ ticket, savedReplies, ai, staffName }: { ticket: TicketDetai
               role="radio"
               aria-checked={kind === "note"}
               onClick={() => setKind("note")}
-              className={cn("inline-flex h-6 items-center gap-1 rounded-[4px] px-2 text-[11px]", kind === "note" ? "bg-warning-soft text-warning" : "text-muted hover:text-foreground")}
+              className={cn("inline-flex h-6 items-center gap-1 rounded-[4px] px-2 text-xs", kind === "note" ? "bg-warning-soft text-warning" : "text-muted hover:text-foreground")}
             >
               <StickyNote className="size-3" aria-hidden /> Internal note
             </button>
@@ -225,12 +225,12 @@ function Composer({ ticket, savedReplies, ai, staffName }: { ticket: TicketDetai
           }}
         />
         {error ? (
-          <p role="alert" className="mt-1 text-xs text-danger">
+          <p role="alert" className="mt-1 text-[13px] text-danger">
             {error}
           </p>
         ) : null}
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] text-muted">
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-muted">
             {kind === "reply" ? (
               <>
                 Sends as {staffName.split(" ")[0]} to {ticket.requester_email} (demo outbox). <kbd className="rounded-[3px] bg-white/[0.06] px-1">Ctrl</kbd>+<kbd className="rounded-[3px] bg-white/[0.06] px-1">Enter</kbd> to send.
@@ -239,11 +239,11 @@ function Composer({ ticket, savedReplies, ai, staffName }: { ticket: TicketDetai
               "Internal notes are only visible to staff."
             )}
           </p>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <label htmlFor="composer-status" className="sr-only">
               Status after sending
             </label>
-            <Select id="composer-status" value={setStatus} onChange={(e) => setSetStatus(e.target.value as typeof setStatus)} className="h-7 w-auto text-[11px]">
+            <Select id="composer-status" value={setStatus} onChange={(e) => setSetStatus(e.target.value as typeof setStatus)} className="h-8 w-auto text-[13px]">
               <option value="">Keep status: {titleCase(ticket.status)}</option>
               <option value="open">and mark Open</option>
               <option value="waiting_on_guest">and mark Waiting on guest</option>

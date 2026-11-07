@@ -30,10 +30,10 @@ export function TicketFields({ ticket, config, editable }: { ticket: TicketDetai
       router.refresh();
     });
 
-  const selectClass = "h-7 w-auto min-w-0 text-[11px]";
+  const selectClass = "h-8 w-full min-w-0 text-[13px]";
 
   return (
-    <div className="flex shrink-0 flex-wrap items-center gap-1.5 border-b border-border bg-black/20 px-3 py-2" aria-busy={pending}>
+    <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-border px-6 py-3 2xl:grid-cols-4" aria-busy={pending}>
       <label htmlFor="tf-status" className="sr-only">
         Status
       </label>

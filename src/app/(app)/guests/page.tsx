@@ -7,7 +7,6 @@ import { guestListParamsSchema, listGuests, listTags, type GuestListParams } fro
 import { formatDateOnly, formatMoney, formatNumber, formatPostcode } from "@/lib/format";
 import { PageBody, PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Pagination } from "@/components/ui/pagination";
@@ -79,7 +78,7 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
           </Button>
         }
       />
-      <PageBody className="space-y-3" wide>
+      <PageBody className="space-y-5" wide>
         <GuestFilters params={params} tags={tags} seasons={seasons} />
 
         {rows.length === 0 ? (
@@ -119,31 +118,26 @@ export default async function GuestsPage({ searchParams }: { searchParams: Promi
                   return (
                     <TableRow key={g.id}>
                       <TableCell>
-                        <div className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-3">
                           <Avatar name={name} />
                           <div className="min-w-0">
                             <Link href={`/guests/${g.id}`} className="font-medium hover:underline focus-visible:outline-2 focus-visible:outline-ring">
                               {name}
                             </Link>
-                            <div className="truncate text-xs text-muted md:hidden">{g.email}</div>
+                            <div className="truncate text-[13px] text-muted md:hidden">{g.email}</div>
                             <GuestFlags guest={g} />
                           </div>
                         </div>
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         <div className="truncate">{g.email}</div>
-                        <div className="text-xs text-muted">{g.phone ?? "No phone"}</div>
+                        <div className="text-[13px] text-muted">{g.phone ?? "No phone"}</div>
                       </TableCell>
                       <TableCell className="hidden lg:table-cell tabular">{formatPostcode(g.postcode)}</TableCell>
                       <TableCell>
-                        <div className="flex gap-1">
-                          <Badge variant={g.email_consent ? "success" : "default"} dot aria-label={`Email consent ${g.email_consent ? "given" : "not given"}`}>
-                            Email
-                          </Badge>
-                          <Badge variant={g.sms_consent ? "success" : "default"} dot aria-label={`SMS consent ${g.sms_consent ? "given" : "not given"}`}>
-                            SMS
-                          </Badge>
-                        </div>
+                        <span className={g.email_consent || g.sms_consent ? "text-muted-strong" : "text-muted"}>
+                          {g.email_consent && g.sms_consent ? "Email and SMS" : g.email_consent ? "Email only" : g.sms_consent ? "SMS only" : "None"}
+                        </span>
                       </TableCell>
                       <TableCell className="tabular text-right">{g.visit_count}</TableCell>
                       <TableCell className="tabular text-right">{formatMoney(g.lifetime_spend_pence)}</TableCell>

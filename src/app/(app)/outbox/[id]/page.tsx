@@ -32,7 +32,7 @@ export default async function OutboxMessagePage({ params }: { params: Promise<{ 
   return (
     <>
       <PageHeader crumbs={[{ label: "Outbox", href: "/outbox" }]} title={m.subject ?? (m.channel === "sms" ? "Text message" : "Email")} meta={formatDateTime(m.sent_at)} />
-      <PageBody className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <PageBody className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
         <div className="min-w-0">
           {m.channel === "email" ? (
             <div className="overflow-hidden rounded-md border border-border bg-white">
@@ -53,18 +53,18 @@ export default async function OutboxMessagePage({ params }: { params: Promise<{ 
               {m.body_html ? (
                 <iframe title="Email as the guest sees it" srcDoc={m.body_html} sandbox="" className="h-[720px] w-full bg-white" />
               ) : (
-                <pre className="whitespace-pre-wrap p-4 font-sans text-[13px] text-neutral-900">{m.full_text}</pre>
+                <pre className="whitespace-pre-wrap p-4 font-sans text-sm text-neutral-900">{m.full_text}</pre>
               )}
             </div>
           ) : (
             <div className="mx-auto w-[340px] max-w-full rounded-[32px] border-[6px] border-white/[0.10] bg-background p-4 pt-8">
-              <p className="mb-4 text-center text-[11px] text-muted">{settings.sms_sender}</p>
+              <p className="mb-4 text-center text-xs text-muted">{settings.sms_sender}</p>
               <div className="ml-1 mr-10 rounded-2xl rounded-bl-sm bg-white/[0.08] px-3.5 py-2.5 text-[14px] leading-snug text-foreground">{m.full_text}</div>
-              <p className="ml-2 mt-1.5 text-[10px] text-muted">Delivered {formatDateTime(m.sent_at)}</p>
+              <p className="ml-2 mt-1.5 text-[11px] text-muted">Delivered {formatDateTime(m.sent_at)}</p>
             </div>
           )}
         </div>
-        <aside className="space-y-3 text-xs">
+        <aside className="space-y-3 text-[13px]">
           <dl className="space-y-2">
             <div>
               <dt className="text-muted">Status</dt>
@@ -104,7 +104,7 @@ export default async function OutboxMessagePage({ params }: { params: Promise<{ 
               <dd className="mt-0.5">{m.channel === "email" ? "Email" : "SMS"}</dd>
             </div>
           </dl>
-          <p className="text-[11px] leading-snug text-muted">Demo outbox. This message was never delivered to a real address.</p>
+          <p className="text-xs leading-snug text-muted">Demo outbox. This message was never delivered to a real address.</p>
         </aside>
       </PageBody>
     </>

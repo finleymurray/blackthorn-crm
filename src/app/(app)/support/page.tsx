@@ -14,8 +14,8 @@ export default async function SupportPage({ searchParams }: { searchParams: Prom
       <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
         <Inbox className="size-6 text-muted" aria-hidden />
         <div>
-          <p className="text-[13px] font-medium">Select a ticket</p>
-          <p className="mt-1 max-w-xs text-xs text-muted">Pick a conversation from the list, or simulate a new inbound email to demonstrate the flow from scratch.</p>
+          <p className="text-sm font-medium">Select a ticket</p>
+          <p className="mt-1 max-w-xs text-[13px] text-muted">Pick a conversation from the list, or simulate a new inbound email to demonstrate the flow from scratch.</p>
         </div>
         <SimulateInboundButton label="Simulate inbound email" />
       </div>

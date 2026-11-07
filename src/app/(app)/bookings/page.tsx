@@ -58,7 +58,7 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
   return (
     <>
       <PageHeader title="Bookings" meta={`${formatNumber(total)} ${total === 1 ? "booking" : "bookings"} · ${formatMoney(revenue_pence)} net`} />
-      <PageBody wide className="space-y-3">
+      <PageBody wide className="space-y-5">
         <BookingFilters params={params} nights={nights} />
         {rows.length === 0 ? (
           <EmptyState icon={Ticket} title="No bookings match" description="Try a different night, status or search. References look like BTH-7K2Q." action={<Button asChild variant="secondary" size="sm"><Link href="/bookings">Clear filters</Link></Button>} />
@@ -81,34 +81,34 @@ export default async function BookingsPage({ searchParams }: { searchParams: Pro
                 {rows.map((b) => (
                   <TableRow key={b.id}>
                     <TableCell>
-                      <Link href={`/bookings/${b.id}`} className="font-mono text-xs font-medium hover:underline">
+                      <Link href={`/bookings/${b.id}`} className="whitespace-nowrap font-mono text-[13px] font-medium hover:underline">
                         {b.reference}
                       </Link>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <Avatar name={b.guest_name} size="sm" />
                         <div className="min-w-0">
                           <Link href={`/guests/${b.guest_id}`} className="hover:underline">{b.guest_name}</Link>
-                          <div className="truncate text-[11px] text-muted">{b.guest_email}</div>
+                          <div className="truncate text-xs text-muted">{b.guest_email}</div>
                         </div>
                       </div>
                     </TableCell>
-                    <TableCell className="tabular">
+                    <TableCell className="whitespace-nowrap tabular">
                       {formatDateOnly(b.date)} <span className="text-muted">{formatClock(b.entry_time)}</span>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
                       {b.group_size} × {TICKET_TYPE_LABELS[b.ticket_type as keyof typeof TICKET_TYPE_LABELS] ?? b.ticket_type}
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell text-xs text-muted">{b.addons.length ? b.addons.map((a) => a.replace("_", " ")).join(", ") : "–"}</TableCell>
+                    <TableCell className="hidden lg:table-cell text-[13px] text-muted">{b.addons.length ? b.addons.map((a) => a.replace("_", " ")).join(", ") : "–"}</TableCell>
                     <TableCell className="tabular text-right">
                       {formatMoney(b.total_paid_pence)}
-                      {b.refunded_pence ? <div className="text-[11px] text-danger">−{formatMoney(b.refunded_pence)}</div> : null}
+                      {b.refunded_pence ? <div className="text-xs text-danger">−{formatMoney(b.refunded_pence)}</div> : null}
                     </TableCell>
                     <TableCell>
                       <Badge variant={tone[b.status]} dot>{BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}</Badge>
                     </TableCell>
-                    <TableCell className="hidden xl:table-cell tabular text-muted-strong">{formatDateTime(b.booked_at)}</TableCell>
+                    <TableCell className="hidden whitespace-nowrap xl:table-cell tabular text-muted-strong">{formatDateTime(b.booked_at)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

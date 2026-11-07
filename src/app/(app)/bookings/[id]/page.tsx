@@ -44,7 +44,7 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
         meta={`${BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status} · booked ${formatDateTime(b.booked_at)}`}
         actions={canEdit ? <BookingActions booking={{ id: b.id, reference: b.reference, total_paid_pence: b.total_paid_pence, refunded_pence: b.refunded_pence, group_size: b.group_size, status: b.status, guest_email: b.guest_email }} canRefund={canRefund} /> : null}
       />
-      <PageBody wide className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_340px]">
+      <PageBody wide className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0 space-y-5">
           <section aria-label="Summary" className="stat-strip grid-cols-2 md:grid-cols-4">
             <div>
@@ -74,27 +74,27 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           <section className="panel">
             <div className="panel-head"><h2 className="panel-title">History</h2><span className="panel-meta">Every change to this booking</span></div>
             {data.refunds.length === 0 && data.activity.length === 0 ? (
-              <p className="px-4 py-6 text-xs text-muted">No changes since the booking was made.</p>
+              <p className="px-4 py-6 text-[13px] text-muted">No changes since the booking was made.</p>
             ) : (
               <ul className="divide-y divide-border">
                 {data.refunds.map((r) => (
-                  <li key={r.id} className="flex items-start justify-between gap-3 px-4 py-2.5 text-[13px]">
+                  <li key={r.id} className="flex items-start justify-between gap-3 px-4 py-2.5 text-sm">
                     <div>
                       <span className="font-medium">Refund of {formatMoney(r.amount_pence)}</span>
                       <span className="text-muted"> · {r.reason}</span>
-                      {r.ticket_id ? <Link href={`/support/${r.ticket_id}`} className="ml-2 text-xs text-muted hover:text-foreground">ticket #{r.ticket_number}</Link> : null}
-                      <div className="text-[11px] text-muted">{r.processed_by_name ?? "System"} · ref {r.provider_reference}</div>
+                      {r.ticket_id ? <Link href={`/support/${r.ticket_id}`} className="ml-2 text-[13px] text-muted hover:text-foreground">ticket #{r.ticket_number}</Link> : null}
+                      <div className="text-xs text-muted">{r.processed_by_name ?? "System"} · ref {r.provider_reference}</div>
                     </div>
-                    <span className="shrink-0 tabular text-[11px] text-muted">{formatDateTime(r.created_at)}</span>
+                    <span className="shrink-0 tabular text-xs text-muted">{formatDateTime(r.created_at)}</span>
                   </li>
                 ))}
                 {data.activity.filter((a) => a.action !== "booking.refunded").map((a) => (
-                  <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-2.5 text-[13px]">
+                  <li key={a.id} className="flex items-start justify-between gap-3 px-4 py-2.5 text-sm">
                     <div>
                       {a.summary}
-                      <div className="text-[11px] text-muted">{a.staff_name ?? "System"}</div>
+                      <div className="text-xs text-muted">{a.staff_name ?? "System"}</div>
                     </div>
-                    <span className="shrink-0 tabular text-[11px] text-muted">{formatDateTime(a.created_at)}</span>
+                    <span className="shrink-0 tabular text-xs text-muted">{formatDateTime(a.created_at)}</span>
                   </li>
                 ))}
               </ul>
@@ -102,47 +102,47 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
           </section>
         </div>
 
-        <aside className="space-y-4">
+        <aside className="space-y-6">
           <section className="panel p-4">
             <div className="flex items-start gap-3">
               <Avatar name={b.guest_name} size="lg" />
               <div className="min-w-0">
-                <Link href={`/guests/${b.guest_id}`} className="text-[13px] font-medium hover:underline">{b.guest_name}</Link>
-                <p className="truncate text-[11px] text-muted">{b.guest_email}</p>
-                <p className="text-[11px] text-muted">{b.guest_phone ?? "No phone"}</p>
+                <Link href={`/guests/${b.guest_id}`} className="text-sm font-medium hover:underline">{b.guest_name}</Link>
+                <p className="truncate text-xs text-muted">{b.guest_email}</p>
+                <p className="text-xs text-muted">{b.guest_phone ?? "No phone"}</p>
               </div>
             </div>
             <div className="mt-3 flex flex-wrap gap-1">
               {b.guest_banned ? <Badge variant="danger"><Ban className="size-2.5" aria-hidden /> Banned</Badge> : null}
               {b.guest_accessibility ? <Badge variant="info"><Accessibility className="size-2.5" aria-hidden /> Accessibility</Badge> : null}
             </div>
-            {b.guest_accessibility ? <p className="mt-2 rounded-md bg-info-soft px-2.5 py-1.5 text-[11px] leading-snug text-info">{b.guest_accessibility}</p> : null}
+            {b.guest_accessibility ? <p className="mt-2 rounded-md bg-info-soft px-2.5 py-1.5 text-xs leading-snug text-info">{b.guest_accessibility}</p> : null}
             <div className="mt-3">
               <Button asChild variant="secondary" size="sm" className="w-full"><Link href={`/support/new?guest=${b.guest_id}`}>Raise a ticket</Link></Button>
             </div>
           </section>
 
           {b.source_campaign_id ? (
-            <section className="panel p-4 text-xs">
+            <section className="panel p-4 text-[13px]">
               <p className="flex items-center gap-1.5 text-muted"><Megaphone className="size-3.5" aria-hidden /> Attributed to campaign</p>
-              <Link href={`/campaigns/${b.source_campaign_id}/report`} className="mt-1 block text-[13px] hover:underline">{b.source_campaign_name}</Link>
+              <Link href={`/campaigns/${b.source_campaign_id}/report`} className="mt-1 block text-sm hover:underline">{b.source_campaign_name}</Link>
             </section>
           ) : null}
 
           {b.survey_score ? (
-            <section className="panel p-4 text-xs">
+            <section className="panel p-4 text-[13px]">
               <p className="flex items-center gap-1.5 text-muted"><Star className="size-3.5" aria-hidden /> Survey {b.survey_score}/10</p>
-              {b.survey_comments ? <p className="mt-1 text-[13px] leading-relaxed text-muted-strong">“{b.survey_comments}”</p> : null}
+              {b.survey_comments ? <p className="mt-1 text-sm leading-relaxed text-muted-strong">“{b.survey_comments}”</p> : null}
             </section>
           ) : null}
 
           <section className="panel">
             <div className="panel-head"><h2 className="panel-title">Support tickets</h2></div>
-            {data.tickets.length === 0 ? <p className="px-4 py-4 text-xs text-muted">None linked to this booking.</p> : (
+            {data.tickets.length === 0 ? <p className="px-4 py-4 text-[13px] text-muted">None linked to this booking.</p> : (
               <ul className="divide-y divide-border">
                 {data.tickets.map((t) => (
                   <li key={t.id}>
-                    <Link href={`/support/${t.id}`} className="flex items-center justify-between gap-2 px-4 py-2 text-xs hover:bg-white/[0.03]">
+                    <Link href={`/support/${t.id}`} className="flex items-center justify-between gap-2 px-4 py-2 text-[13px] hover:bg-white/[0.03]">
                       <span className="truncate"><span className="text-muted">#{t.number}</span> {t.subject}</span>
                       <Badge variant={ticketTone[t.status]} dot>{t.status === "waiting_on_guest" ? "Waiting" : titleCase(t.status)}</Badge>
                     </Link>
@@ -154,15 +154,15 @@ export default async function BookingPage({ params }: { params: Promise<{ id: st
 
           <section className="panel">
             <div className="panel-head"><h2 className="panel-title">Messages about this booking</h2></div>
-            {data.messages.length === 0 ? <p className="px-4 py-4 text-xs text-muted">Nothing sent yet.</p> : (
+            {data.messages.length === 0 ? <p className="px-4 py-4 text-[13px] text-muted">Nothing sent yet.</p> : (
               <ul className="divide-y divide-border">
                 {data.messages.map((m) => (
                   <li key={m.id}>
-                    <Link href={`/outbox/${m.id}`} className="flex items-start gap-2 px-4 py-2 text-xs hover:bg-white/[0.03]">
+                    <Link href={`/outbox/${m.id}`} className="flex items-start gap-2 px-4 py-2 text-[13px] hover:bg-white/[0.03]">
                       <Mail className="mt-0.5 size-3 shrink-0 text-muted" aria-hidden />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate">{m.subject ?? "Text message"}</span>
-                        <span className="block text-[11px] text-muted">{formatDateTime(m.sent_at)}{m.opened_at ? " · opened" : ""}</span>
+                        <span className="block text-xs text-muted">{formatDateTime(m.sent_at)}{m.opened_at ? " · opened" : ""}</span>
                       </span>
                     </Link>
                   </li>

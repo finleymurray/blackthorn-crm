@@ -109,15 +109,15 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
               }}
               className="h-12 flex-1 bg-transparent text-[14px] text-foreground outline-none placeholder:text-muted"
             />
-            <kbd className="rounded-[3px] bg-white/[0.06] px-1.5 py-0.5 text-[10px] text-muted">Esc</kbd>
+            <kbd className="rounded-[3px] bg-white/[0.06] px-1.5 py-0.5 text-[11px] text-muted">Esc</kbd>
           </div>
           <div id={listId} role="listbox" aria-label="Results" className="max-h-[50vh] overflow-y-auto p-1.5">
             {!showList ? (
-              <p className="px-2.5 py-6 text-center text-xs text-muted">Type a name, email, phone, postcode, booking reference or ticket number.</p>
+              <p className="px-2.5 py-6 text-center text-[13px] text-muted">Type a name, email, phone, postcode, booking reference or ticket number.</p>
             ) : loading && hits.length === 0 ? (
-              <p className="px-2.5 py-6 text-center text-xs text-muted">Searching…</p>
+              <p className="px-2.5 py-6 text-center text-[13px] text-muted">Searching…</p>
             ) : hits.length === 0 ? (
-              <p className="px-2.5 py-6 text-center text-xs text-muted">No matches for “{query.trim()}”.</p>
+              <p className="px-2.5 py-6 text-center text-[13px] text-muted">No matches for “{query.trim()}”.</p>
             ) : (
               <ul>
                 {hits.map((hit, i) => {
@@ -135,10 +135,10 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
                     >
                       <Icon className="size-4 shrink-0 text-muted" strokeWidth={1.75} aria-hidden />
                       <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px]">{hit.title}</span>
-                        <span className="block truncate text-[11px] text-muted">{hit.subtitle}</span>
+                        <span className="block truncate text-sm">{hit.title}</span>
+                        <span className="block truncate text-xs text-muted">{hit.subtitle}</span>
                       </span>
-                      <span className="shrink-0 text-[10px] text-muted">{LABELS[hit.type]}</span>
+                      <span className="shrink-0 text-[11px] text-muted">{LABELS[hit.type]}</span>
                       {i === active ? <CornerDownLeft className="size-3 shrink-0 text-muted" aria-hidden /> : null}
                     </li>
                   );

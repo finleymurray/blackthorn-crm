@@ -25,8 +25,8 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <header className={cn("sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-surface/95 px-4 backdrop-blur sm:px-5", className)}>
-      <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1 text-[13px]">
+    <header className={cn("sticky top-0 z-20 flex h-14 shrink-0 items-center gap-4 border-b border-border bg-surface/95 px-5 backdrop-blur sm:px-8", className)}>
+      <nav aria-label="Breadcrumb" className="flex min-w-0 items-center gap-1.5 text-sm">
         {crumbs.map((c) => (
           <span key={c.label} className="flex items-center gap-1 text-muted">
             {c.href ? (
@@ -40,7 +40,7 @@ export function PageHeader({
           </span>
         ))}
         <h1 className="truncate font-medium text-foreground">{title}</h1>
-        {meta ? <span className="ml-2 hidden truncate text-xs text-muted sm:inline">{meta}</span> : null}
+        {meta ? <span className="ml-3 hidden truncate text-[13px] text-muted sm:inline">{meta}</span> : null}
       </nav>
       {actions ? <div className="ml-auto flex shrink-0 items-center gap-2">{actions}</div> : null}
     </header>
@@ -48,5 +48,5 @@ export function PageHeader({
 }
 
 export function PageBody({ children, className, wide }: { children: React.ReactNode; className?: string; wide?: boolean }) {
-  return <div className={cn("px-4 py-4 sm:px-5", !wide && "mx-auto max-w-[1400px]", className)}>{children}</div>;
+  return <div className={cn("px-5 py-6 sm:px-8 sm:py-8", !wide && "mx-auto max-w-[1400px]", className)}>{children}</div>;
 }

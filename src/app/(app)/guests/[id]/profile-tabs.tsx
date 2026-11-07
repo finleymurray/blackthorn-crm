@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
-import { formatDateOnly, formatDateTime, formatMoney, formatClock, formatRelative } from "@/lib/format";
+import { formatDateOnly, formatDateTime, formatMoney, formatClock } from "@/lib/format";
 import { ADDON_LABELS, BOOKING_STATUS_LABELS, TICKET_PRIORITY_LABELS, TICKET_STATUS_LABELS, TICKET_TYPE_LABELS } from "@/lib/domain/constants";
 import type { GuestBooking, GuestMessage, GuestTicket, TimelineEvent } from "@/lib/data/guests";
 import { cn, titleCase } from "@/lib/utils";
@@ -75,26 +75,26 @@ export function GuestProfileTabs({
               {bookings.map((b) => (
                 <TableRow key={b.id}>
                   <TableCell>
-                    <Link href={`/bookings/${b.id}`} className="font-mono text-xs hover:underline">
+                    <Link href={`/bookings/${b.id}`} className="font-mono text-[13px] hover:underline">
                       {b.reference}
                     </Link>
                   </TableCell>
                   <TableCell>
                     <div className="text-sm">{formatDateOnly(b.date)}</div>
-                    <div className="text-xs text-muted">{formatClock(b.entry_time)} entry · {b.season_year}</div>
+                    <div className="text-[13px] text-muted">{formatClock(b.entry_time)} entry · {b.season_year}</div>
                   </TableCell>
                   <TableCell className="text-sm">
                     {b.group_size} × {TICKET_TYPE_LABELS[b.ticket_type as keyof typeof TICKET_TYPE_LABELS] ?? titleCase(b.ticket_type)}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell text-xs text-muted">{b.addons.length ? b.addons.map((a) => ADDON_LABELS[a] ?? a).join(", ") : "–"}</TableCell>
+                  <TableCell className="hidden md:table-cell text-[13px] text-muted">{b.addons.length ? b.addons.map((a) => ADDON_LABELS[a] ?? a).join(", ") : "–"}</TableCell>
                   <TableCell className="tabular text-right text-sm">
                     {formatMoney(b.total_paid_pence)}
-                    {b.refunded_pence > 0 ? <div className="text-xs text-danger">−{formatMoney(b.refunded_pence)}</div> : null}
+                    {b.refunded_pence > 0 ? <div className="text-[13px] text-danger">−{formatMoney(b.refunded_pence)}</div> : null}
                   </TableCell>
                   <TableCell>
                     <Badge variant={bookingBadge[b.status] ?? "default"} dot>{BOOKING_STATUS_LABELS[b.status as keyof typeof BOOKING_STATUS_LABELS] ?? b.status}</Badge>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell text-xs text-muted">{b.survey_score ? `${b.survey_score}/10` : "Not completed"}</TableCell>
+                  <TableCell className="hidden sm:table-cell text-[13px] text-muted">{b.survey_score ? `${b.survey_score}/10` : "Not completed"}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -114,7 +114,7 @@ export function GuestProfileTabs({
                     <p className="truncate text-sm font-medium">
                       #{t.number} {t.subject}
                     </p>
-                    <p className="text-xs text-muted">
+                    <p className="text-[13px] text-muted">
                       {titleCase(t.category)} · {TICKET_PRIORITY_LABELS[t.priority as keyof typeof TICKET_PRIORITY_LABELS]} priority · {formatDateTime(t.created_at)}
                     </p>
                   </div>
@@ -137,7 +137,7 @@ export function GuestProfileTabs({
                   {m.channel === "sms" ? <MessageSquare className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden /> : <Mail className="mt-0.5 size-4 shrink-0 text-muted" aria-hidden />}
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{m.subject ?? m.body_text.slice(0, 80)}</p>
-                    <p className="text-xs text-muted">
+                    <p className="text-[13px] text-muted">
                       {m.campaign_name ? `Campaign: ${m.campaign_name}` : m.automation_name ? `Automation: ${m.automation_name}` : m.ticket_number ? `Ticket #${m.ticket_number}` : "Manual"} · {formatDateTime(m.sent_at)}
                     </p>
                   </div>
@@ -191,7 +191,7 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
             onClick={() => setFilter(k.key)}
             aria-pressed={filter === k.key}
             className={cn(
-              "rounded-md border px-2 py-0.5 text-[11px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+              "rounded-md border px-2 py-0.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-ring",
               filter === k.key ? "border-white/[0.16] bg-white/[0.08] text-foreground" : "border-white/[0.08] text-white/60 hover:border-white/[0.16] hover:text-foreground",
             )}
           >
@@ -211,12 +211,12 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
           const body = (
             <>
               <p className="text-sm font-medium leading-snug">{e.title}</p>
-              {e.detail ? <p className="mt-0.5 text-xs text-muted">{e.detail}</p> : null}
+              {e.detail ? <p className="mt-0.5 text-[13px] text-muted">{e.detail}</p> : null}
               {e.kind === "message" ? (
                 <p className="mt-1 flex gap-1">
-                  <Badge className="text-[10px]">{String(e.meta.channel).toUpperCase()}</Badge>
-                  {e.meta.opened ? <Badge variant="success" className="text-[10px]">Opened</Badge> : null}
-                  {e.meta.clicked ? <Badge variant="info" className="text-[10px]">Clicked</Badge> : null}
+                  <Badge className="text-[11px]">{String(e.meta.channel).toUpperCase()}</Badge>
+                  {e.meta.opened ? <Badge variant="success" className="text-[11px]">Opened</Badge> : null}
+                  {e.meta.clicked ? <Badge variant="info" className="text-[11px]">Clicked</Badge> : null}
                 </p>
               ) : null}
             </>
@@ -236,9 +236,8 @@ function Timeline({ events }: { events: TimelineEvent[] }) {
                     body
                   )}
                 </div>
-                <time dateTime={new Date(e.at).toISOString()} className="shrink-0 text-xs text-muted sm:text-right" title={formatDateTime(e.at)}>
+                <time dateTime={new Date(e.at).toISOString()} className="shrink-0 text-[13px] text-muted sm:text-right" title={formatDateTime(e.at)}>
                   {formatDateTime(e.at)}
-                  <span className="block text-[11px]">{formatRelative(e.at)}</span>
                 </time>
               </div>
             </li>

@@ -65,7 +65,7 @@ export function BookingEditor({ booking: b, nights, editable }: { booking: Booki
         </div>
         {editable ? (
           <div className="flex items-center gap-2">
-            {dirty ? <span className="text-[11px] text-warning">Unsaved changes</span> : null}
+            {dirty ? <span className="text-xs text-warning">Unsaved changes</span> : null}
             <Button type="submit" size="sm" loading={pending} disabled={!dirty}>Save changes</Button>
           </div>
         ) : null}
@@ -106,12 +106,12 @@ export function BookingEditor({ booking: b, nights, editable }: { booking: Booki
           <Input id="bk-paid" inputMode="decimal" value={paid} onChange={(e) => setPaid(e.target.value)} className="tabular" />
         </Field>
         <div className="space-y-1.5 sm:col-span-2 lg:col-span-3">
-          <span className="text-xs font-medium text-muted-strong">Add-ons</span>
+          <span className="text-[13px] font-medium text-muted-strong">Add-ons</span>
           <div className="flex flex-wrap gap-4">
             {ADDONS.map((a) => (
-              <label key={a.key} className="flex items-center gap-2 text-[13px]">
+              <label key={a.key} className="flex items-center gap-2 text-sm">
                 <Checkbox checked={addons.includes(a.key)} onChange={(e) => setAddons((cur) => (e.target.checked ? [...cur, a.key] : cur.filter((x) => x !== a.key)))} />
-                {a.name} <span className="text-[11px] text-muted">{formatMoney(a.pricePence)} pp</span>
+                {a.name} <span className="text-xs text-muted">{formatMoney(a.pricePence)} pp</span>
               </label>
             ))}
           </div>
@@ -119,7 +119,7 @@ export function BookingEditor({ booking: b, nights, editable }: { booking: Booki
         <Field id="bk-note" label="Reason for change" help="Optional. Saved in the history with your name." className="sm:col-span-2 lg:col-span-3">
           <Input id="bk-note" value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. Guest phoned to add two friends" maxLength={300} />
         </Field>
-        {formError ? <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger sm:col-span-2 lg:col-span-3">{formError}</p> : null}
+        {formError ? <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger sm:col-span-2 lg:col-span-3">{formError}</p> : null}
       </fieldset>
     </form>
   );

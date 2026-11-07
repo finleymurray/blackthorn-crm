@@ -57,7 +57,7 @@ export function StaffManager({ rows, currentId, authConfigured }: { rows: StaffR
                       <span className="font-medium">{s.name}</span>
                       {s.id === currentId ? <Badge>You</Badge> : null}
                     </div>
-                    <div className="truncate text-xs text-muted">{s.email}</div>
+                    <div className="truncate text-[13px] text-muted">{s.email}</div>
                   </div>
                 </div>
               </TableCell>
@@ -65,7 +65,7 @@ export function StaffManager({ rows, currentId, authConfigured }: { rows: StaffR
                 <label htmlFor={`role-${s.id}`} className="sr-only">
                   Role for {s.name}
                 </label>
-                <Select id={`role-${s.id}`} value={s.role} disabled={pending} onChange={(e) => change(s.id, { role: e.target.value as StaffRole })} className="h-7 w-auto text-xs">
+                <Select id={`role-${s.id}`} value={s.role} disabled={pending} onChange={(e) => change(s.id, { role: e.target.value as StaffRole })} className="h-7 w-auto text-[13px]">
                   {STAFF_ROLES.map((r) => (
                     <option key={r} value={r}>
                       {ROLE_LABELS[r]}
@@ -73,10 +73,10 @@ export function StaffManager({ rows, currentId, authConfigured }: { rows: StaffR
                   ))}
                 </Select>
               </TableCell>
-              <TableCell className="hidden md:table-cell text-xs text-muted-strong">
+              <TableCell className="hidden md:table-cell text-[13px] text-muted-strong">
                 {s.actions_30d} action{s.actions_30d === 1 ? "" : "s"} in 30 days
                 {s.last_action_at ? <span className="text-muted"> · last {formatRelative(s.last_action_at)}</span> : null}
-                <div className="text-[11px] text-muted">Added {formatDateTime(s.created_at)}</div>
+                <div className="text-xs text-muted">Added {formatDateTime(s.created_at)}</div>
               </TableCell>
               <TableCell>
                 <Switch aria-label={`${s.name} active`} checked={s.active} disabled={pending || s.id === currentId} onCheckedChange={(v) => change(s.id, { active: v })} />

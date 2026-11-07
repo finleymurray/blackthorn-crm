@@ -53,7 +53,7 @@ export function BookingActions({ booking: b, canRefund }: { booking: Summary; ca
           <div className="space-y-4">
             <div className="flex gap-1 rounded-md bg-white/[0.04] p-1" role="radiogroup" aria-label="Refund type">
               {(["full", "partial"] as const).map((k) => (
-                <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => setKind(k)} className={`flex-1 rounded-[4px] py-1 text-[13px] ${kind === k ? "bg-white/[0.08] text-foreground" : "text-muted hover:text-foreground"}`}>
+                <button key={k} type="button" role="radio" aria-checked={kind === k} onClick={() => setKind(k)} className={`flex-1 rounded-[4px] py-1 text-sm ${kind === k ? "bg-white/[0.08] text-foreground" : "text-muted hover:text-foreground"}`}>
                   {k === "full" ? `Full (${formatMoney(remaining)})` : "Partial"}
                 </button>
               ))}
@@ -69,14 +69,14 @@ export function BookingActions({ booking: b, canRefund }: { booking: Summary; ca
             <Field id="rfd-reason" label="Reason" required>
               <Textarea id="rfd-reason" value={reason} onChange={(e) => setReason(e.target.value)} rows={2} maxLength={300} />
             </Field>
-            <label className="flex items-start gap-2 text-[13px]">
+            <label className="flex items-start gap-2 text-sm">
               <Checkbox checked={kind === "full" || voidTickets} disabled={kind === "full"} onChange={(e) => setVoidTickets(e.target.checked)} className="mt-0.5" />
               <span>
                 Void the tickets
-                <span className="block text-[11px] text-muted">{kind === "full" ? "A full refund always voids the tickets." : "The booking is marked refunded so the tickets will not scan, even though only part of the money is returned."}</span>
+                <span className="block text-xs text-muted">{kind === "full" ? "A full refund always voids the tickets." : "The booking is marked refunded so the tickets will not scan, even though only part of the money is returned."}</span>
               </span>
             </label>
-            {error ? <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-xs text-danger">{error}</p> : null}
+            {error ? <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">{error}</p> : null}
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>

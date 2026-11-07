@@ -43,11 +43,11 @@ export function SupportRules({ categories, sla }: { categories: TicketCategory[]
         >
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             {(["urgent", "high", "normal", "low"] as const).map((p) => (
-              <label key={p} className="space-y-1 text-xs text-muted-strong">
+              <label key={p} className="space-y-1 text-[13px] text-muted-strong">
                 {TICKET_PRIORITY_LABELS[p]}
                 <div className="flex items-center gap-1">
                   <Input name={p} type="number" min={1} max={720} defaultValue={sla[p]} className="tabular" />
-                  <span className="text-[11px] text-muted">h</span>
+                  <span className="text-xs text-muted">h</span>
                 </div>
               </label>
             ))}
@@ -71,7 +71,7 @@ export function SupportRules({ categories, sla }: { categories: TicketCategory[]
           {categories.map((c) => (
             <li key={c.key} className="flex flex-wrap items-center gap-3 px-4 py-2">
               <span className={`min-w-[140px] ${c.active ? "" : "text-muted line-through"}`}>
-                {c.label} <span className="ml-1 text-[11px] text-muted">{c.key}</span>
+                {c.label} <span className="ml-1 text-xs text-muted">{c.key}</span>
               </span>
               <label htmlFor={`cat-pri-${c.key}`} className="sr-only">
                 Default priority for {c.label}
@@ -81,7 +81,7 @@ export function SupportRules({ categories, sla }: { categories: TicketCategory[]
                 value={c.default_priority}
                 disabled={pending}
                 onChange={(e) => start(async () => done(await saveCategory({ key: c.key, label: c.label, default_priority: e.target.value })))}
-                className="h-7 w-auto text-xs"
+                className="h-7 w-auto text-[13px]"
               >
                 {(Object.keys(TICKET_PRIORITY_LABELS) as Array<keyof typeof TICKET_PRIORITY_LABELS>).map((p) => (
                   <option key={p} value={p}>
@@ -109,11 +109,11 @@ export function SupportRules({ categories, sla }: { categories: TicketCategory[]
             });
           }}
         >
-          <label className="flex-1 space-y-1 text-[11px] text-muted">
+          <label className="flex-1 space-y-1 text-xs text-muted">
             New category
             <Input name="label" placeholder="e.g. Group bookings" required maxLength={40} />
           </label>
-          <label className="space-y-1 text-[11px] text-muted">
+          <label className="space-y-1 text-xs text-muted">
             Default priority
             <Select name="default_priority" defaultValue="normal" className="w-auto">
               {(Object.keys(TICKET_PRIORITY_LABELS) as Array<keyof typeof TICKET_PRIORITY_LABELS>).map((p) => (

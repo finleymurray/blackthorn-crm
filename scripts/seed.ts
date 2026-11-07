@@ -750,18 +750,25 @@ async function main() {
   const pastBookings = bookings.filter((b) => !b.night.future && b.status !== "refunded" && !b.guest.banned);
   const staffNames: Record<string, string> = { support: "Priya", admin: "Eleanor" };
 
-  const TICKET_COUNT = 62;
-  const templateUses = new Map<number, number>();
-  for (let i = 0; i < TICKET_COUNT; i++) {
-    const tplIndex = i % TICKET_TEMPLATES.length;
-    const tpl = TICKET_TEMPLATES[tplIndex]!;
-    const uses = templateUses.get(tplIndex) ?? 0;
-    templateUses.set(tplIndex, uses + 1);
-    const booking = rng.pick(pastBookings);
+  // Every template is used once and every guest gets at most one seeded
+  // ticket, so the inbox never shows the same case twice.
+  const ticketGuests = new Set<string>();
+  const pickBooking = (pool: typeof bookings) => {
+    for (let tries = 0; tries < 500; tries++) {
+      const b = rng.pick(pool);
+      if (!ticketGuests.has(b.guest.id)) {
+        ticketGuests.add(b.guest.id);
+        return b;
+      }
+    }
+    throw new Error("Ran out of guests for support tickets");
+  };
+  for (let i = 0; i < TICKET_TEMPLATES.length; i++) {
+    const tpl = TICKET_TEMPLATES[i]!;
+    const booking = pickBooking(pastBookings);
     const guest = booking.guest;
-    // Spread: most in Oct/Nov 2026, some older ones resolved. A complaint
-    // template is only ever "live" once; repeats are historical.
-    const old = i % 7 === 3 || (tpl.category === "complaint" && uses > 0);
+    // Spread: most in Oct/Nov 2026, a few older ones from last season.
+    const old = i % 7 === 3;
     const priority = tpl.priority;
     const slaHours = SLA_HOURS[priority];
     const replied = tpl.thread.some((m) => m.direction === "outbound");
@@ -843,7 +850,7 @@ async function main() {
   // A queue of fresh, unanswered emails to work through, arriving over the last 36 hours.
   const freshBookings = bookings.filter((b) => b.status !== "refunded" && !b.guest.banned);
   NEW_INBOUND.forEach((tpl, i) => {
-    const booking = rng.pick(freshBookings);
+    const booking = pickBooking(freshBookings);
     const guest = booking.guest;
     const priority = tpl.priority ?? (TICKET_CATEGORIES.find((c) => c.key === tpl.category)?.defaultPriority ?? "normal");
     const createdAt = addMinutes(NOW, -(rng.chance(0.7) ? rng.int(15, 7 * 60) : rng.int(7 * 60, 36 * 60)));

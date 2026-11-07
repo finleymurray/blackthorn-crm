@@ -223,15 +223,15 @@ export function CampaignEditor({
           </>
         }
       />
-      <PageBody wide className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.9fr)]">
+      <PageBody wide className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_minmax(360px,0.9fr)]">
         <div className="min-w-0 space-y-5">
           {formError ? (
-            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">
               {formError}
             </p>
           ) : null}
           {campaign?.status === "scheduled" ? (
-            <p className="rounded-md bg-info-soft px-3 py-2 text-[13px] text-info">This campaign is scheduled. Unschedule it to make changes.</p>
+            <p className="rounded-md bg-info-soft px-3 py-2 text-sm text-info">This campaign is scheduled. Unschedule it to make changes.</p>
           ) : null}
 
           <section className="panel">
@@ -243,7 +243,7 @@ export function CampaignEditor({
                 <Input id="c-name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Halloween week last tickets" maxLength={100} readOnly={locked} aria-invalid={!!errors.name} />
               </Field>
               <div className="space-y-1.5">
-                <span className="text-xs font-medium text-muted-strong">Channel</span>
+                <span className="text-[13px] font-medium text-muted-strong">Channel</span>
                 <div className="flex gap-1 rounded-md bg-white/[0.04] p-1" role="radiogroup" aria-label="Channel">
                   {(["email", "sms"] as const).map((ch) => {
                     const Icon = ch === "email" ? Mail : MessageSquare;
@@ -256,7 +256,7 @@ export function CampaignEditor({
                         disabled={locked || (!!campaign && campaign.channel !== ch && (campaign.blocks.length > 0 || !!campaign.sms_body))}
                         onClick={() => setChannel(ch)}
                         className={cn(
-                          "flex flex-1 items-center justify-center gap-1.5 rounded-[4px] py-1 text-[13px] transition-colors focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50",
+                          "flex flex-1 items-center justify-center gap-1.5 rounded-[4px] py-1 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-ring disabled:opacity-50",
                           channel === ch ? "bg-white/[0.08] text-foreground" : "text-muted hover:text-foreground",
                         )}
                       >
@@ -293,7 +293,7 @@ export function CampaignEditor({
                   <Input id="c-preheader" value={preheader} onChange={(e) => setPreheader(e.target.value)} maxLength={150} readOnly={locked} />
                 </Field>
                 <div className="space-y-1.5">
-                  <span className="text-xs font-medium text-muted-strong">Content</span>
+                  <span className="text-[13px] font-medium text-muted-strong">Content</span>
                   <BlockEditor blocks={blocks} onChange={setBlocks} readOnly={locked} />
                 </div>
               </div>
@@ -308,7 +308,7 @@ export function CampaignEditor({
                 <Field id="c-sms" label="Message" error={errors.sms_body} required>
                   <Textarea ref={smsRef} id="c-sms" value={smsBody} onChange={(e) => setSmsBody(e.target.value)} rows={5} maxLength={640} readOnly={locked} aria-invalid={!!errors.sms_body} />
                 </Field>
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted" aria-live="polite">
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[13px] text-muted" aria-live="polite">
                   <span>
                     <span className={cn("tabular", sms.characters > 160 && "text-warning")}>{sms.characters}</span> characters
                   </span>
@@ -323,12 +323,12 @@ export function CampaignEditor({
           )}
         </div>
 
-        <aside className="min-w-0 space-y-4 xl:sticky xl:top-16 xl:self-start">
+        <aside className="min-w-0 space-y-6 xl:sticky xl:top-16 xl:self-start">
           <section className="panel">
             <div className="panel-head">
               <h2 className="panel-title">Audience</h2>
               {audience ? (
-                <span className="tabular text-[13px]">
+                <span className="tabular text-sm">
                   <span className="font-medium text-success">{formatNumber(audience.eligible)}</span>
                   <span className="text-muted"> will receive it</span>
                 </span>
@@ -336,15 +336,15 @@ export function CampaignEditor({
             </div>
             <div className="panel-body">
               {!segmentId ? (
-                <p className="text-xs text-muted">Choose a segment to see who will receive this campaign.</p>
+                <p className="text-[13px] text-muted">Choose a segment to see who will receive this campaign.</p>
               ) : !audience ? (
-                <p className="text-xs text-muted">Calculating…</p>
+                <p className="text-[13px] text-muted">Calculating…</p>
               ) : (
                 <>
                   <div className="h-1.5 overflow-hidden rounded-full bg-white/[0.06]" aria-hidden>
                     <div className="h-full bg-success" style={{ width: `${audience.total ? (100 * audience.eligible) / audience.total : 0}%` }} />
                   </div>
-                  <dl className="mt-3 space-y-1 text-xs">
+                  <dl className="mt-3 space-y-1 text-[13px]">
                     <div className="flex justify-between">
                       <dt className="text-muted">In segment</dt>
                       <dd className="tabular">{formatNumber(audience.total)}</dd>
@@ -360,7 +360,7 @@ export function CampaignEditor({
                       <dd className="tabular">{formatNumber(audience.eligible)}</dd>
                     </div>
                   </dl>
-                  <p className="mt-3 text-[11px] leading-snug text-muted">Only guests with {channel === "email" ? "email" : "SMS"} marketing consent are sent to. This is checked again when you press send.</p>
+                  <p className="mt-3 text-xs leading-snug text-muted">Only guests with {channel === "email" ? "email" : "SMS"} marketing consent are sent to. This is checked again when you press send.</p>
                 </>
               )}
             </div>
@@ -400,20 +400,20 @@ export function CampaignEditor({
                   {preview?.html ? (
                     <iframe title="Email preview" srcDoc={preview.html} sandbox="" className={cn("w-full bg-white", device === "mobile" ? "h-[560px]" : "h-[620px]")} />
                   ) : (
-                    <div className="flex h-64 items-center justify-center text-xs text-neutral-500">Rendering preview…</div>
+                    <div className="flex h-64 items-center justify-center text-[13px] text-neutral-500">Rendering preview…</div>
                   )}
                 </div>
               ) : (
                 <div className="mx-auto w-[300px] max-w-full rounded-[28px] border-[6px] border-white/[0.10] bg-background p-3 pt-6">
-                  <p className="mb-3 text-center text-[11px] text-muted">{preview?.smsSender ?? "Blackthorn"}</p>
-                  <div className="ml-2 mr-10 rounded-2xl rounded-bl-sm bg-white/[0.08] px-3 py-2 text-[13px] leading-snug text-foreground">{renderMergeFields(smsBody || "Your message appears here", SAMPLE_VALUES)}</div>
-                  <p className="mt-1 ml-3 text-[10px] text-muted">Delivered</p>
+                  <p className="mb-3 text-center text-xs text-muted">{preview?.smsSender ?? "Blackthorn"}</p>
+                  <div className="ml-2 mr-10 rounded-2xl rounded-bl-sm bg-white/[0.08] px-3 py-2 text-sm leading-snug text-foreground">{renderMergeFields(smsBody || "Your message appears here", SAMPLE_VALUES)}</div>
+                  <p className="mt-1 ml-3 text-[11px] text-muted">Delivered</p>
                 </div>
               )}
             </div>
           </section>
           {campaign ? (
-            <p className="px-1 text-[11px] text-muted">
+            <p className="px-1 text-xs text-muted">
               <Badge variant={campaign.status === "scheduled" ? "info" : "default"} dot className="mr-1.5">
                 {campaign.status === "scheduled" ? "Scheduled" : "Draft"}
               </Badge>
@@ -435,7 +435,7 @@ export function CampaignEditor({
                   {audience ? `${formatNumber(audience.eligible)} guests will receive this ${channel === "email" ? "email" : "text"}. ${formatNumber(audience.excluded)} in the segment are excluded for consent or because they are banned.` : "Calculating the audience…"}
                 </DialogDescription>
               </DialogHeader>
-              <p className="rounded-md bg-white/[0.04] px-3 py-2 text-xs text-muted">Demo: every message is written to the outbox. Nothing is sent to a real inbox or phone.</p>
+              <p className="rounded-md bg-white/[0.04] px-3 py-2 text-[13px] text-muted">Demo: every message is written to the outbox. Nothing is sent to a real inbox or phone.</p>
               <DialogFooter>
                 <Button type="button" variant="ghost" onClick={() => setSendOpen(false)}>
                   Cancel

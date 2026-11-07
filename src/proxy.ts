@@ -6,7 +6,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * /login. This is an optimistic check: every page also calls requireStaff(),
  * which is what actually enforces access.
  */
-const PUBLIC_PATHS = ["/login", "/contact", "/api/public"];
+const PUBLIC_PATHS = ["/login", "/contact", "/api/public", "/api/health"];
 const LOCAL_DEV_COOKIE = "bt_dev_staff";
 
 export async function proxy(request: NextRequest) {

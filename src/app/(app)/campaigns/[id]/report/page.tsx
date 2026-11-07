@@ -50,8 +50,8 @@ export default async function CampaignReportPage({ params }: { params: Promise<{
           ) : null
         }
       />
-      <PageBody wide className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
+      <PageBody wide className="space-y-8">
+        <div className="flex flex-wrap items-center gap-2 text-[13px] text-muted">
           <Badge dot variant="success">
             Sent
           </Badge>
@@ -103,11 +103,11 @@ export default async function CampaignReportPage({ params }: { params: Promise<{
           </div>
         </section>
 
-        <div className="grid gap-4 xl:grid-cols-3">
+        <div className="grid gap-6 xl:grid-cols-3">
           <Card className="xl:col-span-2">
             <CardHeader
               actions={
-                <span className="flex items-center gap-3 text-[11px] text-muted">
+                <span className="flex items-center gap-3 text-xs text-muted">
                   <span className="inline-flex items-center gap-1.5">
                     <span className="inline-block h-2 w-2 rounded-[2px] bg-[#c2636b]" aria-hidden /> Opens
                   </span>
@@ -131,7 +131,7 @@ export default async function CampaignReportPage({ params }: { params: Promise<{
             </CardHeader>
             <CardContent>
               {c.stats.excluded ? (
-                <ul className="space-y-1.5 text-xs">
+                <ul className="space-y-1.5 text-[13px]">
                   {Object.entries(c.stats.excluded_reasons ?? {}).map(([reason, n]) => (
                     <li key={reason} className="flex justify-between">
                       <span className="text-muted">{EXCLUSION_LABELS[reason as ExclusionReason] ?? reason}</span>
@@ -140,15 +140,15 @@ export default async function CampaignReportPage({ params }: { params: Promise<{
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-muted">Everyone in the segment could be contacted.</p>
+                <p className="text-[13px] text-muted">Everyone in the segment could be contacted.</p>
               )}
-              <p className="mt-4 text-[11px] leading-snug text-muted">Every message sent is listed in the outbox. Opens and clicks are simulated for the demo; a real provider would post them back via webhook.</p>
+              <p className="mt-4 text-xs leading-snug text-muted">Every message sent is listed in the outbox. Opens and clicks are simulated for the demo; a real provider would post them back via webhook.</p>
             </CardContent>
           </Card>
         </div>
 
         <Card>
-          <CardHeader actions={<Link href={`/outbox?source=campaign&q=${encodeURIComponent(c.subject ?? c.name)}`} className="text-xs text-muted hover:text-foreground">Open in outbox</Link>}>
+          <CardHeader actions={<Link href={`/outbox?source=campaign&q=${encodeURIComponent(c.subject ?? c.name)}`} className="text-[13px] text-muted hover:text-foreground">Open in outbox</Link>}>
             <CardTitle>Most engaged recipients</CardTitle>
             <CardDescription>Guests who clicked or opened first</CardDescription>
           </CardHeader>

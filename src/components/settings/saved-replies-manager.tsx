@@ -32,10 +32,10 @@ export function SavedRepliesManager({ replies, categories }: { replies: SavedRep
           <li key={r.id} className="flex items-start gap-3 px-4 py-3">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2">
-                <span className="text-[13px] font-medium">{r.title}</span>
+                <span className="text-sm font-medium">{r.title}</span>
                 <Badge>{label(r.category)}</Badge>
               </div>
-              <p className="mt-1 text-xs text-muted">{truncate(r.body.replace(/\s+/g, " "), 160)}</p>
+              <p className="mt-1 text-[13px] text-muted">{truncate(r.body.replace(/\s+/g, " "), 160)}</p>
             </div>
             <div className="flex shrink-0 gap-1">
               <Button variant="ghost" size="icon-sm" aria-label={`Edit ${r.title}`} onClick={() => setEditing(r)}>
@@ -117,14 +117,14 @@ function ReplyDialog({ reply, categories, onClose }: { reply: SavedReply | null;
           </div>
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <label htmlFor="sr-body" className="text-xs font-medium text-muted-strong">
+              <label htmlFor="sr-body" className="text-[13px] font-medium text-muted-strong">
                 Reply text <span className="text-danger">*</span>
               </label>
               <MergeFieldMenu onInsert={(t) => setBody((b) => insertAtCaret(ref.current, b, t))} />
             </div>
             <Textarea ref={ref} id="sr-body" value={body} onChange={(e) => setBody(e.target.value)} rows={10} aria-invalid={!!errors.body} />
             {errors.body ? (
-              <p role="alert" className="text-xs text-danger">
+              <p role="alert" className="text-[13px] text-danger">
                 {errors.body}
               </p>
             ) : null}

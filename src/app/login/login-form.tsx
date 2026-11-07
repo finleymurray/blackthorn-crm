@@ -43,8 +43,8 @@ export function LoginForm({ next, demoLogins, password }: { next?: string; demoL
       {demoLogins.length > 0 ? (
         <div>
           <div className="flex items-baseline justify-between">
-            <h2 className="text-xs font-medium text-muted-strong">Demo accounts</h2>
-            <span className="text-[11px] text-muted">Click one to fill the form</span>
+            <h2 className="text-[13px] font-medium text-muted-strong">Demo accounts</h2>
+            <span className="text-xs text-muted">Click one to fill the form</span>
           </div>
           <ul className="mt-2 divide-y divide-border overflow-hidden rounded-md border border-border">
             {demoLogins.map((s) => (
@@ -61,15 +61,15 @@ export function LoginForm({ next, demoLogins, password }: { next?: string; demoL
                   className="flex w-full items-center justify-between gap-3 px-3 py-2 text-left hover:bg-surface-raised focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-ring"
                 >
                   <span className="min-w-0">
-                    <span className="block text-[13px] text-foreground">{s.name}</span>
-                    <span className="block truncate text-[11px] text-muted">{s.description}</span>
+                    <span className="block text-sm text-foreground">{s.name}</span>
+                    <span className="block truncate text-xs text-muted">{s.description}</span>
                   </span>
-                  <span className="shrink-0 rounded-[3px] border border-border px-1.5 py-px text-[11px] text-muted-strong">{s.roleLabel}</span>
+                  <span className="shrink-0 rounded-[3px] border border-border px-1.5 py-px text-xs text-muted-strong">{s.roleLabel}</span>
                 </button>
               </li>
             ))}
           </ul>
-          <p className="mt-2 text-[11px] text-muted">
+          <p className="mt-2 text-xs text-muted">
             Password for all demo accounts: <code className="rounded-[3px] bg-surface-raised px-1 py-px text-muted-strong">{password}</code>
           </p>
         </div>

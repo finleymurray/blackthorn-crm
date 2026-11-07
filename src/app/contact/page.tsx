@@ -18,17 +18,17 @@ export default async function ContactPage() {
           <ThornMark className="size-8 text-foreground" />
           <div>
             <p className="font-display text-2xl leading-none tracking-wide">{settings?.name ?? "Blackthorn"}</p>
-            <p className="text-[11px] uppercase tracking-[0.2em] text-muted">Guest support</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-muted">Guest support</p>
           </div>
         </div>
         <h1 className="text-xl font-medium">How can we help?</h1>
-        <p className="mt-1 text-[13px] text-muted">
+        <p className="mt-1 text-sm text-muted">
           Tell us what&apos;s happened and we&apos;ll come back to you by email, usually within a day. For anything urgent on an event night, speak to a member of staff at the box office.
         </p>
         <div className="panel mt-6 p-5">
           <ContactForm categories={categories} />
         </div>
-        <p className="mt-6 text-center text-[11px] text-muted">
+        <p className="mt-6 text-center text-xs text-muted">
           Or email {settings?.support_email}. This is a demonstration form: messages create tickets in the Blackthorn CRM and are not sent anywhere else.
         </p>
       </div>

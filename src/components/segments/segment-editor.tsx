@@ -130,7 +130,7 @@ export function SegmentEditor({
           </>
         }
       />
-      <PageBody wide className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <PageBody wide className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="min-w-0 space-y-5">
           <div className="grid gap-4 sm:grid-cols-[1fr_1fr]">
             <Field id="seg-name" label="Name" required>
@@ -154,7 +154,7 @@ export function SegmentEditor({
           </section>
 
           {error ? (
-            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">
               {error}
             </p>
           ) : null}
@@ -168,11 +168,11 @@ export function SegmentEditor({
               {loading ? <Loader2 className="size-3.5 animate-spin text-muted" aria-label="Updating" /> : null}
             </div>
             {previewError ? (
-              <p className="px-4 py-6 text-center text-xs text-danger">{previewError}</p>
+              <p className="px-4 py-6 text-center text-[13px] text-danger">{previewError}</p>
             ) : !preview ? (
-              <p className="px-4 py-6 text-center text-xs text-muted">Evaluating…</p>
+              <p className="px-4 py-6 text-center text-[13px] text-muted">Evaluating…</p>
             ) : preview.preview.length === 0 ? (
-              <p className="px-4 py-6 text-center text-xs text-muted">No guests match these rules.</p>
+              <p className="px-4 py-6 text-center text-[13px] text-muted">No guests match these rules.</p>
             ) : (
               <Table flush>
                 <TableHeader>
@@ -199,7 +199,7 @@ export function SegmentEditor({
                             </Badge>
                           ) : null}
                         </div>
-                        <div className="truncate text-xs text-muted">{g.email}</div>
+                        <div className="truncate text-[13px] text-muted">{g.email}</div>
                       </TableCell>
                       <TableCell className="hidden sm:table-cell tabular">{g.postcode}</TableCell>
                       <TableCell>
@@ -222,7 +222,7 @@ export function SegmentEditor({
           </section>
         </div>
 
-        <aside className="space-y-4 xl:sticky xl:top-16 xl:self-start">
+        <aside className="space-y-6 xl:sticky xl:top-16 xl:self-start">
           <div className="panel p-4">
             <p className="stat-label">Guests matching</p>
             <p className="stat-value text-3xl">{preview ? formatNumber(preview.count) : "–"}</p>
@@ -235,7 +235,7 @@ export function SegmentEditor({
             </>
           ) : null}
           {segment && segment.campaign_count > 0 ? (
-            <p className="px-1 text-[11px] leading-relaxed text-muted">
+            <p className="px-1 text-xs leading-relaxed text-muted">
               Used by {segment.campaign_count} campaign{segment.campaign_count === 1 ? "" : "s"}. Changing the rules changes who those campaigns go to next time they send.
             </p>
           ) : null}
@@ -251,10 +251,10 @@ function ChannelCard({ channel, summary }: { channel: "email" | "sms"; summary: 
   return (
     <div className="panel p-4">
       <div className="flex items-center justify-between">
-        <p className="flex items-center gap-1.5 text-[13px] font-medium">
+        <p className="flex items-center gap-1.5 text-sm font-medium">
           <Icon className="size-3.5 text-muted" aria-hidden /> {channel === "email" ? "Email" : "SMS"} send
         </p>
-        <span className="tabular text-[13px]">
+        <span className="tabular text-sm">
           <span className="font-medium text-success">{formatNumber(summary.eligible)}</span>
           <span className="text-muted"> / {formatNumber(summary.total)}</span>
         </span>
@@ -263,7 +263,7 @@ function ChannelCard({ channel, summary }: { channel: "email" | "sms"; summary: 
         <div className="h-full bg-success" style={{ width: `${summary.total ? (100 * summary.eligible) / summary.total : 0}%` }} />
       </div>
       {summary.excluded > 0 ? (
-        <ul className="mt-3 space-y-1 text-xs">
+        <ul className="mt-3 space-y-1 text-[13px]">
           {reasons.map(([reason, count]) => (
             <li key={reason} className="flex justify-between gap-2">
               <span className="text-muted">{EXCLUSION_LABELS[reason]}</span>
@@ -272,9 +272,9 @@ function ChannelCard({ channel, summary }: { channel: "email" | "sms"; summary: 
           ))}
         </ul>
       ) : (
-        <p className="mt-3 text-xs text-muted">Everyone in this segment can be contacted by {channel === "email" ? "email" : "SMS"}.</p>
+        <p className="mt-3 text-[13px] text-muted">Everyone in this segment can be contacted by {channel === "email" ? "email" : "SMS"}.</p>
       )}
-      <p className="mt-3 text-[11px] leading-snug text-muted">Excluded guests are never sent to. Consent is checked again at send time.</p>
+      <p className="mt-3 text-xs leading-snug text-muted">Excluded guests are never sent to. Consent is checked again at send time.</p>
     </div>
   );
 }

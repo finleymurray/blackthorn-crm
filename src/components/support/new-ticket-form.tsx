@@ -75,7 +75,7 @@ export function NewTicketForm({ categories, prefill }: { categories: Array<{ key
         </Field>
       </div>
       {formError ? (
-        <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
+        <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-sm text-danger">
           {formError}
         </p>
       ) : null}

@@ -36,7 +36,7 @@ export function OutboxFilters({ params }: { params: OutboxParams }) {
       <label htmlFor="outbox-channel" className="sr-only">
         Channel
       </label>
-      <Select id="outbox-channel" value={channel} onChange={(e) => setChannel(e.target.value as OutboxParams["channel"])} className="h-8 w-auto text-xs">
+      <Select id="outbox-channel" value={channel} onChange={(e) => setChannel(e.target.value as OutboxParams["channel"])} className="h-8 w-auto text-[13px]">
         <option value="any">All channels</option>
         <option value="email">Email</option>
         <option value="sms">SMS</option>
@@ -44,7 +44,7 @@ export function OutboxFilters({ params }: { params: OutboxParams }) {
       <label htmlFor="outbox-source" className="sr-only">
         Source
       </label>
-      <Select id="outbox-source" value={source} onChange={(e) => setSource(e.target.value as OutboxParams["source"])} className="h-8 w-auto text-xs">
+      <Select id="outbox-source" value={source} onChange={(e) => setSource(e.target.value as OutboxParams["source"])} className="h-8 w-auto text-[13px]">
         <option value="any">All sources</option>
         <option value="campaign">Campaigns</option>
         <option value="automation">Automations</option>

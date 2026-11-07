@@ -31,7 +31,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 overlay rounded-lg p-5 max-h-[calc(100vh-2rem)] overflow-y-auto",
+        "fixed left-1/2 top-1/2 z-50 grid w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 overlay rounded-lg p-6 max-h-[calc(100vh-2rem)] overflow-y-auto",
         size === "sm" && "max-w-sm",
         size === "md" && "max-w-lg",
         size === "lg" && "max-w-2xl",
@@ -61,7 +61,7 @@ const DialogTitle = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title ref={ref} className={cn("text-[15px] font-medium leading-none", className)} {...props} />
+  <DialogPrimitive.Title ref={ref} className={cn("text-base font-medium leading-none", className)} {...props} />
 ));
 DialogTitle.displayName = "DialogTitle";
 
@@ -69,7 +69,7 @@ const DialogDescription = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description ref={ref} className={cn("text-[13px] text-muted", className)} {...props} />
+  <DialogPrimitive.Description ref={ref} className={cn("text-sm text-muted", className)} {...props} />
 ));
 DialogDescription.displayName = "DialogDescription";
 

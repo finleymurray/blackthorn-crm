@@ -54,7 +54,7 @@ export function TicketActions({ ticket, bookings, canRefund }: { ticket: TicketD
           </Button>
         ) : null}
       </div>
-      <p className="mt-2 text-[10px] leading-snug text-muted">All actions are simulated, logged on the ticket and in the audit trail.</p>
+      <p className="mt-2 text-[11px] leading-snug text-muted">All actions are simulated, logged on the ticket and in the audit trail.</p>
 
       {mode === "refund" ? <RefundDialog ticket={ticket} bookings={refundable} initial={preferred(refundable)?.id ?? ""} onClose={() => setMode(null)} onResult={done} /> : null}
       {mode === "move" ? <MoveDialog ticket={ticket} bookings={movable} initial={preferred(movable)?.id ?? ""} onClose={() => setMode(null)} onResult={done} /> : null}
@@ -136,7 +136,7 @@ function RefundDialog({ ticket, bookings, initial, onClose, onResult }: { ticket
                 role="radio"
                 aria-checked={kind === k}
                 onClick={() => setKind(k)}
-                className={`flex-1 rounded-[4px] py-1 text-[13px] ${kind === k ? "bg-white/[0.08] text-foreground" : "text-muted hover:text-foreground"}`}
+                className={`flex-1 rounded-[4px] py-1 text-sm ${kind === k ? "bg-white/[0.08] text-foreground" : "text-muted hover:text-foreground"}`}
               >
                 {k === "full" ? `Full refund (${formatMoney(remaining)})` : "Partial refund"}
               </button>
@@ -157,15 +157,15 @@ function RefundDialog({ ticket, bookings, initial, onClose, onResult }: { ticket
           <Field id="rf-reason" label="Reason" required>
             <Textarea id="rf-reason" value={reason} onChange={(e) => setReason(e.target.value)} rows={2} placeholder="e.g. Duplicate payment, bereavement, weather closure" maxLength={300} />
           </Field>
-          <label className="flex items-start gap-2 text-[13px]">
+          <label className="flex items-start gap-2 text-sm">
             <Checkbox checked={kind === "full" || voidTickets} disabled={kind === "full"} onChange={(e) => setVoidTickets(e.target.checked)} className="mt-0.5" />
             <span>
               Void the tickets
-              <span className="block text-[11px] text-muted">{kind === "full" ? "A full refund always voids the tickets." : "Marks the booking as refunded so the tickets will not scan at the gate, even though only part of the money is returned."}</span>
+              <span className="block text-xs text-muted">{kind === "full" ? "A full refund always voids the tickets." : "Marks the booking as refunded so the tickets will not scan at the gate, even though only part of the money is returned."}</span>
             </span>
           </label>
           {error ? (
-            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-xs text-danger">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
               {error}
             </p>
           ) : null}
@@ -254,7 +254,7 @@ function MoveDialog({ ticket, bookings, initial, onClose, onResult }: { ticket: 
             </Select>
           </Field>
           {error ? (
-            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-xs text-danger">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
               {error}
             </p>
           ) : null}
@@ -314,7 +314,7 @@ function VoucherDialog({ ticket, onClose, onResult }: { ticket: TicketDetail; on
             <Textarea id="vc-reason" value={reason} onChange={(e) => setReason(e.target.value)} rows={2} placeholder="e.g. Goodwill for the queue times on 31/10" maxLength={300} />
           </Field>
           {error ? (
-            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-xs text-danger">
+            <p role="alert" className="rounded-md bg-danger-soft px-3 py-2 text-[13px] text-danger">
               {error}
             </p>
           ) : null}
