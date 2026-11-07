@@ -37,7 +37,22 @@ function connect(): Sql {
   });
 }
 
-export const adminSql: Sql = globalThis.__blackthornSql ?? (globalThis.__blackthornSql = connect());
+function pool(): Sql {
+  return (globalThis.__blackthornSql ??= connect());
+}
+
+/**
+ * Connects on first use, not on import, so `next build` works on hosts
+ * (Docker, Fly.io) where runtime secrets are not available at build time.
+ */
+export const adminSql: Sql = new Proxy(function lazySql() {} as unknown as Sql, {
+  apply: (_target, thisArg, args) => Reflect.apply(pool() as unknown as (...a: unknown[]) => unknown, thisArg, args),
+  get: (_target, prop) => {
+    const sql = pool();
+    const value = Reflect.get(sql, prop, sql) as unknown;
+    return typeof value === "function" ? (value as (...a: unknown[]) => unknown).bind(sql) : value;
+  },
+});
 
 export type Db = TransactionSql;
 
