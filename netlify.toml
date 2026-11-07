@@ -1,0 +1,12 @@
+# Netlify deployment. The Next.js runtime is detected automatically; this file
+# only pins the build command and Node version. Set the environment variables
+# from .env.example in Site settings -> Environment variables.
+[build]
+  command = "bash scripts/netlify-build.sh"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

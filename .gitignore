@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Netlify CLI upload bundles
+deploy-*.zip
+.netlify
