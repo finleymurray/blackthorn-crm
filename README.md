@@ -66,6 +66,8 @@ Open http://localhost:3000. The sign in page lists the demo accounts.
 
 Use the Supabase **Transaction pooler** `DATABASE_URL` on both. No code changes are needed.
 
+**Always-on container (fastest):** the `Dockerfile` builds a self-contained server and `fly.toml` runs it permanently in London. `/api/health` reports the database round trip time. See [docs/always-on-hosting.md](docs/always-on-hosting.md) for a free Oracle Cloud option and a low-cost Fly.io option.
+
 ### Local development without Supabase
 
 The app can run against any Postgres 16 database. Set `DATABASE_URL` to it and `LOCAL_DEV_AUTH=1`, and the sign in page authenticates the demo accounts with `DEMO_PASSWORD` instead of Supabase Auth. `npm run db:migrate` adds a small `auth` shim so the migrations apply unchanged. This mode is refused in production builds.
