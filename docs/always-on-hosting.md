@@ -68,8 +68,8 @@ permanently costs roughly £3 a month at current prices.
 curl -L https://fly.io/install.sh | sh
 fly auth signup            # or: fly auth login
 fly launch --no-deploy --copy-config --name blackthorn-crm
-fly secrets set DATABASE_URL='...' SUPABASE_SERVICE_ROLE_KEY='...' DEMO_PASSWORD='...'
-fly deploy --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY='...'
+fly secrets set DATABASE_URL='...'
+fly deploy
 ```
 
 `fly.toml` already sets London, keeps one machine running at all times and

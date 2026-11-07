@@ -8,7 +8,8 @@ primary_region = "lhr"
 [build.args]
   NEXT_PUBLIC_SUPABASE_URL = "https://uaclhscpseivkuzajuly.supabase.co"
   NEXT_PUBLIC_APP_URL = "https://blackthorn-crm.fly.dev"
-  # NEXT_PUBLIC_SUPABASE_ANON_KEY is passed with --build-arg on deploy.
+  # Publishable key: safe in the browser, access is enforced by row level security.
+  NEXT_PUBLIC_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVhY2xoc2Nwc2Vpdmt1emFqdWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA0MTIwNzYsImV4cCI6MjA4NTk4ODA3Nn0.kBcHtnR-oY8ZUq6S5xk6M0F_iAw35ayosq6EOwE1C78"
 
 [http_service]
   internal_port = 3000
